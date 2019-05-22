@@ -4,9 +4,7 @@ import dicomModule from "./dicom";
 const state = {
   scans: [],
   NIfTI: [],
-  sequenceTypes: [],
-  unreviewedDicomPatientsAsTreeNodes: [],
-  unreviewedDicomSeriesAsTreeNodes: {}
+  sequenceTypes: []
 };
 
 const getters = {};
@@ -20,15 +18,6 @@ const mutations = {
   },
   setSequenceTypes(state, sequenceTypes) {
     state.sequenceTypes = sequenceTypes;
-  },
-  setUnreviewedDicomPatientsAsTreeNodes(
-    state,
-    unreviewedDicomPatientsAsTreeNodes
-  ) {
-    state.unreviewedDicomPatientsAsTreeNodes = unreviewedDicomPatientsAsTreeNodes;
-  },
-  setUnreviewedDicomSeriesAsTreeNodes(state, data) {
-    state.unreviewedDicomSeriesAsTreeNodes[data.patient_id] = data.results;
   }
 };
 
@@ -38,27 +27,6 @@ const actions = {
       .get("/api/mri/scans/")
       .then(json => commit("setScans", json.data.results))
       .catch(console.error);
-  },
-  getUnreviewedDicomPatientsAsTreeNodes({ commit }) {
-    axios
-      .get("/api/mri/tree/unreviewed_dicom_patients/")
-      .then(json =>
-        commit("setUnreviewedDicomPatientsAsTreeNodes", json.data.results)
-      )
-      .catch(console.error);
-  },
-  getUnreviewedDicomSeriesAsTreeNodes({ commit }, patient_id) {
-    return new Promise((resolve, reject) =>
-      axios
-        .get("/api/mri/tree/unreviewed_dicom_series/?patient__id=" + patient_id)
-        .then(json =>
-          commit("setUnreviewedDicomSeriesAsTreeNodes", {
-            patient_id,
-            results: json.data.results
-          })
-        )
-        .catch(console.error)
-    );
   }
 };
 

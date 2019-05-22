@@ -1,8 +1,8 @@
 <template>
   <v-app id="app">
-    <v-navigation-drawer v-model="drawer" fixed app>
+    <v-navigation-drawer v-model="drawer" clipped absolute overflow app>
       <v-list dense>
-        <router-link to="/">
+        <router-link to="/" class="drawer-link">
           <v-list-tile>
             <v-list-tile-action>
               <v-icon>home</v-icon>
@@ -13,7 +13,7 @@
           </v-list-tile>
         </router-link>
 
-        <router-link to="/">
+        <router-link to="/researchers" class="drawer-link">
           <v-list-tile>
             <v-list-tile-action>
               <v-icon>people</v-icon>
@@ -24,7 +24,7 @@
           </v-list-tile>
         </router-link>
 
-        <router-link to="/review">
+        <router-link to="/review" class="drawer-link">
           <v-list-tile>
             <v-list-tile-action>
               <v-icon>storage</v-icon>
@@ -36,7 +36,7 @@
         </router-link>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar color="indigo" dark fixed app>
+    <v-toolbar color="indigo" clipped-left dark absolute app>
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title>pylabber</v-toolbar-title>
     </v-toolbar>
@@ -58,7 +58,7 @@
 <script>
 export default {
   data: () => ({
-    drawer: null
+    drawer: {}
   }),
   props: {
     source: String
@@ -74,14 +74,13 @@ export default {
   text-align: center;
   color: #2c3e50;
 }
-#nav {
-  padding: 30px;
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+
+.drawer-link {
+  text-decoration: none;
+  color: black;
+}
+
+a.router-link-exact-active {
+  color: #3366bb;
 }
 </style>

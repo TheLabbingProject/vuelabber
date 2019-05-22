@@ -1,5 +1,7 @@
 <template>
-  <v-text>Check</v-text>
+  <h2>
+    Welcome to Yaniv Assaf's lab!
+  </h2>
 </template>
 
 <script>

@@ -45,11 +45,10 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "UnreviewedDataTree",
-  created() {
-    this.$store.dispatch("mri/getUnreviewedDicomPatientsAsTreeNodes");
-  },
   data: () => ({
     tree: [],
     open: [],
@@ -82,18 +81,22 @@ export default {
     }
   },
   methods: {
-    loadChildren(item) {
+    async loadChildren(item) {
       if (item.name === "DICOM") {
-        let unreviewedPatients = this.$store.state.mri
-          .unreviewedDicomPatientsAsTreeNodes;
-        item.children = unreviewedPatients;
+        return axios
+          .get("/api/mri/tree/unreviewed_dicom_patients/")
+          .then(json => json.data.results)
+          .then(result => (item.children = result))
+          .catch(console.error);
       } else if (item.id.startsWith("dicom_patient_")) {
         let patient_id = item.id.split("_").pop();
-        this.$store
-          .dispatch("mri/getUnreviewedDicomSeriesAsTreeNodes", patient_id)
-          .then(
-            (item.children = this.$store.state.mri.unreviewedDicomSeriesAsTreeNodes.patient_id)
-          );
+        return axios
+          .get(
+            "/api/mri/tree/unreviewed_dicom_series/?patient__id=" + patient_id
+          )
+          .then(json => json.data.results)
+          .then(result => (item.children = result))
+          .catch(console.error);
       }
     }
   }
