@@ -1,13 +1,15 @@
-import Vue from "vue";
-import Vuex from "vuex";
-import mriModule from "./modules/mri";
-import usersModule from "./modules/users";
+import auth from './auth'
+import password from './password'
+import Vue from 'vue'
+import Vuex from 'vuex'
+import usersModule from './modules/users'
 
-Vue.use(Vuex);
+Vue.use(Vuex)
 
 export default new Vuex.Store({
   modules: {
-    mri: mriModule,
+    auth,
+    password,
     users: usersModule
   }
-});
+})

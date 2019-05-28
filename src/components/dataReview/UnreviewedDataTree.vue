@@ -1,54 +1,65 @@
 <template>
-  <div>
-    <v-card class="pl-0">
-      <v-sheet class="pa-3 primary lighten-2">
-        <v-text-field
-          v-model="search"
-          label="Search Unreviewed Data"
-          dark
-          flat
-          solo-inverted
-          hide-details
-          clearable
-          clear-icon="far fa-times-circle"
-        ></v-text-field>
-        <v-checkbox
-          v-model="caseSensitive"
-          dark
-          hide-details
-          label="Case sensitive search"
-        ></v-checkbox>
-      </v-sheet>
-      <v-card-text>
-        <v-treeview
-          activatable
-          open-on-click
-          transition
-          v-model="tree"
-          :active.sync="active"
-          :filter="filter"
-          :items="items"
-          :load-children="loadChildren"
-          :open.sync="open"
-          :search="search"
-        >
-          <template v-slot:prepend="{ item, open }">
-            <v-icon v-if="!item.icon">{{
-              open ? "folder_open" : "folder"
-            }}</v-icon>
-            <v-icon v-else>{{ icons[item.icon] }}</v-icon>
-          </template>
-        </v-treeview>
-      </v-card-text>
-    </v-card>
-  </div>
+  <b-container fluid>
+    <b-row>
+      <b-col>
+        <div>
+          <v-card class="pl-0">
+            <v-sheet class="pa-3 primary lighten-2">
+              <v-text-field
+                v-model="search"
+                label="Search Unreviewed Data"
+                dark
+                flat
+                solo-inverted
+                hide-details
+                clearable
+                clear-icon="far fa-times-circle"
+              ></v-text-field>
+              <v-checkbox
+                v-model="caseSensitive"
+                dark
+                hide-details
+                label="Case sensitive search"
+              ></v-checkbox>
+            </v-sheet>
+            <v-card-text>
+              <v-treeview
+                activatable
+                open-on-click
+                transition
+                v-model="tree"
+                :active.sync="active"
+                :filter="filter"
+                :items="items"
+                :load-children="loadChildren"
+                :open.sync="open"
+                :search="search"
+              >
+                <template v-slot:prepend="{ item, open }">
+                  <v-icon v-if="!item.icon">{{
+                    open ? 'folder_open' : 'folder'
+                  }}</v-icon>
+                  <v-icon v-else>{{ icons[item.icon] }}</v-icon>
+                </template>
+              </v-treeview>
+            </v-card-text>
+          </v-card>
+        </div>
+      </b-col>
+      <b-col>
+        <ScanReview v-bind:selectedSeriesId="selectedSeriesId"></ScanReview>
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
-import axios from "axios";
+import axios from 'axios'
+import ScanReview from '@/components/dataReview/ScanReview.vue'
 
 export default {
-  name: "UnreviewedDataTree",
+  name: 'UnreviewedDataTree',
+  components: { ScanReview },
   data: () => ({
     tree: [],
     open: [],
@@ -56,19 +67,19 @@ export default {
     search: null,
     caseSensitive: false,
     icons: {
-      subject: "person",
-      dcm: "camera",
-      nii: "camera"
+      subject: 'person',
+      dcm: 'camera',
+      nii: 'camera'
     },
     items: [
       {
         id: 1,
-        name: "DICOM",
+        name: 'DICOM',
         children: []
       },
       {
         id: 2,
-        name: "NIfTI",
+        name: 'NIfTI',
         children: []
       }
     ]
@@ -77,30 +88,33 @@ export default {
     filter() {
       return this.caseSensitive
         ? (item, search, textKey) => item[textKey].indexOf(search) > -1
-        : undefined;
+        : undefined
+    },
+    selectedSeriesId() {
+      return this.active[0]
     }
   },
   methods: {
     async loadChildren(item) {
-      if (item.name === "DICOM") {
+      if (item.name === 'DICOM') {
         return axios
-          .get("/api/mri/tree/unreviewed_dicom_patients/")
+          .get('/api/mri/tree/unreviewed_dicom_patients/')
           .then(json => json.data.results)
           .then(result => (item.children = result))
-          .catch(console.error);
-      } else if (item.id.startsWith("dicom_patient_")) {
-        let patient_id = item.id.split("_").pop();
+          .catch(console.error)
+      } else if (item.id.startsWith('dicom_patient_')) {
+        let patient_id = item.id.split('_').pop()
         return axios
           .get(
-            "/api/mri/tree/unreviewed_dicom_series/?patient__id=" + patient_id
+            '/api/mri/tree/unreviewed_dicom_series/?patient__id=' + patient_id
           )
           .then(json => json.data.results)
           .then(result => (item.children = result))
-          .catch(console.error);
+          .catch(console.error)
       }
     }
   }
-};
+}
 </script>
 
 <style lang="scss">
