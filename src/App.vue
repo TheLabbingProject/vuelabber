@@ -56,15 +56,10 @@
             </router-link>
           </v-list>
         </v-menu>
-
-        <!-- <v-btn flat>{{ user.username }}</v-btn>
-        <router-link to="/logout">
-          <v-btn flat>Logout</v-btn>
-        </router-link> -->
       </div>
     </v-toolbar>
     <v-content>
-      <v-container fluid fill-height>
+      <v-container fluid p-4>
         <v-layout justify-left align-top>
           <main>
             <router-view />

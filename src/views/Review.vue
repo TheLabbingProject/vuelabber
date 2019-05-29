@@ -1,7 +1,5 @@
 <template>
-  <div class="review">
-    <UnreviewedDataTree />
-  </div>
+  <UnreviewedDataTree />
 </template>
 
 <script>

@@ -4,6 +4,8 @@
       <b-form-group
         id="institution-name-input-group"
         label="Institution Name"
+        label-cols-sm="6"
+        label-cols-lg="5"
         label-for="institution-name-input"
         description="Where was this scanned acquired?"
       >
@@ -18,6 +20,8 @@
       <b-form-group
         id="acquisition-time-input-group"
         label="Acquisition Time"
+        label-cols-sm="6"
+        label-cols-lg="5"
         label-for="acquisition-time-input"
         description="When was this scanned acquired?"
       >
@@ -31,6 +35,8 @@
       <b-form-group
         id="description-input-group"
         label="Description"
+        label-cols-sm="6"
+        label-cols-lg="5"
         label-for="description-input"
         description="A description of the type of scan acquired."
       >
@@ -44,6 +50,8 @@
       <b-form-group
         id="number-input-group"
         label="Number"
+        label-cols-sm="6"
+        label-cols-lg="5"
         label-for="number-input"
         description="A number identifying this scan within its acquisition session."
       >
@@ -57,6 +65,8 @@
       <b-form-group
         id="comments-input-group"
         label="Comments"
+        label-cols-sm="6"
+        label-cols-lg="5"
         label-for="comments-input"
         description="Anything noteworty about this scan or its acquisition."
       >
@@ -119,7 +129,10 @@ export default {
 </script>
 
 <style scoped>
-.scan-review label {
+/deep/ label.col-form-label {
+  text-align: left;
+}
+/deep/ .form-text {
   text-align: left;
 }
 </style>

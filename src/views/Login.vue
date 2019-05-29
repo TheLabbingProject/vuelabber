@@ -1,31 +1,31 @@
 <template>
   <div id="login-view">
-    <h1>Login</h1>
     <form @submit.prevent="submit">
-      <input
+      <v-text-field
         v-model="inputs.username"
         type="text"
         id="username"
-        placeholder="username"
+        placeholder="Username"
+        required
       />
-      <input
+      <v-text-field
         v-model="inputs.password"
         type="password"
         id="password"
-        placeholder="password"
+        placeholder="Password"
+        required
       />
     </form>
-    <button @click="login(inputs)" id="login-button">login</button>
-    <div>
-      <router-link to="/register">create account</router-link>|
-      <router-link to="/password_reset">reset password</router-link>
-    </div>
+    <v-btn @click="login(inputs)" color="success" id="login-button"
+      >login</v-btn
+    >
   </div>
 </template>
 
 <script>
 export default {
-  data() {
+  name: 'LoginView',
+  data: () => {
     return {
       inputs: {
         username: '',
@@ -43,8 +43,8 @@ export default {
 }
 </script>
 
-<style>
-form input {
-  display: block;
+<style scoped>
+>>> .login-title {
+  text-align: left;
 }
 </style>

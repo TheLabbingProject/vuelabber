@@ -1,56 +1,52 @@
 <template>
-  <b-container fluid>
-    <b-row>
-      <b-col>
-        <div>
-          <v-card class="pl-0">
-            <v-sheet class="pa-3 primary lighten-2">
-              <v-text-field
-                v-model="search"
-                label="Search Unreviewed Data"
-                dark
-                flat
-                solo-inverted
-                hide-details
-                clearable
-                clear-icon="far fa-times-circle"
-              ></v-text-field>
-              <v-checkbox
-                v-model="caseSensitive"
-                dark
-                hide-details
-                label="Case sensitive search"
-              ></v-checkbox>
-            </v-sheet>
-            <v-card-text>
-              <v-treeview
-                activatable
-                open-on-click
-                transition
-                v-model="tree"
-                :active.sync="active"
-                :filter="filter"
-                :items="items"
-                :load-children="loadChildren"
-                :open.sync="open"
-                :search="search"
-              >
-                <template v-slot:prepend="{ item, open }">
-                  <v-icon v-if="!item.icon">{{
-                    open ? 'folder_open' : 'folder'
-                  }}</v-icon>
-                  <v-icon v-else>{{ icons[item.icon] }}</v-icon>
-                </template>
-              </v-treeview>
-            </v-card-text>
-          </v-card>
-        </div>
-      </b-col>
-      <b-col>
-        <ScanReview v-bind:selectedSeriesId="selectedSeriesId"></ScanReview>
-      </b-col>
-    </b-row>
-  </b-container>
+  <v-layout p4>
+    <v-flex>
+      <v-card class="pl-0">
+        <v-sheet class="pa-3 primary lighten-2">
+          <v-text-field
+            v-model="search"
+            label="Search Unreviewed Data"
+            dark
+            flat
+            solo-inverted
+            hide-details
+            clearable
+            clear-icon="far fa-times-circle"
+          ></v-text-field>
+          <v-checkbox
+            v-model="caseSensitive"
+            dark
+            hide-details
+            label="Case sensitive search"
+          ></v-checkbox>
+        </v-sheet>
+        <v-card-text>
+          <v-treeview
+            activatable
+            open-on-click
+            transition
+            v-model="tree"
+            :active.sync="active"
+            :filter="filter"
+            :items="items"
+            :load-children="loadChildren"
+            :open.sync="open"
+            :search="search"
+          >
+            <template v-slot:prepend="{ item, open }">
+              <v-icon v-if="!item.icon">{{
+                open ? 'folder_open' : 'folder'
+              }}</v-icon>
+              <v-icon v-else>{{ icons[item.icon] }}</v-icon>
+            </template>
+          </v-treeview>
+        </v-card-text>
+      </v-card>
+    </v-flex>
+    <v-flex>
+      <ScanReview v-bind:selectedSeriesId="selectedSeriesId"></ScanReview>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script>
