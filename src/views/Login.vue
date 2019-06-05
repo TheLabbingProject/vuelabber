@@ -1,24 +1,28 @@
 <template>
   <div id="login-view">
     <form @submit.prevent="submit">
-      <v-text-field
-        v-model="inputs.username"
-        type="text"
-        id="username"
-        placeholder="Username"
-        required
-      />
-      <v-text-field
-        v-model="inputs.password"
-        type="password"
-        id="password"
-        placeholder="Password"
-        required
-      />
+      <v-flex>
+        <v-text-field
+          v-model="inputs.username"
+          type="text"
+          id="username"
+          label="Username"
+          required
+        />
+      </v-flex>
+      <v-flex>
+        <v-text-field
+          v-model="inputs.password"
+          type="password"
+          id="password"
+          label="Password"
+          required
+        />
+      </v-flex>
+      <v-btn @click="login(inputs)" color="success" id="login-button"
+        >login</v-btn
+      >
     </form>
-    <v-btn @click="login(inputs)" color="success" id="login-button"
-      >login</v-btn
-    >
   </div>
 </template>
 
@@ -43,8 +47,4 @@ export default {
 }
 </script>
 
-<style scoped>
->>> .login-title {
-  text-align: left;
-}
-</style>
+<style scoped></style>

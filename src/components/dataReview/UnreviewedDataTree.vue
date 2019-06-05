@@ -1,6 +1,6 @@
 <template>
-  <v-layout p4>
-    <v-flex>
+  <v-layout row>
+    <v-flex grow>
       <v-card class="pl-0">
         <v-sheet class="pa-3 primary lighten-2">
           <v-text-field
@@ -43,7 +43,7 @@
         </v-card-text>
       </v-card>
     </v-flex>
-    <v-flex>
+    <v-flex grow pl-5>
       <ScanReview v-bind:selectedSeriesId="selectedSeriesId"></ScanReview>
     </v-flex>
   </v-layout>

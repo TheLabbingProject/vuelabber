@@ -61,9 +61,7 @@
     <v-content>
       <v-container fluid p-4>
         <v-layout justify-left align-top>
-          <main>
-            <router-view />
-          </main>
+          <router-view />
         </v-layout>
       </v-container>
     </v-content>
