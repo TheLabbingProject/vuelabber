@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Vue from 'vue'
 const camelcaseKeys = require('camelcase-keys')
 
 const state = {
@@ -7,6 +8,9 @@ const state = {
 }
 
 const getters = {
+  getScanByDicomSeries(state) {
+    return dicomSeries => state.seriesToScan[dicomSeries.id]
+  },
   getDicomSeriesSequenceType(state) {
     return series =>
       state.sequenceTypes.find(
@@ -14,6 +18,15 @@ const getters = {
           arraysEqual(item.scanningSequence, series.scanningSequence) &&
           arraysEqual(item.sequenceVariant, series.sequenceVariant)
       )
+  },
+  getStudyGroupsByDicomSeries(state) {
+    return function(series) {
+      if (state.seriesToScan[series.id]) {
+        return state.seriesToScan[series.id].studyGroups
+      } else {
+        return []
+      }
+    }
   }
 }
 
@@ -22,9 +35,13 @@ const mutations = {
     state.sequenceTypes = sequenceTypes
   },
   updateScanList(state, { seriesId, scan }) {
-    state.seriesToScan = Object.assign({}, state.seriesToScan, {
-      [seriesId]: scan
-    })
+    Vue.set(state.seriesToScan, seriesId, scan)
+  },
+  addGroupToScan(state, { dicomSeries, group }) {
+    let updated = state.seriesToScan[dicomSeries.id].studyGroups.concat(
+      group.url
+    )
+    Vue.set(state.seriesToScan[dicomSeries.id], 'studyGroups', updated)
   },
   clearSeriesToScan(state) {
     state.seriesToScan = {}
@@ -33,14 +50,14 @@ const mutations = {
 
 const actions = {
   fetchSequenceTypes({ commit }) {
-    axios
+    return axios
       .get('/api/mri/sequence_type/')
       .then(({ data }) => data.results.map(item => camelcaseKeys(item)))
       .then(sequenceTypes => commit('setSequenceTypes', sequenceTypes))
       .catch(console.error)
   },
   fetchScanByDicomSeries({ commit }, series) {
-    axios
+    return axios
       .get('/api/mri/scan/?dicom__id=' + series.id)
       .then(({ data }) => (data.count ? camelcaseKeys(data.results[0]) : null))
       .then(scan => commit('updateScanList', { seriesId: series.id, scan }))
@@ -48,6 +65,40 @@ const actions = {
   },
   updateSeriesToScan({ dispatch }, seriesList) {
     seriesList.forEach(series => dispatch('fetchScanByDicomSeries', series))
+  },
+  getOrCreateScanFromDicomSeries({ commit }, dicomSeries) {
+    return axios
+      .post('/api/mri/scan/', { dicom: dicomSeries.url })
+      .then(({ data }) =>
+        commit('updateScanList', {
+          seriesId: dicomSeries.id,
+          scan: camelcaseKeys(data)
+        })
+      )
+      .catch(console.error)
+  },
+  associateDicomSeriesToStudyGroups(
+    { commit, dispatch, state },
+    { dicomSeries, studyGroups }
+  ) {
+    dispatch('getOrCreateScanFromDicomSeries', dicomSeries)
+      .then(() => {
+        let scan = state.seriesToScan[dicomSeries.id]
+        let groupUrls = studyGroups.map(group => group.url)
+        let updatedGroups = [...new Set(scan.studyGroups.concat(groupUrls))]
+        axios
+          .patch(`/api/mri/scan/${scan.id}/`, {
+            study_groups: updatedGroups
+          })
+          .then(({ data }) =>
+            commit('updateScanList', {
+              seriesId: dicomSeries.id,
+              scan: camelcaseKeys(data)
+            })
+          )
+          .catch(console.error)
+      })
+      .catch(console.error)
   }
 }
 

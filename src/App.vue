@@ -2,44 +2,62 @@
   <v-app id="app">
     <v-navigation-drawer v-model="drawer" clipped absolute overflow app>
       <v-list dense>
-        <router-link to="/" class="drawer-link">
-          <v-list-tile>
-            <v-list-tile-action>
-              <v-icon>home</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>Home</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </router-link>
+        <v-list-tile to="/home" class="drawer-link">
+          <v-list-tile-action>
+            <v-icon>
+              home
+            </v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>
+              Home
+            </v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
 
-        <router-link to="/researchers" class="drawer-link">
-          <v-list-tile>
-            <v-list-tile-action>
-              <v-icon>people</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>Researchers</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </router-link>
-
-        <router-link to="/review" class="drawer-link">
-          <v-list-tile>
-            <v-list-tile-action>
-              <v-icon>storage</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>Data</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </router-link>
+        <v-list-tile to="/researchers" class="drawer-link">
+          <v-list-tile-action>
+            <v-icon>
+              people
+            </v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>
+              Researchers
+            </v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-group prepend-icon="storage" value="true" no-action>
+          <template v-slot:activator>
+            <v-list-tile>
+              <v-list-tile-title>
+                Data
+              </v-list-tile-title>
+            </v-list-tile>
+          </template>
+          <v-list-group prepend-icon="blur_on" value="true" sub-group no-action>
+            <template v-slot:activator>
+              <v-list-tile>
+                <v-list-tile-title>
+                  MRI
+                </v-list-tile-title>
+              </v-list-tile>
+            </template>
+            <v-list>
+              <v-list-tile to="/review" class="drawer-link">
+                <v-list-tile-title>
+                  DICOM
+                </v-list-tile-title>
+              </v-list-tile>
+            </v-list>
+          </v-list-group>
+        </v-list-group>
       </v-list>
     </v-navigation-drawer>
     <v-toolbar color="indigo" clipped-left dark absolute app>
       <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title>pylabber</v-toolbar-title>
-      <v-spacer></v-spacer>
+      <v-spacer />
       <div class="text-xs-center" v-if="isAuthenticated && user">
         <v-menu offset-y>
           <template v-slot:activator="{ on }">
@@ -109,5 +127,12 @@ a.router-link-exact-active {
 .dropmenu-link {
   text-decoration: none;
   color: black;
+}
+
+[v-cloak] > * {
+  display: none;
+}
+[v-cloak]::before {
+  content: 'loading…';
 }
 </style>

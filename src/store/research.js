@@ -1,8 +1,10 @@
 import axios from 'axios'
+const camelcaseKeys = require('camelcase-keys')
 
 const state = {
   studies: [],
-  groups: []
+  groups: [],
+  subjects: []
 }
 
 const getters = {
@@ -20,6 +22,9 @@ const getters = {
   },
   getStudyGroups(state) {
     return study => state.groups.filter(group => group.study.id === study.id)
+  },
+  getSubjectByUrl(state) {
+    return url => state.subjects.find(subject => subject.url === url)
   }
 }
 
@@ -27,34 +32,107 @@ const mutations = {
   setStudies(state, studyList) {
     state.studies = studyList
   },
+  setSubjects(state, subjectList) {
+    state.subjects = subjectList
+  },
   setGroups(state, groupList) {
     state.groups = groupList
   },
   addStudy(state, study) {
     state.studies.push(study)
+  },
+  addGroup(state, group) {
+    state.groups.push(group)
+  },
+  updateSubjectState(state, subject) {
+    state.subjects = state.subjects.filter(
+      existingSubject => existingSubject.id != subject.id
+    )
+    state.subjects.push(subject)
+  },
+  removeSubjectFromState(state, subject) {
+    state.subjects = state.subjects.filter(
+      existingSubject => existingSubject.id != subject.id
+    )
   }
 }
 
 const actions = {
   fetchStudies({ commit }) {
-    axios
+    return axios
       .get('/api/research/studies/')
       .then(({ data }) => commit('setStudies', data.results))
       .catch(console.error)
   },
+  fetchSubjects({ commit }) {
+    return axios
+      .get('/api/research/subjects/')
+      .then(({ data }) =>
+        commit('setSubjects', data.results.map(item => camelcaseKeys(item)))
+      )
+      .catch(console.error)
+  },
   fetchGroups({ commit }) {
-    axios
+    return axios
       .get('/api/research/groups/')
-      .then(({ data }) => commit('setGroups', data.results))
+      .then(({ data }) => commit('setGroups', camelcaseKeys(data.results)))
       .catch(console.error)
   },
   createStudy({ commit }, study) {
-    axios
+    return axios
       .post('/api/research/studies/', study)
-      .then(response => console.log(response))
+      .then(({ data }) =>
+        axios
+          .get('/api/research/studies/' + data.id)
+          .then(({ data }) => commit('addStudy', data))
+      )
       .catch(console.error)
-    commit('addStudy', study)
+  },
+  createGroup({ commit }, group) {
+    return axios
+      .post('/api/research/groups/', group)
+      .then(({ data }) =>
+        axios
+          .get('/api/research/groups/' + data.id)
+          .then(({ data }) => commit('addGroup', data))
+      )
+      .catch(console.error)
+  },
+  createSubject({ commit }, subject) {
+    return axios
+      .post('/api/research/subjects/', camelToSnakeCase(subject))
+      .then(({ data }) => camelcaseKeys(data))
+      .then(data => {
+        commit('updateSubjectState', data)
+        return data
+      })
+      .catch(console.error)
+  },
+  updateSubject({ commit }, subject) {
+    return axios
+      .patch(`/api/research/subjects/${subject.id}/`, camelToSnakeCase(subject))
+      .then(({ data }) => camelcaseKeys(data))
+      .then(data => {
+        commit('updateSubjectState', data)
+        return data
+      })
+      .catch(console.error)
+  },
+  deleteSubject({ commit }, subject) {
+    return axios
+      .delete(`/api/research/subjects/${subject.id}/`)
+      .then(() => commit('removeSubjectFromState', subject))
+      .catch(console.error)
   }
+}
+const camelToSnakeCase = obj => {
+  let result = {}
+  Object.keys(obj).forEach(
+    key =>
+      (result[key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)] =
+        obj[key])
+  )
+  return result
 }
 
 export default {

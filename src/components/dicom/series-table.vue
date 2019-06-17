@@ -1,15 +1,13 @@
 <template>
   <v-container fluid>
-    <v-layout row wrap>
-      <v-flex><GroupAssociation :selectedSeries="selectedSeries"/></v-flex
-    ></v-layout>
+    <group-association :selectedSeries="selectedSeries" />
     <v-layout row wrap>
       <v-flex>
         <v-data-table
           v-model="selectedSeries"
           :headers="headers"
           :items="seriesList"
-          item-key="uid"
+          item-key="id"
           hide-actions
           select-all
         >
@@ -47,13 +45,14 @@
                 {{ getSpatialResolution(props.item) }}
               </td>
               <td>
-                <div class="text-xs-left">
-                  <v-chip
-                    small
-                    v-for="group in studyGroups[props.item.id]"
-                    :key="group.id"
-                    >{{ stringifyGroup(group) }}</v-chip
-                  >
+                <div
+                  v-for="group in getStudyGroupsByDicomSeries(props.item)"
+                  :key="group"
+                  class="text-xs-left"
+                >
+                  <v-chip small>{{
+                    stringifyGroup(getGroupByUrl(group))
+                  }}</v-chip>
                 </div>
               </td>
             </tr>
@@ -80,21 +79,11 @@ export default {
   computed: {
     ...mapState('dicom', ['seriesList']),
     ...mapState('mri', ['sequenceTypes', 'seriesToScan']),
-    ...mapGetters('mri', ['getDicomSeriesSequenceType']),
+    ...mapGetters('mri', [
+      'getDicomSeriesSequenceType',
+      'getStudyGroupsByDicomSeries'
+    ]),
     ...mapGetters('research', ['getGroupByUrl'])
-  },
-  watch: {
-    seriesList: function(list) {
-      this.$store.dispatch('mri/updateSeriesToScan', list)
-    },
-    seriesToScan: function(newValue) {
-      let groups = objectMap(newValue, item =>
-        item != null
-          ? item.studyGroups.map(url => this.getGroupByUrl(url))
-          : null
-      )
-      this.$set(this, 'studyGroups', groups)
-    }
   },
   data: () => ({
     protocolInformationDialog: {},
@@ -109,6 +98,11 @@ export default {
       { text: 'Study Groups', value: 'studyGroups' }
     ]
   }),
+  watch: {
+    seriesList: function(list) {
+      this.$store.dispatch('mri/updateSeriesToScan', list)
+    }
+  },
   methods: {
     getSequenceTypeTitle(series) {
       let type = this.getDicomSeriesSequenceType(series)
@@ -131,18 +125,6 @@ function formatSpatialResolution(floatArray) {
     .replace(/,/g, ' x ')
     .trim()
 }
-
-// returns a new object with the values at each key mapped using mapFn(value)
-function objectMap(object, mapFn) {
-  return Object.keys(object).reduce(function(result, key) {
-    result[key] = mapFn(object[key])
-    return result
-  }, {})
-}
 </script>
 
-<style scoped>
-.disable-events {
-  pointer-events: none;
-}
-</style>
+<style scoped></style>

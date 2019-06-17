@@ -16,6 +16,7 @@
     "braces": "^3.0.2",
     "camelcase-keys": "^5.2.0",
     "core-js": "^2.6.5",
+    "dns": "^0.2.2",
     "luxon": "^1.15.0",
     "vue": "^2.6.10",
     "vue-async-computed": "^3.6.1",

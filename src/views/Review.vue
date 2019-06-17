@@ -1,9 +1,9 @@
 <template>
   <!-- <UnreviewedDataTree /> -->
   <v-container fluid>
-    <v-layout>
+    <v-layout row wrap>
       <v-flex>
-        <ReviewTable />
+        <patient-table />
       </v-flex>
     </v-layout>
   </v-container>
@@ -11,14 +11,12 @@
 
 <script>
 // @ is an alias to /src
-// import UnreviewedDataTree from '@/components/dataReview/UnreviewedDataTree.vue'
-import ReviewTable from '@/components/dicom/review-table.vue'
+import PatientTable from '@/components/dicom/patient-table.vue'
 
 export default {
   name: 'Review',
   components: {
-    ReviewTable
-    // UnreviewedDataTree
+    PatientTable
   }
 }
 </script>

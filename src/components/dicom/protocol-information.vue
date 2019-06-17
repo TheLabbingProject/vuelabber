@@ -52,7 +52,7 @@
           </v-layout>
           <v-layout column>
             <v-subheader>
-              AcquisitionParameters
+              Acquisition Parameters
             </v-subheader>
             <v-flex class="pl-3">
               <div

@@ -40,7 +40,9 @@
         :disabled="$v.study.$error"
         >Submit</v-btn
       >
-      <v-btn color="green darken-1" flat @click="closeDialog">Cancel</v-btn>
+      <v-btn color="green darken-1" flat @click="$emit('close-study-dialog')"
+        >Cancel</v-btn
+      >
     </v-card-actions>
   </v-card>
 </template>
@@ -58,7 +60,7 @@ const cleanStudy = {
 }
 
 export default {
-  name: 'CreateStudy',
+  name: 'CreateStudyCard',
   created() {
     this.$store.dispatch('accounts/fetchUsers')
   },
@@ -103,8 +105,10 @@ export default {
       )
     },
     closeDialog: function() {
+      this.$emit('select-study', this.study.title)
       this.study = Object.assign({}, cleanStudy)
-      this.$emit('close-dialog')
+      this.$v.$reset()
+      this.$emit('close-study-dialog')
     },
     createStudy: function() {
       this.$v.study.$touch()
@@ -112,7 +116,6 @@ export default {
       this.fixCollaboratorsProperty()
       this.$store
         .dispatch('research/createStudy', this.study)
-        .then(result => console.log(result))
         .catch(console.error)
       this.closeDialog()
     }
