@@ -38,14 +38,14 @@
                 <template v-slot:activator="{ on }">
                   <v-btn
                     small
-                    color="info"
+                    color="success"
                     v-on="on"
                     v-if="getSubjectByUrl(props.item.subject)"
                   >
                     Subject #{{ getSubjectByUrl(props.item.subject).id }}
                   </v-btn>
-                  <v-btn v-else small color="error" v-on="on">
-                    Create
+                  <v-btn v-else small color="warning" v-on="on">
+                    Review
                   </v-btn>
                 </template>
                 <subject-info-card

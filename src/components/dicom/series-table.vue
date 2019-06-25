@@ -36,9 +36,7 @@
                       {{ getSequenceTypeTitle(props.item) }}
                     </v-btn>
                   </template>
-                  <protocol-information
-                    :series="props.item"
-                  ></protocol-information>
+                  <protocol-information :series="props.item" />
                 </v-dialog>
               </td>
               <td class="text-xs-left">
@@ -50,10 +48,37 @@
                   :key="group"
                   class="text-xs-left"
                 >
-                  <v-chip small>{{
-                    stringifyGroup(getGroupByUrl(group))
-                  }}</v-chip>
+                  <v-chip small>
+                    {{ stringifyGroup(getGroupByUrl(group)) }}
+                  </v-chip>
                 </div>
+              </td>
+              <td>
+                <v-dialog
+                  v-model="scanInfoDialog[props.item.id]"
+                  lazy
+                  width="800px"
+                >
+                  <template v-slot:activator="{ on }">
+                    <v-btn
+                      small
+                      color="success"
+                      v-if="seriesToScan[props.item.id]"
+                      v-on="on"
+                    >
+                      {{ `Scan #${seriesToScan[props.item.id].id}` }}
+                    </v-btn>
+                    <v-btn small v-else color="warning" v-on="on">
+                      Review
+                    </v-btn>
+                  </template>
+                  <div v-if="seriesToScan[props.item.id]">
+                    <scan-info :scanInstance="seriesToScan[props.item.id]" />
+                  </div>
+                  <div v-else>
+                    <scan-info :dicom="props.item" />
+                  </div>
+                </v-dialog>
               </td>
             </tr>
           </template>
@@ -65,13 +90,14 @@
 
 <script>
 import GroupAssociation from './group-association.vue'
-import { mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 import ProtocolInformation from './protocol-information.vue'
+import ScanInfo from '@/components/mri/scan-info.vue'
 
 export default {
   name: 'SeriesTable',
   props: { patient: Object },
-  components: { GroupAssociation, ProtocolInformation },
+  components: { GroupAssociation, ProtocolInformation, ScanInfo },
   created() {
     this.$store.dispatch('dicom/fetchPatientSeriesList', this.patient)
     this.$store.dispatch('mri/fetchSequenceTypes')
@@ -87,6 +113,7 @@ export default {
   },
   data: () => ({
     protocolInformationDialog: {},
+    scanInfoDialog: {},
     studyGroups: {},
     selectedSeries: [],
     headers: [
@@ -95,7 +122,8 @@ export default {
       { text: 'Time', value: 'time' },
       { text: 'Sequence Type', value: 'sequenceType' },
       { text: 'Spatial Resolution (mm)', value: 'spatialResolution' },
-      { text: 'Study Groups', value: 'studyGroups' }
+      { text: 'Study Groups', value: 'studyGroups' },
+      { text: 'Scan Instance', value: 'scanInstance' }
     ]
   }),
   watch: {
@@ -114,7 +142,14 @@ export default {
     },
     stringifyGroup(group) {
       return `${group.study.title} | ${group.title}`
-    }
+    },
+    // getScanInstance(series) {
+    //   return (
+    //     this.seriesToScan[series.id] ||
+    //     this.getOrCreateScanInfoFromDicomSeries(series)
+    //   )
+    // },
+    ...mapActions('mri', ['getOrCreateScanInfoFromDicomSeries'])
   }
 }
 

@@ -4,10 +4,14 @@ const camelcaseKeys = require('camelcase-keys')
 
 const state = {
   sequenceTypes: [],
-  seriesToScan: {}
+  seriesToScan: {},
+  scanInfo: {}
 }
 
 const getters = {
+  getSequenceTypeByUrl(state) {
+    return url => state.sequenceTypes.find(sequence => sequence.url === url)
+  },
   getScanByDicomSeries(state) {
     return dicomSeries => state.seriesToScan[dicomSeries.id]
   },
@@ -34,7 +38,7 @@ const mutations = {
   setSequenceTypes(state, sequenceTypes) {
     state.sequenceTypes = sequenceTypes
   },
-  updateScanList(state, { seriesId, scan }) {
+  updateSeriesToScan(state, { seriesId, scan }) {
     Vue.set(state.seriesToScan, seriesId, scan)
   },
   addGroupToScan(state, { dicomSeries, group }) {
@@ -45,6 +49,9 @@ const mutations = {
   },
   clearSeriesToScan(state) {
     state.seriesToScan = {}
+  },
+  updateScanInfo(state, scanInfo) {
+    state.scanInfo = scanInfo
   }
 }
 
@@ -60,7 +67,7 @@ const actions = {
     return axios
       .get('/api/mri/scan/?dicom__id=' + series.id)
       .then(({ data }) => (data.count ? camelcaseKeys(data.results[0]) : null))
-      .then(scan => commit('updateScanList', { seriesId: series.id, scan }))
+      .then(scan => commit('updateSeriesToScan', { seriesId: series.id, scan }))
       .catch(console.error)
   },
   updateSeriesToScan({ dispatch }, seriesList) {
@@ -69,12 +76,21 @@ const actions = {
   getOrCreateScanFromDicomSeries({ commit }, dicomSeries) {
     return axios
       .post('/api/mri/scan/', { dicom: dicomSeries.url })
-      .then(({ data }) =>
-        commit('updateScanList', {
+      .then(({ data }) => {
+        commit('updateSeriesToScan', {
           seriesId: dicomSeries.id,
           scan: camelcaseKeys(data)
         })
-      )
+        return data
+      })
+      .catch(console.error)
+  },
+  getOrCreateScanInfoFromDicomSeries({ commit }, dicomSeries) {
+    return axios
+      .get(`/api/mri/scan/from_dicom/${dicomSeries.id}/`)
+      .then(({ data }) => {
+        commit('updateScanInfo', camelcaseKeys(data))
+      })
       .catch(console.error)
   },
   associateDicomSeriesToStudyGroups(
@@ -91,7 +107,7 @@ const actions = {
             study_groups: updatedGroups
           })
           .then(({ data }) =>
-            commit('updateScanList', {
+            commit('updateSeriesToScan', {
               seriesId: dicomSeries.id,
               scan: camelcaseKeys(data)
             })
