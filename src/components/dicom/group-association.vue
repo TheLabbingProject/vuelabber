@@ -1,5 +1,8 @@
 <template>
   <v-container fluid px-3 pt-2 pb-4>
+    <div class="title font-italic text-xs-left pb-4">
+      Group Association
+    </div>
     <v-layout row>
       <!-- Study selection with creation dialog -->
       <v-flex pr-5>
