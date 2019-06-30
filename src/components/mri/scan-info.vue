@@ -5,7 +5,7 @@
         <span class="white--text">
           Scan Information
         </span>
-        <span class="grey--text text--lighten-1">
+        <span v-if="existingScan" class="grey--text text--lighten-1">
           {{ `#${scan.id}` }}
         </span>
       </div>
@@ -19,24 +19,34 @@
             type="text"
             label="Institution Name"
             hint="Where was this scan acquired?"
+            :readonly="!editable"
           />
         </v-layout>
         <v-layout row wrap>
+          <v-text-field
+            v-model="scan.number"
+            id="number-input"
+            type="number"
+            label="Acquisition Number"
+            hint="A number identifying this scan within its acquisition session."
+            :readonly="!editable"
+          />
+          <v-spacer />
           <v-text-field
             v-model="scan.description"
             id="description-input"
             type="text"
             label="Description"
             hint="A description of the type of scan acquired."
+            :readonly="!editable"
           />
           <v-spacer />
-          <v-text-field
+          <v-select
             v-model="sequenceType"
-            id="sequence-type-input"
-            type="text"
             label="Sequence Type"
             hint="A unique combination of scanning sequence and variant."
-            readonly
+            :items="sequenceTypes.map(sequence => sequence.title)"
+            :readonly="!editable"
           />
         </v-layout>
 
@@ -57,7 +67,7 @@
                   v-model="scanDate"
                   label="Acquisition Date"
                   prepend-icon="event"
-                  disabled
+                  readonly
                   v-on="on"
                 />
               </template>
@@ -65,7 +75,7 @@
                 v-model="scanDate"
                 @input="dateMenu = false"
                 :max="new Date().toISOString().substr(0, 10)"
-                readonly
+                :readonly="!editable"
               />
             </v-menu>
           </v-flex>
@@ -89,7 +99,7 @@
                   v-model="scanTime"
                   label="Acquisition Time"
                   prepend-icon="access_time"
-                  disabled
+                  readonly
                   v-on="on"
                 />
               </template>
@@ -100,33 +110,59 @@
                 @click:minute="$refs.timeMenuRef.save(time)"
                 use-seconds
                 full-width
-                disabled
+                :readonly="!editable"
               />
             </v-menu>
           </v-flex>
-          <v-spacer />
-          <v-flex pl-3>
-            <v-text-field
-              v-model="scan.number"
-              id="number-input"
-              type="number"
-              label="Acquisition Number"
-              hint="A number identifying this scan within its acquisition session."
-              disabled
-            />
-          </v-flex>
         </v-layout>
-
         <v-layout row wrap>
           <v-textarea
             name="comments-input"
             label="Comments"
-            value=""
+            v-model="scan.comments"
             hint="Anything noteworty about this scan or its acquisition."
+            :readonly="!editable"
           />
         </v-layout>
       </v-container>
     </v-card-text>
+    <v-card-actions>
+      <v-flex shrink px-3>
+        <v-switch
+          v-if="existingScan"
+          v-model="editable"
+          :label="editable ? 'Edit Mode' : 'View Mode'"
+        />
+      </v-flex>
+      <v-btn
+        flat
+        v-if="existingScan && editable"
+        color="error"
+        @click="deleteExistingScan"
+      >
+        Delete
+      </v-btn>
+      <v-spacer />
+      <v-btn
+        flat
+        v-if="editable && existingScan"
+        color="warning"
+        @click="updateExistingScan(scan)"
+      >
+        Update
+      </v-btn>
+      <v-btn
+        flat
+        v-if="!existingScan && radioGroup == 'new'"
+        color="success"
+        @click="createNewScan"
+      >
+        Create
+      </v-btn>
+      <v-btn color="green darken-1" flat @click="closeDialog">
+        Cancel
+      </v-btn>
+    </v-card-actions>
   </v-card>
 </template>
 
@@ -138,45 +174,107 @@ const cleanScan = {
   description: '',
   sequenceType: null,
   number: null,
-  comments: null
+  comments: null,
+  subject: null
 }
 
 export default {
   name: 'ScanInfo',
   props: {
-    scanInstance: Object,
+    existingScan: Object,
     dicom: Object
   },
-  // created() {
-  //   if (this.scanInstance) {
-  //     this.scan = this.scanInstance
-  //   } else {
-  //     this.getOrCreateScanInfoFromDicomSeries(this.dicom)
-  //     this.scan = this.scanInfo
-  //   }
-  // },
+  created() {
+    this.initializeScan()
+    if (this.dicom) this.fetchPatients()
+  },
   data: () => ({
+    radioGroup: 'new',
     dateMenu: null,
-    timeMenu: null
-    // scan: null
+    timeMenu: null,
+    scan: Object.assign({}, cleanScan),
+    editable: false
   }),
   computed: {
     scanDate: function() {
-      return new Date(this.scan.time).toISOString().substr(0, 10)
+      let time = this.scan.time
+      return time ? new Date(time).toISOString().substr(0, 10) : null
     },
     scanTime: function() {
-      return new Date(this.scan.time).toISOString().substr(11)
+      let time = this.scan.time
+      return time ? new Date(time).toISOString().substr(11) : null
     },
     sequenceType: function() {
-      return this.getSequenceTypeByUrl(this.scan.sequenceType)
+      let type = this.getSequenceTypeByUrl(this.scan.sequenceType)
+      return type ? type.title : null
     },
-    ...mapGetters('mri', ['getSequenceTypeByUrl']),
-    ...mapState('mri', ['scanInfo'])
+    ...mapState('mri', ['sequenceTypes']),
+    ...mapGetters('mri', ['getSequenceTypeByUrl'])
   },
   methods: {
-    ...mapActions('mri', ['getOrCreateScanInfoFromDicomSeries'])
+    closeDialog() {
+      if (this.existingScan && this.editable) this.editable = false
+      this.$emit('close-scan-dialog')
+    },
+    updateScanFromDicomInfo(data) {
+      this.scan = data
+      delete this.scan.studyGroups
+      delete this.scan.id
+      delete this.scan.nifti
+      delete this.scan.url
+      this.scan.dicom = this.dicom.url
+    },
+    createNewScan() {
+      this.createScan(this.scan).then(() => {
+        this.editable = false
+      })
+    },
+    updateExistingScan() {
+      this.updateScan(this.scan).then(() => {
+        this.editable = false
+        this.closeDialog()
+      })
+    },
+    deleteExistingScan() {
+      this.deleteScan(this.scan).then(() => {
+        this.initializeScan()
+        this.closeDialog()
+      })
+    },
+    initializeScan() {
+      if (this.existingScan) {
+        this.scan = Object.assign({}, this.existingScan)
+        this.editable = false
+      } else if (this.dicom) {
+        this.getOrCreateScanInfoFromDicomSeries(this.dicom).then(data => {
+          this.updateScanFromDicomInfo(data)
+        })
+        this.editable = true
+      } else {
+        this.scan = Object.assign({}, cleanScan)
+        this.editable = true
+      }
+    },
+    ...mapActions('mri', [
+      'getOrCreateScanInfoFromDicomSeries',
+      'createScan',
+      'updateScan',
+      'deleteScan'
+    ]),
+    ...mapActions('dicom', ['fetchPatients'])
+  },
+  watch: {
+    editable: function(isEditable) {
+      if (!isEditable) {
+        this.scan = Object.assign({}, this.existingScan)
+      }
+    }
   }
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+/deep/ label {
+  margin-bottom: 0rem;
+}
+</style>

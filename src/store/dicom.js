@@ -6,7 +6,14 @@ const state = {
   seriesList: []
 }
 
-const getters = {}
+const getters = {
+  getSeriesByUrl(state) {
+    return url => state.seriesList.find(series => series.url === url)
+  },
+  getPatientByUrl(state) {
+    return url => state.patients.find(patient => patient.url === url)
+  }
+}
 
 const mutations = {
   setSeriesList(state, seriesList) {
@@ -47,6 +54,14 @@ const actions = {
     return axios
       .patch(`/api/dicom/patients/${patient.id}/`, camelToSnakeCase(patient))
       .then(({ data }) => commit('updatePatientState', camelcaseKeys(data)))
+      .catch(console.error)
+  },
+  filterPatients({ commit }, filterString) {
+    return axios
+      .get(`/api/dicom/patients/?${filterString}`)
+      .then(({ data }) =>
+        commit('setPatients', data.results.map(item => camelcaseKeys(item)))
+      )
       .catch(console.error)
   }
 }

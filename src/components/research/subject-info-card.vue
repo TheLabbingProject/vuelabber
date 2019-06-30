@@ -12,7 +12,11 @@
     </v-card-title>
     <v-card-text>
       <v-layout wrap column>
-        <v-radio-group row v-model="radioGroup" v-if="!existingSubject">
+        <v-radio-group
+          row
+          v-model="radioGroup"
+          v-if="!(existingSubject || createMode)"
+        >
           <v-radio label="New Subject" value="new" />
           <v-radio label="Existing subject" value="existing" />
         </v-radio-group>
@@ -167,7 +171,8 @@ const cleanSubject = {
 export default {
   name: 'SubjectInfoCard',
   props: {
-    existingSubject: Object
+    existingSubject: Object,
+    createMode: { type: Boolean, default: false }
   },
   created() {
     if (this.existingSubject) {
@@ -181,7 +186,7 @@ export default {
     editable: true,
     dob_menu: false,
     radioGroup: 'new',
-    sexOptions: { M: 'Male', F: 'Female', I: 'Intersex' },
+    sexOptions: { M: 'Male', F: 'Female', U: 'Other' },
     genderOptions: { CIS: 'Cisgender', TRANS: 'Transgender', OTHER: 'Other' }
   }),
   computed: {
@@ -229,6 +234,7 @@ export default {
       this.createSubject(this.subject)
         .then(result => this.$emit('associate-patient', result))
         .then((this.editable = false))
+        .then(this.closeDialog())
     },
     associateExistingSubject() {
       this.$emit('associate-patient', this.selectedSubject)

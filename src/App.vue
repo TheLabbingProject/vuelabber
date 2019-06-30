@@ -15,7 +15,7 @@
           </v-list-tile-content>
         </v-list-tile>
 
-        <v-list-tile to="/researchers" class="drawer-link">
+        <v-list-tile to="/subjects" class="drawer-link">
           <v-list-tile-action>
             <v-icon>
               people
@@ -23,7 +23,7 @@
           </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title>
-              Researchers
+              Subjects
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
@@ -44,7 +44,7 @@
               </v-list-tile>
             </template>
             <v-list>
-              <v-list-tile to="/review" class="drawer-link">
+              <v-list-tile to="/dicom-browser" class="drawer-link">
                 <v-list-tile-title>
                   DICOM
                 </v-list-tile-title>

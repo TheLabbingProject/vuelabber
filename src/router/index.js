@@ -3,7 +3,8 @@ import Router from 'vue-router'
 import Login from '../views/Login.vue'
 import Lost from '../views/Lost.vue'
 import Home from '../views/Home.vue'
-import Review from '../views/Review.vue'
+import DicomBrowser from '../views/DicomBrowser.vue'
+import SubjectBrowser from '../views/SubjectBrowser.vue'
 import store from '../store'
 
 const requireAuthenticated = (to, from, next) => {
@@ -69,9 +70,15 @@ export default new Router({
         import(/* webpackChunkName: "about" */ '../views/About.vue')
     },
     {
-      path: '/review',
-      name: 'review',
-      component: Review,
+      path: '/dicom-browser',
+      name: 'dicomBrowser',
+      component: DicomBrowser,
+      beforeEnter: requireAuthenticated
+    },
+    {
+      path: '/subjects',
+      name: 'subjectBroser',
+      component: SubjectBrowser,
       beforeEnter: requireAuthenticated
     }
   ]

@@ -63,21 +63,26 @@
                     <v-btn
                       small
                       color="success"
-                      v-if="seriesToScan[props.item.id]"
+                      v-if="getScanByDicomSeries(props.item)"
                       v-on="on"
                     >
-                      {{ `Scan #${seriesToScan[props.item.id].id}` }}
+                      {{ `Scan #${getScanByDicomSeries(props.item).id}` }}
                     </v-btn>
-                    <v-btn small v-else color="warning" v-on="on">
-                      Review
+                    <v-btn
+                      small
+                      v-else
+                      color="warning"
+                      v-on="on"
+                      :disabled="!patient.subject"
+                    >
+                      Create
                     </v-btn>
                   </template>
-                  <div v-if="seriesToScan[props.item.id]">
-                    <scan-info :scanInstance="seriesToScan[props.item.id]" />
-                  </div>
-                  <div v-else>
-                    <scan-info :dicom="props.item" />
-                  </div>
+                  <scan-info
+                    :existingScan="getScanByDicomSeries(props.item)"
+                    :dicom="props.item"
+                    @close-scan-dialog="scanInfoDialog[props.item.id] = false"
+                  />
                 </v-dialog>
               </td>
             </tr>
@@ -99,15 +104,18 @@ export default {
   props: { patient: Object },
   components: { GroupAssociation, ProtocolInformation, ScanInfo },
   created() {
-    this.$store.dispatch('dicom/fetchPatientSeriesList', this.patient)
-    this.$store.dispatch('mri/fetchSequenceTypes')
+    this.fetchSequenceTypes()
+    if (this.patient) {
+      this.fetchPatientSeriesList(this.patient)
+    }
   },
   computed: {
     ...mapState('dicom', ['seriesList']),
-    ...mapState('mri', ['sequenceTypes', 'seriesToScan']),
+    ...mapState('mri', ['sequenceTypes', 'series']),
     ...mapGetters('mri', [
       'getDicomSeriesSequenceType',
-      'getStudyGroupsByDicomSeries'
+      'getStudyGroupsByDicomSeries',
+      'getScanByDicomSeries'
     ]),
     ...mapGetters('research', ['getGroupByUrl'])
   },
@@ -128,7 +136,7 @@ export default {
   }),
   watch: {
     seriesList: function(list) {
-      this.$store.dispatch('mri/updateSeriesToScan', list)
+      this.updateScans(list)
     }
   },
   methods: {
@@ -143,13 +151,12 @@ export default {
     stringifyGroup(group) {
       return `${group.study.title} | ${group.title}`
     },
-    // getScanInstance(series) {
-    //   return (
-    //     this.seriesToScan[series.id] ||
-    //     this.getOrCreateScanInfoFromDicomSeries(series)
-    //   )
-    // },
-    ...mapActions('mri', ['getOrCreateScanInfoFromDicomSeries'])
+    ...mapActions('dicom', ['fetchPatientSeriesList']),
+    ...mapActions('mri', [
+      'getOrCreateScanInfoFromDicomSeries',
+      'fetchSequenceTypes',
+      'updateScans'
+    ])
   }
 }
 

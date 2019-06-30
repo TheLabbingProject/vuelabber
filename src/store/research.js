@@ -4,7 +4,8 @@ const camelcaseKeys = require('camelcase-keys')
 const state = {
   studies: [],
   groups: [],
-  subjects: []
+  subjects: [],
+  selectedSubjectId: null
 }
 
 const getters = {
@@ -23,17 +24,26 @@ const getters = {
   getStudyGroups(state) {
     return study => state.groups.filter(group => group.study.id === study.id)
   },
+  getSubjectById(state) {
+    return id => state.subjects.find(subject => subject.id === id)
+  },
+  getSelectedSubject(state, getters) {
+    return getters['getSubjectById'](state.selectedSubjectId)
+  },
   getSubjectByUrl(state) {
     return url => state.subjects.find(subject => subject.url === url)
   }
 }
 
 const mutations = {
-  setStudies(state, studyList) {
-    state.studies = studyList
+  setStudies(state, studies) {
+    state.studies = studies
   },
-  setSubjects(state, subjectList) {
-    state.subjects = subjectList
+  setSubjects(state, subjects) {
+    state.subjects = subjects
+  },
+  setSelectedSubjectId(state, selectedSubjectId) {
+    state.selectedSubjectId = selectedSubjectId
   },
   setGroups(state, groupList) {
     state.groups = groupList

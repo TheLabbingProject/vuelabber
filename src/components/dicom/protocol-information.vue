@@ -19,7 +19,7 @@
             <v-flex class="pl-3">
               <div
                 class="text-xs-left"
-                v-for="(sequence, index) in series.scanningSequence"
+                v-for="(sequence, index) in sequenceType.scanningSequence"
                 :key="index"
               >
                 <v-chip small>
@@ -38,7 +38,7 @@
             <v-flex class="pl-3">
               <div
                 class="text-xs-left"
-                v-for="(variant, index) in series.sequenceVariant"
+                v-for="(variant, index) in sequenceType.sequenceVariant"
                 :key="index"
               >
                 <v-chip small>
@@ -57,7 +57,9 @@
             <v-flex class="pl-3">
               <div
                 class="text-xs-left"
-                v-for="(value, parameter) in getSeriesParameters(series)"
+                v-for="(value, parameter) in getSeriesParameters(
+                  series || scan
+                )"
                 :key="parameter"
               >
                 <v-chip small v-if="value">
@@ -88,38 +90,41 @@ import { mapGetters } from 'vuex'
 
 export default {
   name: 'ProtocolInformation',
-  props: { series: Object },
+  props: { series: Object, scan: Object },
   created() {
-    this.sequenceType = this.getDicomSeriesSequenceType(this.series)
-  },
-  computed: {
-    ...mapGetters('mri', ['getDicomSeriesSequenceType'])
-  },
-  data() {
-    return {
-      sequenceType: null,
-      headers: [
-        {
-          text: 'Scanning Sequence',
-          align: 'left',
-          sortable: false,
-          value: 'scanningSequence'
-        },
-        {
-          text: 'Sequence Variant',
-          align: 'left',
-          sortable: false,
-          value: 'sequenceVariant'
-        },
-        {
-          text: 'Scan Parameters (ms)',
-          align: 'left',
-          sortable: false,
-          value: 'scanParameters'
-        }
-      ]
+    if (this.series) {
+      this.sequenceType = this.getDicomSeriesSequenceType(this.series)
+    } else if (this.scan) {
+      this.sequenceType = this.getSequenceTypeByUrl(this.scan.sequenceType)
     }
   },
+  computed: {
+    ...mapGetters('mri', ['getSequenceTypeByUrl']),
+    ...mapGetters('mri', ['getDicomSeriesSequenceType'])
+  },
+  data: () => ({
+    sequenceType: null,
+    headers: [
+      {
+        text: 'Scanning Sequence',
+        align: 'left',
+        sortable: false,
+        value: 'scanningSequence'
+      },
+      {
+        text: 'Sequence Variant',
+        align: 'left',
+        sortable: false,
+        value: 'sequenceVariant'
+      },
+      {
+        text: 'Scan Parameters (ms)',
+        align: 'left',
+        sortable: false,
+        value: 'scanParameters'
+      }
+    ]
+  }),
   methods: {
     getScanningSequenceName(abbreviation) {
       return scanningSequences[abbreviation].name
