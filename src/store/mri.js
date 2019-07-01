@@ -72,7 +72,6 @@ const actions = {
       })
       .catch(console.error)
   },
-  // fetchScansByResearchSubject({ commit }, subjectId) {},
   updateScans({ dispatch }, seriesList) {
     seriesList.forEach(series => dispatch('fetchScanByDicomSeries', series))
   },

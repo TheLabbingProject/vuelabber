@@ -1,6 +1,20 @@
 <template>
   <div>
-    <scan-upload :subject="subject" />
+    <br />
+    <v-expansion-panel>
+      <v-expansion-panel-content>
+        <template v-slot:header>
+          <div>
+            Upload new data
+          </div>
+        </template>
+        <v-card>
+          <v-card-text>
+            <scan-upload :subject="subject" />
+          </v-card-text>
+        </v-card>
+      </v-expansion-panel-content>
+    </v-expansion-panel>
     <v-data-table
       item-key="id"
       :headers="headers"
@@ -26,6 +40,7 @@
           <td>
             <v-dialog
               v-model="sequenceTypeDialog[props.item.id]"
+              v-if="props.item.sequenceType"
               lazy
               width="800px"
             >

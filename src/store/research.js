@@ -133,6 +133,14 @@ const actions = {
       .delete(`/api/research/subjects/${subject.id}/`)
       .then(() => commit('removeSubjectFromState', subject))
       .catch(console.error)
+  },
+  filterSubjects({ commit }, filterString) {
+    return axios
+      .get(`/api/research/subjects/?${filterString}`)
+      .then(({ data }) =>
+        commit('setSubjects', data.results.map(item => camelcaseKeys(item)))
+      )
+      .catch(console.error)
   }
 }
 const camelToSnakeCase = obj => {
