@@ -53,15 +53,6 @@
           </v-flex>
           <v-flex row mx-0>
             <v-flex>
-              <v-text-field
-                v-model="subject.idNumber"
-                label="ID Number"
-                :counter="64"
-                :disabled="!(editable || subject.idNumber)"
-                :readonly="!editable"
-              />
-            </v-flex>
-            <v-flex pl-4>
               <v-menu
                 v-model="dob_menu"
                 :close-on-content-click="false"
@@ -88,12 +79,21 @@
                 ></v-date-picker>
               </v-menu>
             </v-flex>
+            <v-flex pl-4>
+              <v-select
+                v-model="subjectDominantHand"
+                label="Dominant Hand"
+                :items="Object.keys(dominantHandOptions)"
+                :readonly="!editable"
+                :disabled="!(editable || subjectDominantHand)"
+              />
+            </v-flex>
             <v-flex row mx-0>
               <v-flex>
                 <v-select
                   v-model="subjectSex"
                   label="Sex"
-                  :items="Object.values(sexOptions)"
+                  :items="Object.keys(sexOptions)"
                   :readonly="!editable"
                   :disabled="!(editable || subjectSex)"
                 />
@@ -103,7 +103,7 @@
                 <v-select
                   v-model="subjectGender"
                   label="Gender"
-                  :items="Object.values(genderOptions)"
+                  :items="Object.keys(genderOptions)"
                   :readonly="!editable"
                   :disabled="!(editable || subjectGender)"
                 />
@@ -129,7 +129,7 @@
         flat
         v-if="editable && existingSubject"
         color="warning"
-        @click="updateSubject(subject)"
+        @click="updateExistingSubject()"
       >
         Update
       </v-btn>
@@ -150,13 +150,17 @@
       >
         Associate
       </v-btn>
-      <v-btn color="green darken-1" flat @click="closeDialog">Cancel</v-btn>
+      <v-btn color="green darken-1" flat @click="closeDialog">
+        Cancel
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import { sexOptions, genderOptions, dominantHandOptions } from './choices.js'
+import { getKeyByValue } from './utils.js'
 
 const cleanSubject = {
   idNumber: '',
@@ -186,24 +190,36 @@ export default {
     editable: true,
     dob_menu: false,
     radioGroup: 'new',
-    sexOptions: { M: 'Male', F: 'Female', U: 'Other' },
-    genderOptions: { CIS: 'Cisgender', TRANS: 'Transgender', OTHER: 'Other' }
+    sexOptions,
+    genderOptions,
+    dominantHandOptions
   }),
   computed: {
     subjectSex: {
       get: function() {
-        return this.sexOptions[this.subject.sex]
+        return getKeyByValue(this.sexOptions, this.subject.sex)
       },
       set: function(newValue) {
-        this.subject.sex = getKeyByValue(this.sexOptions, newValue)
+        this.subject.sex = this.sexOptions[newValue]
       }
     },
     subjectGender: {
       get: function() {
-        return this.genderOptions[this.subject.gender]
+        return getKeyByValue(this.genderOptions, this.subject.gender)
       },
       set: function(newValue) {
-        this.subject.gender = getKeyByValue(this.genderOptions, newValue)
+        this.subject.gender = this.genderOptions[newValue]
+      }
+    },
+    subjectDominantHand: {
+      get: function() {
+        return getKeyByValue(
+          this.dominantHandOptions,
+          this.subject.dominantHand
+        )
+      },
+      set: function(newValue) {
+        this.subject.dominantHand = this.dominantHandOptions[newValue]
       }
     },
     selectedSubject: function() {
@@ -229,6 +245,9 @@ export default {
     closeDialog() {
       if (this.existingSubject && this.editable) this.editable = false
       this.$emit('close-subject-dialog')
+    },
+    updateExistingSubject() {
+      this.updateSubject(this.subject).then(this.closeDialog())
     },
     associateNewSubject() {
       this.createSubject(this.subject)
@@ -259,10 +278,6 @@ function formatDate(date) {
 
   const [year, month, day] = date.split('-')
   return `${day}/${month}/${year}`
-}
-
-function getKeyByValue(object, value) {
-  return Object.keys(object).find(key => object[key] === value)
 }
 </script>
 

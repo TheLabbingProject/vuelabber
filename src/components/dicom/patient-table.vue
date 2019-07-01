@@ -85,6 +85,7 @@
     </v-flex>
     <v-flex>
       <v-data-table
+        item-key="id"
         :rows-per-page-items="[
           10,
           25,
@@ -94,7 +95,6 @@
         :headers="headers"
         :items="patients"
         :expand="expand"
-        item-key="id"
       >
         <template v-slot:items="props">
           <tr @click="props.expanded = !props.expanded">

@@ -10,7 +10,10 @@
         </template>
         <v-card>
           <v-card-text>
-            <scan-upload :subject="subject" />
+            <scan-upload
+              :subject="subject"
+              @file-upload-complete="updateScanTable()"
+            />
           </v-card-text>
         </v-card>
       </v-expansion-panel-content>
@@ -18,13 +21,11 @@
     <v-data-table
       item-key="id"
       :headers="headers"
+      :loading="loading"
       :items="scans"
-      :rows-per-page-items="[
-        10,
-        25,
-        50,
-        { text: '$vuetify.dataIterator.rowsPerPageAll', value: -1 }
-      ]"
+      :rows-per-page-items="rowsPerPageItems"
+      :pagination.sync="pagination"
+      :total-items="totalScansCount"
     >
       <template v-slot:items="props">
         <tr>
@@ -35,7 +36,10 @@
             {{ props.item.description }}
           </td>
           <td>
-            {{ props.item.time }}
+            {{ formatDate(props.item.time) }}
+          </td>
+          <td>
+            {{ formatTime(props.item.time) }}
           </td>
           <td>
             <v-dialog
@@ -74,20 +78,39 @@ export default {
   },
   created() {
     this.fetchSequenceTypes()
-    this.fetchSubjectScans(this.subject)
+    this.fetchSubjectScans({
+      subject: this.subject,
+      pageSize: this.pagination['rowsPerPage'],
+      page: this.pagination['page'],
+      ordering: this.pagination['sortBy'],
+      descending: this.pagination['descending']
+    })
   },
   data: () => ({
     sequenceTypeDialog: {},
     headers: [
       { text: 'Number', value: 'number' },
       { text: 'Description', value: 'description' },
-      { text: 'Time', value: 'time' },
-      { text: 'Sequence Type', value: 'sequenceType' },
-      { text: 'Spatial Resolution', value: 'spatialResolution' }
-    ]
+      { text: 'Date', value: 'date', sortable: false },
+      { text: 'Time', value: 'time', sortable: false },
+      { text: 'Sequence Type', value: 'sequenceType', sortable: false },
+      {
+        text: 'Spatial Resolution',
+        value: 'spatialResolution',
+        sortable: false
+      }
+    ],
+    rowsPerPageItems: [
+      10,
+      25,
+      50,
+      { text: '$vuetify.dataIterator.rowsPerPageAll', value: 100000 }
+    ],
+    pagination: { rowsPerPage: 25, page: 1, descending: false },
+    loading: false
   }),
   computed: {
-    ...mapState('mri', ['scans']),
+    ...mapState('mri', ['scans', 'totalScansCount']),
     ...mapGetters('mri', ['getSequenceTypeByUrl']),
     ...mapGetters('research', { subject: 'getSelectedSubject' })
   },
@@ -99,11 +122,53 @@ export default {
         .replace(/,/g, ' x ')
         .trim()
     },
+    formatDate(scanTime) {
+      if (!scanTime) return null
+      let [year, month, day] = scanTime.slice(0, 10).split('-')
+      return `${day}/${month}/${year}`
+    },
+    formatTime(scanTime) {
+      if (!scanTime) return null
+      return scanTime.slice(11, 23)
+    },
+    updateScanTable() {
+      this.loading = true
+      this.fetchSubjectScans({
+        subject: this.subject,
+        pageSize: this.pagination['rowsPerPage'],
+        page: this.pagination['page'],
+        descending: this.pagination['descending'],
+        ordering: this.pagination['sortBy']
+      })
+      this.loading = false
+    },
     ...mapActions('mri', ['fetchSubjectScans', 'fetchSequenceTypes'])
   },
   watch: {
     subject: function(selectedSubject) {
-      this.fetchSubjectScans(selectedSubject)
+      this.loading = true
+      this.fetchSubjectScans({
+        subject: selectedSubject,
+        pageSize: this.pagination['rowsPerPage'],
+        page: this.pagination['page'],
+        descending: this.pagination['descending'],
+        ordering: this.pagination['sortBy']
+      })
+      this.loading = false
+    },
+    pagination: {
+      handler() {
+        this.loading = true
+        this.fetchSubjectScans({
+          subject: this.subject,
+          pageSize: this.pagination['rowsPerPage'],
+          page: this.pagination['page'],
+          ordering: this.pagination['sortBy'],
+          descending: this.pagination['descending']
+        })
+        this.loading = false
+      },
+      deep: true
     }
   }
 }

@@ -65,6 +65,7 @@ export default {
         let formData = new FormData()
 
         formData.append('file', file)
+        formData.append('subject_id', this.subject.id)
         this.fileProgressLabel = `Uploading ${file.name}...`
 
         /*
@@ -88,11 +89,10 @@ export default {
       this.totalUploadPercentage = 0
       this.fileProgressLabel = 'File progress'
       this.totalProgressLabel = 'Total progress'
-      this.fetchSubjectScans(this.subject)
     },
     submitFile(formData) {
       return axios
-        .put(`/api/mri/scan/from_dicom/${this.subject.id}/`, formData, {
+        .post(`/api/mri/scan/from_file/`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           },
@@ -102,6 +102,7 @@ export default {
             )
           }.bind(this)
         })
+        .then(() => this.$emit('file-upload-complete'))
         .catch(console.error)
     },
     ...mapActions('mri', ['fetchSubjectScans'])

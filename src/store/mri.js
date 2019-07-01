@@ -3,7 +3,8 @@ const camelcaseKeys = require('camelcase-keys')
 
 const state = {
   sequenceTypes: [],
-  scans: []
+  scans: [],
+  totalScansCount: 0
 }
 
 const getters = {
@@ -40,6 +41,9 @@ const mutations = {
   setScans(state, scans) {
     state.scans = scans
   },
+  setTotalScansCount(state, count) {
+    state.totalScansCount = count
+  },
   addScan(state, scan) {
     state.scans.push(scan)
   },
@@ -49,10 +53,22 @@ const mutations = {
 }
 
 const actions = {
-  fetchSubjectScans({ commit }, subject) {
+  fetchSubjectScans(
+    { commit },
+    { subject, pageSize, page, ordering, descending }
+  ) {
     return axios
-      .get(`/api/mri/scan/?subject=${subject.id}`)
-      .then(({ data }) => data.results.map(item => camelcaseKeys(item)))
+      .get(
+        `/api/mri/scan/?subject=${
+          subject.id
+        }&page_size=${pageSize}&page=${page}&ordering=${
+          descending ? '-' + ordering : ordering
+        }`
+      )
+      .then(({ data }) => {
+        commit('setTotalScansCount', data.count)
+        return data.results.map(item => camelcaseKeys(item))
+      })
       .then(scans => commit('setScans', scans))
       .catch(console.error)
   },

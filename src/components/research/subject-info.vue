@@ -1,7 +1,6 @@
 <template>
   <div class="text-left">
-    <div class="title">Subject #{{ subject.id }}</div>
-    <hr />
+    <div class="title pb-3">Subject #{{ subject.id }}</div>
     <v-tabs v-model="active">
       <v-tab>
         MRI
