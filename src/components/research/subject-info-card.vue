@@ -121,9 +121,9 @@
           :label="editable ? 'Edit Mode' : 'View Mode'"
         />
       </v-flex>
-      <v-btn flat v-if="existingSubject" color="error" @click="disassociate">
+      <!-- <v-btn flat v-if="existingSubject" color="error" @click="disassociate">
         Undo Association
-      </v-btn>
+      </v-btn> -->
       <v-spacer />
       <v-btn
         flat
@@ -251,8 +251,7 @@ export default {
     },
     associateNewSubject() {
       this.createSubject(this.subject)
-        .then(result => this.$emit('associate-patient', result))
-        .then((this.editable = false))
+        .then((this.subject = Object.assign({}, cleanSubject)))
         .then(this.closeDialog())
     },
     associateExistingSubject() {

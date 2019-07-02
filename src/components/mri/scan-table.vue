@@ -1,6 +1,6 @@
 <template>
   <div>
-    <br />
+    <!-- Scan Upload -->
     <v-expansion-panel>
       <v-expansion-panel-content>
         <template v-slot:header>
@@ -18,6 +18,8 @@
         </v-card>
       </v-expansion-panel-content>
     </v-expansion-panel>
+
+    <!-- Scan Table -->
     <v-data-table
       item-key="id"
       :headers="headers"
@@ -29,19 +31,28 @@
     >
       <template v-slot:items="props">
         <tr>
-          <td>
+          <!-- Scan Number -->
+          <td class="text-left">
             {{ props.item.number }}
           </td>
-          <td>
+
+          <!-- Description -->
+          <td class="text-left">
             {{ props.item.description }}
           </td>
-          <td>
+
+          <!-- Date -->
+          <td class="text-left">
             {{ formatDate(props.item.time) }}
           </td>
-          <td>
+
+          <!-- Time -->
+          <td class="text-left">
             {{ formatTime(props.item.time) }}
           </td>
-          <td>
+
+          <!-- Sequence Type -->
+          <td class="text-left">
             <v-dialog
               v-model="sequenceTypeDialog[props.item.id]"
               v-if="props.item.sequenceType"
@@ -56,7 +67,9 @@
               <protocol-information :scan="props.item" />
             </v-dialog>
           </td>
-          <td>
+
+          <!-- Spatial Resolution -->
+          <td class="text-left">
             {{ formatSpatialResolution(props.item.spatialResolution) }}
           </td>
         </tr>
@@ -80,10 +93,7 @@ export default {
     this.fetchSequenceTypes()
     this.fetchSubjectScans({
       subject: this.subject,
-      pageSize: this.pagination['rowsPerPage'],
-      page: this.pagination['page'],
-      ordering: this.pagination['sortBy'],
-      descending: this.pagination['descending']
+      pagination: this.pagination
     })
   },
   data: () => ({
@@ -106,7 +116,12 @@ export default {
       50,
       { text: '$vuetify.dataIterator.rowsPerPageAll', value: 100000 }
     ],
-    pagination: { rowsPerPage: 25, page: 1, descending: false },
+    pagination: {
+      rowsPerPage: 25,
+      page: 1,
+      ordering: 'number',
+      descending: false
+    },
     loading: false
   }),
   computed: {
@@ -135,10 +150,7 @@ export default {
       this.loading = true
       this.fetchSubjectScans({
         subject: this.subject,
-        pageSize: this.pagination['rowsPerPage'],
-        page: this.pagination['page'],
-        descending: this.pagination['descending'],
-        ordering: this.pagination['sortBy']
+        pagination: this.pagination
       })
       this.loading = false
     },
@@ -149,10 +161,7 @@ export default {
       this.loading = true
       this.fetchSubjectScans({
         subject: selectedSubject,
-        pageSize: this.pagination['rowsPerPage'],
-        page: this.pagination['page'],
-        descending: this.pagination['descending'],
-        ordering: this.pagination['sortBy']
+        pagination: this.pagination
       })
       this.loading = false
     },
@@ -161,10 +170,7 @@ export default {
         this.loading = true
         this.fetchSubjectScans({
           subject: this.subject,
-          pageSize: this.pagination['rowsPerPage'],
-          page: this.pagination['page'],
-          ordering: this.pagination['sortBy'],
-          descending: this.pagination['descending']
+          pagination: this.pagination
         })
         this.loading = false
       },

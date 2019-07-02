@@ -53,10 +53,10 @@ const mutations = {
 }
 
 const actions = {
-  fetchSubjectScans(
-    { commit },
-    { subject, pageSize, page, ordering, descending }
-  ) {
+  fetchSubjectScans({ commit }, { subject, pagination }) {
+    let { page, descending } = pagination
+    let ordering = pagination['sortBy']
+    let pageSize = pagination['rowsPerPage']
     return axios
       .get(
         `/api/mri/scan/?subject=${
