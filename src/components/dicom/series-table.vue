@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <group-association :selectedSeries="selectedSeries" />
+    <!-- <group-association :selectedSeries="selectedSeries" /> -->
     <v-layout row wrap>
       <v-flex>
         <v-data-table
@@ -94,7 +94,7 @@
 </template>
 
 <script>
-import GroupAssociation from './group-association.vue'
+// import GroupAssociation from './group-association.vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import ProtocolInformation from './protocol-information.vue'
 import ScanInfo from '@/components/mri/scan-info.vue'
@@ -102,7 +102,7 @@ import ScanInfo from '@/components/mri/scan-info.vue'
 export default {
   name: 'SeriesTable',
   props: { patient: Object },
-  components: { GroupAssociation, ProtocolInformation, ScanInfo },
+  components: { ProtocolInformation, ScanInfo },
   created() {
     this.fetchSequenceTypes()
     if (this.patient) {

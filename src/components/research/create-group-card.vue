@@ -55,7 +55,7 @@ import { mapState } from 'vuex'
 const cleanGroup = {
   title: '',
   description: '',
-  study: null
+  study: { title: '' }
 }
 
 export default {

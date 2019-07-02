@@ -49,6 +49,16 @@ const mutations = {
   },
   removeScanFromState(state, removedScan) {
     state.scans = state.scans.filter(scan => scan.id != removedScan.id)
+  },
+  updateScanState(state, updatedScan) {
+    let index = state.scans.indexOf(
+      state.scans.find(scan => scan.id === updatedScan.id)
+    )
+
+    // Mutating an array directly causes reactivity problems
+    let newScans = state.scans.slice()
+    newScans[index] = updatedScan
+    state.scans = newScans
   }
 }
 
@@ -149,13 +159,20 @@ const actions = {
     return axios
       .patch(`/api/mri/scan/${scan.id}/`, camelToSnakeCase(scan))
       .then(({ data }) => camelcaseKeys(data))
-      .then(data => {
-        commit('removeScanFromState', data)
-        commit('addScan', data)
-        return data
+      .then(updatedScan => {
+        commit('updateScanState', updatedScan)
+        // commit('addScan', updatedScan)
       })
       .catch(console.error)
   }
+}
+
+export default {
+  namespaced: true,
+  state,
+  getters,
+  mutations,
+  actions
 }
 
 const camelToSnakeCase = obj => {
@@ -166,13 +183,6 @@ const camelToSnakeCase = obj => {
         obj[key])
   )
   return result
-}
-export default {
-  namespaced: true,
-  state,
-  getters,
-  mutations,
-  actions
 }
 
 function arraysEqual(a, b) {

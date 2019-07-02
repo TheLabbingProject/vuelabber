@@ -19,9 +19,14 @@
       </v-expansion-panel-content>
     </v-expansion-panel>
 
+    <!-- Group Association -->
+    <group-association :selectedScans="selected" />
+
     <!-- Scan Table -->
     <v-data-table
+      v-model="selected"
       item-key="id"
+      select-all
       :headers="headers"
       :loading="loading"
       :items="scans"
@@ -31,6 +36,15 @@
     >
       <template v-slot:items="props">
         <tr>
+          <!-- Selection Checkbox -->
+          <td>
+            <v-checkbox
+              v-model="props.selected"
+              primary
+              hide-details
+            ></v-checkbox>
+          </td>
+
           <!-- Scan Number -->
           <td class="text-left">
             {{ props.item.number }}
@@ -72,6 +86,23 @@
           <td class="text-left">
             {{ formatSpatialResolution(props.item.spatialResolution) }}
           </td>
+
+          <!-- Study Groups -->
+          <td>
+            <div
+              v-for="groupUrl in props.item.studyGroups"
+              :key="groupUrl"
+              class="text-xs-left"
+            >
+              <v-chip
+                small
+                close
+                @input="disassociateFromGroup(props.item, groupUrl)"
+              >
+                {{ stringifyGroup(getGroupByUrl(groupUrl)) }}
+              </v-chip>
+            </div>
+          </td>
         </tr>
       </template>
     </v-data-table>
@@ -81,11 +112,13 @@
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex'
 import ProtocolInformation from '@/components/dicom/protocol-information.vue'
+import GroupAssociation from '@/components/mri/group-association.vue'
 import ScanUpload from '@/components/mri/scan-upload.vue'
 
 export default {
   name: 'ScanTable',
   components: {
+    GroupAssociation,
     ProtocolInformation,
     ScanUpload
   },
@@ -108,8 +141,10 @@ export default {
         text: 'Spatial Resolution',
         value: 'spatialResolution',
         sortable: false
-      }
+      },
+      { text: 'Study Groups', value: 'studyGroups', sortable: false }
     ],
+    selected: [],
     rowsPerPageItems: [
       10,
       25,
@@ -127,9 +162,22 @@ export default {
   computed: {
     ...mapState('mri', ['scans', 'totalScansCount']),
     ...mapGetters('mri', ['getSequenceTypeByUrl']),
-    ...mapGetters('research', { subject: 'getSelectedSubject' })
+    ...mapGetters('research', { subject: 'getSelectedSubject' }),
+    ...mapGetters('research', ['getGroupByUrl'])
   },
   methods: {
+    updateScanTable() {
+      this.loading = true
+      this.fetchSubjectScans({
+        subject: this.subject,
+        pagination: this.pagination
+      })
+      this.loading = false
+    },
+    disassociateFromGroup(scan, groupUrl) {
+      scan.studyGroups = scan.studyGroups.filter(url => url != groupUrl)
+      this.updateScan(scan)
+    },
     formatSpatialResolution(floatArray) {
       return floatArray
         .map(item => parseFloat(item.toFixed(2)))
@@ -146,15 +194,14 @@ export default {
       if (!scanTime) return null
       return scanTime.slice(11, 23)
     },
-    updateScanTable() {
-      this.loading = true
-      this.fetchSubjectScans({
-        subject: this.subject,
-        pagination: this.pagination
-      })
-      this.loading = false
+    stringifyGroup(group) {
+      return group ? `${group.study.title} | ${group.title}` : null
     },
-    ...mapActions('mri', ['fetchSubjectScans', 'fetchSequenceTypes'])
+    ...mapActions('mri', [
+      'fetchSubjectScans',
+      'fetchSequenceTypes',
+      'updateScan'
+    ])
   },
   watch: {
     subject: function(selectedSubject) {
