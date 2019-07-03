@@ -5,7 +5,7 @@
       <v-expansion-panel-content>
         <template v-slot:header>
           <div>
-            Upload new data
+            Upload
           </div>
         </template>
         <v-card>
@@ -20,7 +20,20 @@
     </v-expansion-panel>
 
     <!-- Group Association -->
-    <group-association :selectedScans="selected" />
+    <v-expansion-panel>
+      <v-expansion-panel-content>
+        <template v-slot:header>
+          <div>
+            Study Group Association
+          </div>
+        </template>
+        <v-card>
+          <v-card-text>
+            <group-association :selectedScans="selected" />
+          </v-card-text>
+        </v-card>
+      </v-expansion-panel-content>
+    </v-expansion-panel>
 
     <!-- Scan Table -->
     <v-data-table
@@ -75,7 +88,7 @@
             >
               <template v-slot:activator="{ on }">
                 <v-btn small class="info" v-on="on">
-                  {{ getSequenceTypeByUrl(props.item.sequenceType).title }}
+                  {{ sequenceTypeTitleFromUrl(props.item.sequenceType) }}
                 </v-btn>
               </template>
               <protocol-information :scan="props.item" />
@@ -196,6 +209,10 @@ export default {
     },
     stringifyGroup(group) {
       return group ? `${group.study.title} | ${group.title}` : null
+    },
+    sequenceTypeTitleFromUrl(url) {
+      let sequenceType = this.getSequenceTypeByUrl(url)
+      return sequenceType ? sequenceType.title : null
     },
     ...mapActions('mri', [
       'fetchSubjectScans',

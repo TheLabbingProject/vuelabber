@@ -1,9 +1,6 @@
 <template>
-  <v-container fluid px-3 pt-2 pb-4>
-    <div class="title font-italic text-xs-left pb-4">
-      Group Association
-    </div>
-    <v-layout row>
+  <v-layout column>
+    <v-layout row pl-3>
       <!-- Study selection with creation dialog -->
       <v-flex pr-5>
         <v-combobox
@@ -47,7 +44,7 @@
       </v-btn>
     </v-layout>
 
-    <v-layout row>
+    <v-layout row pl-3>
       <!-- Show each selected group as a chip -->
       <v-layout column>
         <v-flex pb-1 class="text-xs-left">
@@ -77,7 +74,7 @@
         </v-btn>
       </v-layout>
     </v-layout>
-  </v-container>
+  </v-layout>
 </template>
 
 <script>

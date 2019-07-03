@@ -1,6 +1,11 @@
 import axios from 'axios'
 const camelcaseKeys = require('camelcase-keys')
 
+const queryString = (filters, pagination) =>
+  `id=${
+    filters.id
+  }&description=&description_lookup=&number=&created_after=&created_before=&scan_time_after=&scan_time_before=&echo_time=&inversion_time=&repetition_time=&institution_name=&is_updated_from_dicom=&dicom__id=&subject=`
+
 const state = {
   sequenceTypes: [],
   scans: [],
