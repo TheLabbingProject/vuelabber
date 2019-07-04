@@ -10,10 +10,7 @@
         </template>
         <v-card>
           <v-card-text>
-            <scan-upload
-              :subject="subject"
-              @file-upload-complete="updateScanTable()"
-            />
+            <scan-upload :subject="subject" @file-upload-complete="update()" />
           </v-card-text>
         </v-card>
       </v-expansion-panel-content>
@@ -36,6 +33,12 @@
     </v-expansion-panel>
 
     <!-- Scan Table -->
+    <scan-table-controls
+      ref="tableController"
+      :pagination="pagination"
+      @fetch-scans-start="loading = true"
+      @fetch-scans-end="loading = false"
+    />
     <v-data-table
       v-model="selected"
       item-key="id"
@@ -45,7 +48,7 @@
       :items="scans"
       :rows-per-page-items="rowsPerPageItems"
       :pagination.sync="pagination"
-      :total-items="totalScansCount"
+      :total-items="totalScanCount"
     >
       <template v-slot:items="props">
         <tr>
@@ -127,20 +130,18 @@ import { mapActions, mapState, mapGetters } from 'vuex'
 import ProtocolInformation from '@/components/dicom/protocol-information.vue'
 import GroupAssociation from '@/components/mri/group-association.vue'
 import ScanUpload from '@/components/mri/scan-upload.vue'
+import ScanTableControls from '@/components/mri/scan-table-controls.vue'
 
 export default {
   name: 'ScanTable',
   components: {
     GroupAssociation,
     ProtocolInformation,
+    ScanTableControls,
     ScanUpload
   },
   created() {
     this.fetchSequenceTypes()
-    this.fetchSubjectScans({
-      subject: this.subject,
-      pagination: this.pagination
-    })
   },
   data: () => ({
     sequenceTypeDialog: {},
@@ -173,20 +174,12 @@ export default {
     loading: false
   }),
   computed: {
-    ...mapState('mri', ['scans', 'totalScansCount']),
+    ...mapState('mri', ['scans', 'totalScanCount']),
     ...mapGetters('mri', ['getSequenceTypeByUrl']),
     ...mapGetters('research', { subject: 'getSelectedSubject' }),
     ...mapGetters('research', ['getGroupByUrl'])
   },
   methods: {
-    updateScanTable() {
-      this.loading = true
-      this.fetchSubjectScans({
-        subject: this.subject,
-        pagination: this.pagination
-      })
-      this.loading = false
-    },
     disassociateFromGroup(scan, groupUrl) {
       scan.studyGroups = scan.studyGroups.filter(url => url != groupUrl)
       this.updateScan(scan)
@@ -214,32 +207,10 @@ export default {
       let sequenceType = this.getSequenceTypeByUrl(url)
       return sequenceType ? sequenceType.title : null
     },
-    ...mapActions('mri', [
-      'fetchSubjectScans',
-      'fetchSequenceTypes',
-      'updateScan'
-    ])
-  },
-  watch: {
-    subject: function(selectedSubject) {
-      this.loading = true
-      this.fetchSubjectScans({
-        subject: selectedSubject,
-        pagination: this.pagination
-      })
-      this.loading = false
+    update() {
+      this.$refs.tableController.update()
     },
-    pagination: {
-      handler() {
-        this.loading = true
-        this.fetchSubjectScans({
-          subject: this.subject,
-          pagination: this.pagination
-        })
-        this.loading = false
-      },
-      deep: true
-    }
+    ...mapActions('mri', ['fetchSequenceTypes', 'updateScan'])
   }
 }
 </script>

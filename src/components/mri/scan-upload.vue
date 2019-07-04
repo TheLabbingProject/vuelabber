@@ -19,7 +19,7 @@
         {{ totalProgressLabel }}
       </div>
       <v-progress-linear v-model="totalUploadPercentage" />
-      <v-btn small @click="submitFiles()">
+      <v-btn small :disabled="!files" @click="submitFiles()">
         Upload
       </v-btn>
     </div>

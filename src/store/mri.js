@@ -1,15 +1,28 @@
 import axios from 'axios'
 const camelcaseKeys = require('camelcase-keys')
 
-const queryString = (filters, pagination) =>
-  `id=${
-    filters.id
-  }&description=&description_lookup=&number=&created_after=&created_before=&scan_time_after=&scan_time_before=&echo_time=&inversion_time=&repetition_time=&institution_name=&is_updated_from_dicom=&dicom__id=&subject=`
+const getQueryString = ({ filters, pagination }) => {
+  filters = replaceNull(filters)
+  pagination = replaceNull(pagination)
+  return `?id=&description=${
+    filters.description
+  }&description_lookup=icontains&number=${
+    filters.number
+  }&created_after=&created_before=&scan_time_after=${
+    filters.afterDate
+  }&scan_time_before=${
+    filters.beforeDate
+  }&echo_time=&inversion_time=&repetition_time=&institution_name=&is_updated_from_dicom=&dicom__id=&subject=${
+    filters.subject
+  }&page_size=${pagination.rowsPerPage}&page=${pagination.page}&ordering=${
+    pagination.descending ? '-' + pagination.sortBy : pagination.sortBy
+  }`
+}
 
 const state = {
   sequenceTypes: [],
   scans: [],
-  totalScansCount: 0
+  totalScanCount: 0
 }
 
 const getters = {
@@ -46,8 +59,8 @@ const mutations = {
   setScans(state, scans) {
     state.scans = scans
   },
-  setTotalScansCount(state, count) {
-    state.totalScansCount = count
+  setTotalScanCount(state, count) {
+    state.totalScanCount = count
   },
   addScan(state, scan) {
     state.scans.push(scan)
@@ -68,6 +81,19 @@ const mutations = {
 }
 
 const actions = {
+  fetchScans({ commit }, { filters, pagination }) {
+    let queryString = getQueryString({ filters, pagination })
+    return axios
+      .get(`/api/mri/scan/${queryString}`)
+      .then(({ data }) => {
+        commit('setTotalScanCount', data.count)
+        return data.results.map(item => camelcaseKeys(item))
+      })
+      .then(scans => {
+        commit('setScans', scans)
+      })
+      .catch(console.error)
+  },
   fetchSubjectScans({ commit }, { subject, pagination }) {
     let { page, descending } = pagination
     let ordering = pagination['sortBy']
@@ -81,7 +107,7 @@ const actions = {
         }`
       )
       .then(({ data }) => {
-        commit('setTotalScansCount', data.count)
+        commit('setTotalScanCount', data.count)
         return data.results.map(item => camelcaseKeys(item))
       })
       .then(scans => commit('setScans', scans))
@@ -205,3 +231,10 @@ function arraysEqual(a, b) {
   }
   return true
 }
+
+const replaceNull = obj =>
+  JSON.parse(
+    JSON.stringify(obj, (key, value) => {
+      return value ? value : ''
+    })
+  )
