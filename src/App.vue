@@ -14,7 +14,18 @@
             </v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-
+        <v-list-tile to="/studies" class="drawer-link">
+          <v-list-tile-action>
+            <v-icon>
+              star
+            </v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title>
+              Studies
+            </v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
         <v-list-tile to="/subjects" class="drawer-link">
           <v-list-tile-action>
             <v-icon>

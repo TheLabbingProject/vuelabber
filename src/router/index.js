@@ -4,6 +4,7 @@ import Login from '../views/Login.vue'
 import Lost from '../views/Lost.vue'
 import Home from '../views/Home.vue'
 import DicomBrowser from '../views/DicomBrowser.vue'
+import StudyBrowser from '../views/StudyBrowser.vue'
 import SubjectBrowser from '../views/SubjectBrowser.vue'
 import store from '../store'
 
@@ -77,8 +78,14 @@ export default new Router({
     },
     {
       path: '/subjects',
-      name: 'subjectBroser',
+      name: 'subjectBrowser',
       component: SubjectBrowser,
+      beforeEnter: requireAuthenticated
+    },
+    {
+      path: '/studies',
+      name: 'studyBrowser',
+      component: StudyBrowser,
       beforeEnter: requireAuthenticated
     }
   ]
