@@ -13,7 +13,7 @@
           :items="studies.map(item => item.title)"
           @click:append-outer.stop="createStudyDialog = true"
         />
-        <v-dialog v-model="createStudyDialog" width="600px" lazy persistent>
+        <v-dialog v-model="createStudyDialog" width="600px" lazy>
           <create-study-card
             @close-study-dialog="createStudyDialog = false"
             @select-study="selectedStudyTitle = arguments[0]"

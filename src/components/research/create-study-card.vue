@@ -21,7 +21,7 @@
           </v-flex>
           <v-flex pb-4>
             <v-combobox
-              v-model="study.collaborators"
+              v-model="selectedCollaborators"
               label="Collaborators"
               chips
               multiple
@@ -61,14 +61,20 @@ const cleanStudy = {
 
 export default {
   name: 'CreateStudyCard',
+  props: {
+    study: { type: Object, default: Object.assign({}, cleanStudy) }
+  },
   created() {
     this.$store.dispatch('accounts/fetchUsers')
+    this.selectedCollaborators = this.study.collaborators.map(collaborator =>
+      this.getCollaboratorName(this.getUserByUrl(collaborator))
+    )
   },
   mixins: [validationMixin],
-  data: () => ({
-    study: Object.assign({}, cleanStudy)
-  }),
   computed: {
+    data: () => ({
+      selectedCollaborators: []
+    }),
     possibleCollaborators: function() {
       return this.users.map(user => this.getCollaboratorName(user))
     },
@@ -82,7 +88,7 @@ export default {
       return errors
     },
     ...mapState('accounts', ['users']),
-    ...mapGetters('accounts', ['getUserByUsername'])
+    ...mapGetters('accounts', ['getUserByUsername', 'getUserByUrl'])
   },
   validations: {
     study: {
@@ -99,7 +105,7 @@ export default {
       return this.getUserByUsername(username)
     },
     fixCollaboratorsProperty: function() {
-      this.study.collaborators = this.study.collaborators.map(
+      this.study.collaborators = this.selectedCollaborators.map(
         collaborator =>
           this.getUserFromCollaboratorChoice(collaborator).user.url
       )

@@ -17,6 +17,11 @@ const getters = {
       let user = getters.getUserByUrl(url)
       return `${user.user.first_name[0]}${user.user.last_name[0]}`
     }
+  },
+  currentUser(state, getters, rootState) {
+    return state.users.find(
+      user => user.user.username === rootState.auth.user.username
+    )
   }
 }
 

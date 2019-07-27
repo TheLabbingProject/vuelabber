@@ -2,7 +2,22 @@
   <v-layout column>
     <v-card class="mb-4 mx-3" v-for="study in studies" :key="study.id">
       <v-card-title class="title purple darken-2 white--text">
-        {{ study.title }}
+        <span>
+          {{ study.title }}
+        </span>
+        <v-spacer />
+        <v-dialog v-model="editStudyDialog[study.id]" width="600px" lazy>
+          <template v-slot:activator="{ on }">
+            <v-icon v-if="currentUser.user.is_staff" v-on="on">
+              edit
+            </v-icon>
+          </template>
+          <create-study-card
+            :key="editStudyDialog[study.id]"
+            :study="study"
+            @close-study-dialog="editStudyDialog[study.id] = false"
+          />
+        </v-dialog>
       </v-card-title>
       <v-card-text class="text-xs-left">
         <div v-if="study.description">
@@ -35,13 +50,16 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex'
+import CreateStudyCard from '@/components/research/create-study-card.vue'
 
 export default {
   name: 'StudyBrowser',
+  components: { CreateStudyCard },
   created() {
     this.fetchUsers().then(this.fetchStudies())
   },
   data: () => ({
+    editStudyDialog: {},
     colors: [
       'purple',
       'cyan',
@@ -54,7 +72,11 @@ export default {
     ]
   }),
   computed: {
-    ...mapGetters('accounts', ['getUserByUrl', 'getUserInitialsFromUrl']),
+    ...mapGetters('accounts', [
+      'getUserByUrl',
+      'getUserInitialsFromUrl',
+      'currentUser'
+    ]),
     ...mapState('accounts', ['users']),
     ...mapState('research', ['studies'])
   },
