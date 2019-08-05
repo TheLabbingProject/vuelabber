@@ -94,4 +94,4 @@ function randomize(items) {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped></style>

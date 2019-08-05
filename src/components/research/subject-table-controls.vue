@@ -1,16 +1,18 @@
 <template>
   <div>
-    <v-flex row px-3>
-      <v-text-field label="ID" v-model="filters.id" />
+    <v-flex row pl-4>
+      <v-text-field label="ID" style="width: 50px;" v-model="filters.id" />
       <v-spacer />
       <v-text-field
         label="First Name"
+        style="width: 120px;"
         v-model="filters.firstName"
         :disabled="Boolean(filters.id)"
       />
       <v-spacer />
       <v-text-field
         label="Last Name"
+        style="width: 120px;"
         v-model="filters.lastName"
         :disabled="Boolean(filters.id)"
       />
@@ -28,11 +30,12 @@
         >
           <template v-slot:activator="{ on }">
             <v-text-field
-              v-model="filters.bornAfter"
+              clearable
+              readonly
               label="Born After"
               prepend-icon="event"
-              readonly
-              clearable
+              style="width: 160px;"
+              v-model="filters.bornAfter"
               v-on="on"
               :disabled="Boolean(filters.id)"
             ></v-text-field>
@@ -57,13 +60,14 @@
         >
           <template v-slot:activator="{ on }">
             <v-text-field
-              v-model="filters.bornBefore"
+              clearable
+              readonly
               label="Born Before"
               prepend-icon="event"
-              readonly
+              style="width: 160px;"
+              v-model="filters.bornBefore"
               v-on="on"
               :disabled="Boolean(filters.id)"
-              clearable
             ></v-text-field>
           </template>
           <v-date-picker
@@ -72,57 +76,42 @@
           ></v-date-picker>
         </v-menu>
       </v-flex>
-    </v-flex>
-    <v-flex row px-3>
       <v-select
-        label="Sex"
-        v-model="filters.sex"
         clearable
+        label="Sex"
+        style="width: 70px;"
+        v-model="filters.sex"
         :disabled="Boolean(filters.id)"
         :items="Object.keys(sexOptions)"
       />
       <v-spacer />
       <v-select
-        label="Gender"
-        v-model="filters.gender"
         clearable
+        label="Gender"
+        style="width: 120px;"
+        v-model="filters.gender"
         :disabled="Boolean(filters.id)"
         :items="Object.keys(genderOptions)"
       />
       <v-spacer />
       <v-select
-        label="Dominant Hand"
-        v-model="filters.dominantHand"
         clearable
+        label="Dominant Hand"
+        style="width: 120px;"
+        v-model="filters.dominantHand"
         :disabled="Boolean(filters.id)"
         :items="Object.keys(dominantHandOptions)"
       />
-      <v-spacer />
-      <v-dialog v-model="createSubjectDialog" lazy width="800px">
-        <template v-slot:activator="{ on }">
-          <v-btn color="success" v-on="on">
-            Create
-          </v-btn>
-        </template>
-        <subject-info-card
-          :createMode="true"
-          @close-subject-dialog="createSubjectDialog = false"
-        />
-      </v-dialog>
     </v-flex>
   </div>
 </template>
 
 <script>
-import SubjectInfoCard from '@/components/research/subject-info-card.vue'
 import { mapActions } from 'vuex'
 import { sexOptions, genderOptions, dominantHandOptions } from './choices.js'
 
 export default {
   name: 'SubjectTableControls',
-  components: {
-    SubjectInfoCard
-  },
   data: () => ({
     bornAfterMenu: false,
     bornBeforeMenu: false,
@@ -136,7 +125,6 @@ export default {
       gender: '',
       dominantHand: ''
     },
-    createSubjectDialog: false,
     sexOptions,
     genderOptions,
     dominantHandOptions
@@ -265,4 +253,4 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped></style>

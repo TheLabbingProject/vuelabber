@@ -24,6 +24,10 @@ export const camelToSnakeCase = obj => {
   return result
 }
 
+export function getKeyByValue(object, value) {
+  return Object.keys(object).find(key => object[key] === value)
+}
+
 export const replaceNull = obj =>
   JSON.parse(
     JSON.stringify(obj, (key, value) => {

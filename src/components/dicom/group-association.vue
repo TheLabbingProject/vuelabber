@@ -188,4 +188,4 @@ function arrayContains(needle, arrhaystack) {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped></style>
