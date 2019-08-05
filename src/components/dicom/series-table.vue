@@ -1,6 +1,5 @@
 <template>
   <v-container fluid>
-    <!-- <group-association :selectedSeries="selectedSeries" /> -->
     <v-layout row wrap>
       <v-flex>
         <v-data-table
@@ -9,17 +8,9 @@
           :items="seriesList"
           item-key="id"
           hide-actions
-          select-all
         >
           <template v-slot:items="props">
             <tr>
-              <td>
-                <v-checkbox
-                  v-model="props.selected"
-                  primary
-                  hide-details
-                ></v-checkbox>
-              </td>
               <td class="text-xs-left">{{ props.item.number }}</td>
               <td class="text-xs-left">{{ props.item.description }}</td>
               <td class="text-xs-left">
@@ -42,18 +33,7 @@
               <td class="text-xs-left">
                 {{ getSpatialResolution(props.item) }}
               </td>
-              <td>
-                <div
-                  v-for="group in getStudyGroupsByDicomSeries(props.item)"
-                  :key="group"
-                  class="text-xs-left"
-                >
-                  <v-chip small>
-                    {{ stringifyGroup(getGroupByUrl(group)) }}
-                  </v-chip>
-                </div>
-              </td>
-              <td>
+              <td class="text-xs-left">
                 <v-dialog
                   v-model="scanInfoDialog[props.item.id]"
                   lazy
@@ -94,7 +74,6 @@
 </template>
 
 <script>
-// import GroupAssociation from './group-association.vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import ProtocolInformation from './protocol-information.vue'
 import ScanInfo from '@/components/mri/scan-info.vue'
@@ -109,16 +88,6 @@ export default {
       this.fetchPatientSeriesList(this.patient)
     }
   },
-  computed: {
-    ...mapState('dicom', ['seriesList']),
-    ...mapState('mri', ['sequenceTypes', 'series']),
-    ...mapGetters('mri', [
-      'getDicomSeriesSequenceType',
-      'getStudyGroupsByDicomSeries',
-      'getScanByDicomSeries'
-    ]),
-    ...mapGetters('research', ['getGroupByUrl'])
-  },
   data: () => ({
     protocolInformationDialog: {},
     scanInfoDialog: {},
@@ -130,14 +99,32 @@ export default {
       { text: 'Time', value: 'time' },
       { text: 'Sequence Type', value: 'sequenceType' },
       { text: 'Spatial Resolution (mm)', value: 'spatialResolution' },
-      { text: 'Study Groups', value: 'studyGroups' },
       { text: 'Scan Instance', value: 'scanInstance' }
-    ]
-  }),
-  watch: {
-    seriesList: function(list) {
-      this.updateScans(list)
+    ],
+    filters: {
+      number: '',
+      description: '',
+      afterDate: '',
+      beforeDate: '',
+      sequenceType: '',
+      dicomId: '',
+      subject: ''
+    },
+    pagination: {
+      rowsPerPage: 100,
+      page: 1,
+      sortBy: 'number',
+      descending: false
     }
+  }),
+  computed: {
+    ...mapState('dicom', ['seriesList']),
+    ...mapState('mri', ['sequenceTypes', 'series']),
+    ...mapGetters('mri', [
+      'getDicomSeriesSequenceType'
+      // 'getScanByDicomSeries'
+    ]),
+    ...mapGetters('research', ['getGroupByUrl'])
   },
   methods: {
     getSequenceTypeTitle(series) {
@@ -151,12 +138,13 @@ export default {
     stringifyGroup(group) {
       return `${group.study.title} | ${group.title}`
     },
+    getScanByDicomSeries(series) {
+      let filters = Object.assign({}, this.filters)
+      filters.dicomId = series.id
+      return this.fetchScans({ filters, pagination: this.pagination })[0]
+    },
     ...mapActions('dicom', ['fetchPatientSeriesList']),
-    ...mapActions('mri', [
-      'getOrCreateScanInfoFromDicomSeries',
-      'fetchSequenceTypes',
-      'updateScans'
-    ])
+    ...mapActions('mri', ['fetchScans', 'fetchSequenceTypes'])
   }
 }
 

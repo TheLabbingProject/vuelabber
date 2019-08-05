@@ -1,4 +1,4 @@
-import auth from '../api/auth'
+import auth from '../api/auth/auth'
 
 import {
   PASSWORD_RESET_BEGIN,

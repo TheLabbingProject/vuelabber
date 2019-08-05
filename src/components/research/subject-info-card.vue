@@ -251,7 +251,8 @@ export default {
     },
     associateNewSubject() {
       this.createSubject(this.subject)
-        .then((this.subject = Object.assign({}, cleanSubject)))
+        .then(result => this.$emit('associate-patient', result))
+        .then((this.editable = false))
         .then(this.closeDialog())
     },
     associateExistingSubject() {
@@ -274,7 +275,6 @@ export default {
 
 function formatDate(date) {
   if (!date) return null
-
   const [year, month, day] = date.split('-')
   return `${day}/${month}/${year}`
 }

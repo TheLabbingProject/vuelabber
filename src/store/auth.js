@@ -1,4 +1,4 @@
-import auth from '../api/auth'
+import auth from '../api/auth/auth'
 import session from '../api/session'
 import {
   LOGIN_BEGIN,

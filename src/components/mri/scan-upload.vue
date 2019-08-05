@@ -28,7 +28,6 @@
 
 <script>
 import axios from 'axios'
-import { mapActions } from 'vuex'
 
 export default {
   name: 'ScanUpload',
@@ -104,8 +103,7 @@ export default {
         })
         .then(() => this.$emit('file-upload-complete'))
         .catch(console.error)
-    },
-    ...mapActions('mri', ['fetchSubjectScans'])
+    }
   }
 }
 </script>

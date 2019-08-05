@@ -1,23 +1,7 @@
-import axios from 'axios'
+import { SCANS, SEQUENCE_TYPES } from '@/api/mri/endpoints'
+import session from '@/api/session'
+import { arraysEqual, camelToSnakeCase, replaceNull } from '@/utils'
 const camelcaseKeys = require('camelcase-keys')
-
-const getQueryString = ({ filters, pagination }) => {
-  filters = replaceNull(filters)
-  pagination = replaceNull(pagination)
-  return `?id=&description=${
-    filters.description
-  }&description_lookup=icontains&number=${
-    filters.number
-  }&created_after=&created_before=&scan_time_after=${
-    filters.afterDate
-  }&scan_time_before=${
-    filters.beforeDate
-  }&echo_time=&inversion_time=&repetition_time=&institution_name=&is_updated_from_dicom=&dicom__id=&subject=${
-    filters.subject
-  }&page_size=${pagination.rowsPerPage}&page=${pagination.page}&ordering=${
-    pagination.descending ? '-' + pagination.sortBy : pagination.sortBy
-  }`
-}
 
 const state = {
   sequenceTypes: [],
@@ -39,16 +23,6 @@ const getters = {
           arraysEqual(item.scanningSequence, series.scanningSequence) &&
           arraysEqual(item.sequenceVariant, series.sequenceVariant)
       )
-  },
-  getStudyGroupsByDicomSeries(state, getters) {
-    return function(series) {
-      let scan = getters['getScanByDicomSeries'](series)
-      if (scan) {
-        return scan.studyGroups
-      } else {
-        return []
-      }
-    }
   }
 }
 
@@ -72,7 +46,6 @@ const mutations = {
     let index = state.scans.indexOf(
       state.scans.find(scan => scan.id === updatedScan.id)
     )
-
     // Mutating an array directly causes reactivity problems
     let newScans = state.scans.slice()
     newScans[index] = updatedScan
@@ -83,8 +56,8 @@ const mutations = {
 const actions = {
   fetchScans({ commit }, { filters, pagination }) {
     let queryString = getQueryString({ filters, pagination })
-    return axios
-      .get(`/api/mri/scan/${queryString}`)
+    return session
+      .get(`${SCANS}/${queryString}`)
       .then(({ data }) => {
         commit('setTotalScanCount', data.count)
         return data.results.map(item => camelcaseKeys(item))
@@ -94,56 +67,26 @@ const actions = {
       })
       .catch(console.error)
   },
-  fetchSubjectScans({ commit }, { subject, pagination }) {
-    let { page, descending } = pagination
-    let ordering = pagination['sortBy']
-    let pageSize = pagination['rowsPerPage']
-    return axios
-      .get(
-        `/api/mri/scan/?subject=${
-          subject.id
-        }&page_size=${pageSize}&page=${page}&ordering=${
-          descending ? '-' + ordering : ordering
-        }`
-      )
-      .then(({ data }) => {
-        commit('setTotalScanCount', data.count)
-        return data.results.map(item => camelcaseKeys(item))
-      })
-      .then(scans => commit('setScans', scans))
-      .catch(console.error)
-  },
   fetchSequenceTypes({ commit }) {
-    return axios
-      .get('/api/mri/sequence_type/')
+    return session
+      .get(SEQUENCE_TYPES)
       .then(({ data }) => data.results.map(item => camelcaseKeys(item)))
       .then(sequenceTypes => commit('setSequenceTypes', sequenceTypes))
       .catch(console.error)
   },
-  fetchScanByDicomSeries({ commit }, series) {
-    return axios
-      .get('/api/mri/scan/?dicom__id=' + series.id)
-      .then(({ data }) => (data.count ? camelcaseKeys(data.results[0]) : null))
-      .then(scan => {
-        if (scan) commit('addScan', scan)
-      })
-      .catch(console.error)
-  },
-  updateScans({ dispatch }, seriesList) {
-    seriesList.forEach(series => dispatch('fetchScanByDicomSeries', series))
-  },
   getOrCreateScanFromDicomSeries({ commit }, dicomSeries) {
-    return axios
-      .post('/api/mri/scan/', { dicom: dicomSeries.url })
-      .then(({ data }) => {
-        commit('addScan', camelcaseKeys(data))
+    return session
+      .post(SCANS, { dicom: dicomSeries.url })
+      .then(({ data }) => camelcaseKeys(data))
+      .then(data => {
+        commit('addScan', data)
         return data
       })
       .catch(console.error)
   },
   getOrCreateScanInfoFromDicomSeries(context, dicomSeries) {
-    return axios
-      .get(`/api/mri/scan/from_dicom/${dicomSeries.id}/`)
+    return session
+      .get(`${SCANS}/from_dicom/${dicomSeries.id}/`)
       .then(({ data }) => {
         return camelcaseKeys(data)
       })
@@ -158,8 +101,8 @@ const actions = {
         let scan = getters['getScanByDicomSeries'](dicomSeries)
         let groupUrls = studyGroups.map(group => group.url)
         let updatedGroups = [...new Set(scan.studyGroups.concat(groupUrls))]
-        axios
-          .patch(`/api/mri/scan/${scan.id}/`, {
+        session
+          .patch(`${SCANS}/${scan.id}/`, {
             study_groups: updatedGroups
           })
           .then(({ data }) => {
@@ -171,8 +114,8 @@ const actions = {
       .catch(console.error)
   },
   createScan({ commit }, scan) {
-    return axios
-      .post('/api/mri/scan/', camelToSnakeCase(scan))
+    return session
+      .post(SCANS, camelToSnakeCase(scan))
       .then(({ data }) => camelcaseKeys(data))
       .then(data => {
         commit('addScan', data)
@@ -181,18 +124,17 @@ const actions = {
       .catch(console.error)
   },
   deleteScan({ commit }, scan) {
-    return axios
-      .delete(`/api/mri/scan/${scan.id}/`)
+    return session
+      .delete(`${SCANS}/${scan.id}/`)
       .then(() => commit('removeScanFromState', scan))
       .catch(console.error)
   },
   updateScan({ commit }, scan) {
-    return axios
-      .patch(`/api/mri/scan/${scan.id}/`, camelToSnakeCase(scan))
+    return session
+      .patch(`${SCANS}/${scan.id}/`, camelToSnakeCase(scan))
       .then(({ data }) => camelcaseKeys(data))
       .then(updatedScan => {
         commit('updateScanState', updatedScan)
-        // commit('addScan', updatedScan)
       })
       .catch(console.error)
   }
@@ -206,35 +148,22 @@ export default {
   actions
 }
 
-const camelToSnakeCase = obj => {
-  let result = {}
-  Object.keys(obj).forEach(
-    key =>
-      (result[key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)] =
-        obj[key])
-  )
-  return result
+const getQueryString = ({ filters, pagination }) => {
+  filters = replaceNull(filters)
+  pagination = replaceNull(pagination)
+  return `?id=&description=${
+    filters.description
+  }&description_lookup=icontains&number=${
+    filters.number
+  }&created_after=&created_before=&scan_time_after=${
+    filters.afterDate
+  }&scan_time_before=${
+    filters.beforeDate
+  }&echo_time=&inversion_time=&repetition_time=&institution_name=&is_updated_from_dicom=&dicom__id=${
+    filters.dicomId
+  }&subject=${filters.subject}&page_size=${pagination.rowsPerPage}&page=${
+    pagination.page
+  }&ordering=${
+    pagination.descending ? '-' + pagination.sortBy : pagination.sortBy
+  }`
 }
-
-function arraysEqual(a, b) {
-  if (a === b) return true
-  if (a == null || b == null) return false
-  if (a.length != b.length) return false
-
-  // If you don't care about the order of the elements inside
-  // the array, you should sort both arrays here.
-  // Please note that calling sort on an array will modify that array.
-  // you might want to clone your array first.
-
-  for (var i = 0; i < a.length; ++i) {
-    if (a[i] !== b[i]) return false
-  }
-  return true
-}
-
-const replaceNull = obj =>
-  JSON.parse(
-    JSON.stringify(obj, (key, value) => {
-      return value ? value : ''
-    })
-  )

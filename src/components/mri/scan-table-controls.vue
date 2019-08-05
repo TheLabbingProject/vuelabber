@@ -81,6 +81,7 @@ export default {
       afterDate: '',
       beforeDate: '',
       sequenceType: '',
+      dicomId: '',
       subject: ''
     },
     afterDateMenu: false,

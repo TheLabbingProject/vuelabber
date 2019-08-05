@@ -1,6 +1,5 @@
 <template>
   <v-container fluid p-0>
-    <upload-images />
     <v-tabs v-model="active">
       <v-tab ripple>
         Patients
@@ -14,11 +13,10 @@
 
 <script>
 import PatientTable from '@/components/dicom/patient-table.vue'
-import UploadImages from '@/components/dicom/upload-images.vue'
 
 export default {
   name: 'DicomBrowser',
-  components: { PatientTable, UploadImages },
+  components: { PatientTable },
   data: () => ({
     active: null
   }),
