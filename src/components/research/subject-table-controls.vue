@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-flex row pl-4>
-      <v-text-field label="ID" style="width: 50px;" v-model="filters.id" />
+      <v-text-field label="ID" style="width: 5px;" v-model="filters.id" />
       <v-spacer />
       <v-text-field
         label="First Name"
@@ -112,6 +112,10 @@ import { sexOptions, genderOptions, dominantHandOptions } from './choices.js'
 
 export default {
   name: 'SubjectTableControls',
+  props: { pagination: Object },
+  created() {
+    this.fetchSubjects({ filters: this.filters, pagination: this.pagination })
+  },
   data: () => ({
     bornAfterMenu: false,
     bornBeforeMenu: false,
@@ -130,122 +134,23 @@ export default {
     dominantHandOptions
   }),
   methods: {
-    addIdFilterString: function(filterString) {
-      if (this.filters.id) {
-        filterString += `id=${this.filters.id}`
-      }
-      return filterString
+    update() {
+      this.$emit('fetch-subjects-start')
+      this.fetchSubjects({ filters: this.filters, pagination: this.pagination })
+      this.$emit('fetch-subjects-end')
     },
-    addFirstNameFilterString: function(filterString) {
-      if (this.filters.firstName) {
-        filterString += `first_name=${
-          this.filters.firstName
-        }&first_name_lookup=icontains`
-        if (
-          this.filters.lastName ||
-          this.filters.sex ||
-          this.filters.gender ||
-          this.filters.bornAfter ||
-          this.filters.bornBefore ||
-          this.filters.dominantHand
-        ) {
-          filterString += '&'
-        }
-      }
-      return filterString
-    },
-    addLastNameFilterString: function(filterString) {
-      if (this.filters.lastName) {
-        filterString += `last_name=${
-          this.filters.lastName
-        }&last_name_lookup=icontains`
-        if (
-          this.filters.sex ||
-          this.filters.gender ||
-          this.filters.bornAfter ||
-          this.filters.bornBefore ||
-          this.filters.dominantHand
-        ) {
-          filterString += '&'
-        }
-      }
-      return filterString
-    },
-    addSexFilterString: function(filterString) {
-      if (this.filters.sex) {
-        filterString += `sex=${this.sexOptions[this.filters.sex]}`
-        if (
-          this.filters.gender ||
-          this.filters.bornAfter ||
-          this.filters.bornBefore ||
-          this.filters.dominantHand
-        ) {
-          filterString += '&'
-        }
-      }
-      return filterString
-    },
-    addBornAfterFilterString: function(filterString) {
-      if (this.filters.bornAfter) {
-        filterString += `born_after_date=${this.filters.bornAfter}`
-        if (
-          this.filters.gender ||
-          this.filters.bornBefore ||
-          this.filters.dominantHand
-        ) {
-          filterString += '&'
-        }
-      }
-      return filterString
-    },
-    addBornBeforeFilterString: function(filterString) {
-      if (this.filters.bornBefore) {
-        filterString += `born_before_date=${this.filters.bornBefore}`
-        if (this.filters.gender || this.filters.dominantHand) {
-          filterString += '&'
-        }
-      }
-      return filterString
-    },
-    addGenderFilterString: function(filterString) {
-      if (this.filters.gender) {
-        filterString += `gender=${this.genderOptions[this.filters.gender]}`
-        if (this.filters.dominantHand) {
-          filterString += '&'
-        }
-      }
-      return filterString
-    },
-    addDominantHandFilterString: function(filterString) {
-      if (this.filters.dominantHand) {
-        filterString += `dominant_hand=${
-          this.dominantHandOptions[this.filters.dominantHand]
-        }`
-      }
-      return filterString
-    },
-    createFilterString: function() {
-      let filterString = ''
-      if (this.filters.id) {
-        filterString = this.addIdFilterString(filterString)
-        return filterString
-      }
-      filterString = this.addFirstNameFilterString(filterString)
-      filterString = this.addLastNameFilterString(filterString)
-      filterString = this.addSexFilterString(filterString)
-      filterString = this.addBornAfterFilterString(filterString)
-      filterString = this.addBornBeforeFilterString(filterString)
-      filterString = this.addGenderFilterString(filterString)
-      filterString = this.addDominantHandFilterString(filterString)
-      return filterString
-    },
-    ...mapActions('research', ['filterSubjects'])
+    ...mapActions('research', ['fetchSubjects'])
   },
   watch: {
     filters: {
-      handler(newValue) {
-        let filterString = this.createFilterString(newValue)
-        this.filterSubjects(filterString)
+      handler() {
+        this.update()
+      },
+      deep: true
+    },
+    pagination: {
+      handler() {
+        this.update()
       },
       deep: true
     }

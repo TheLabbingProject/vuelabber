@@ -9,22 +9,33 @@
     <v-flex>
       <v-data-table
         item-key="id"
-        :rows-per-page-items="rowsPerPageItems"
+        :expand="expand"
         :headers="headers"
         :items="patients"
-        :expand="expand"
+        :loading="loading"
+        :rows-per-page-items="rowsPerPageItems"
       >
         <template v-slot:items="props">
           <tr @click="props.expanded = !props.expanded">
-            <td class="text-xs-left">{{ props.item.id }}</td>
-            <td class="text-xs-left">{{ props.item.uid }}</td>
-            <td class="text-xs-left">{{ props.item.givenName }}</td>
-            <td class="text-xs-left">{{ props.item.familyName }}</td>
-            <td class="text-xs-left">{{ getPatientSex(props.item) }}</td>
+            <td class="text-xs-left" style="width: 50px;">
+              {{ props.item.id }}
+            </td>
+            <td class="text-xs-left">
+              {{ props.item.uid }}
+            </td>
+            <td class="text-xs-left">
+              {{ props.item.givenName }}
+            </td>
+            <td class="text-xs-left">
+              {{ props.item.familyName }}
+            </td>
+            <td class="text-xs-left">
+              {{ getPatientSex(props.item) }}
+            </td>
             <td class="text-xs-left">
               {{ formatDate(props.item.dateOfBirth) }}
             </td>
-            <td class="text-xs-left">
+            <td class="text-xs-right">
               <v-dialog
                 v-model="subjectDialog[props.item.id]"
                 lazy
@@ -35,16 +46,16 @@
                     small
                     color="success"
                     v-on="on"
-                    v-if="getSubjectByUrl(props.item.subject)"
+                    v-if="patientToSubject[props.item.id]"
                   >
-                    Subject #{{ getSubjectByUrl(props.item.subject).id }}
+                    Subject #{{ patientToSubject[props.item.id].id }}
                   </v-btn>
-                  <v-btn v-else small color="warning" v-on="on">
+                  <v-btn v-else small color="warning" v-on="on" disabled>
                     Create
                   </v-btn>
                 </template>
                 <subject-info-card
-                  :existingSubject="getSubjectByUrl(props.item.subject)"
+                  :existingSubject="patientToSubject[props.item.id]"
                   :key="subjectDialog[props.item.id]"
                   @close-subject-dialog="subjectDialog[props.item.id] = false"
                 />
@@ -66,18 +77,16 @@
 import PatientTableControls from './patient-table-controls.vue'
 import SeriesTable from './series-table.vue'
 import SubjectInfoCard from '@/components/research/subject-info-card.vue'
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters, mapState, mapActions } from 'vuex'
 import { getKeyByValue } from '@/utils'
 import { sexOptions } from './utils'
 
 export default {
   name: 'PatientTable',
-  // created() {
-  //   this.fetchSubjects()
-  // },
   components: { PatientTableControls, SeriesTable, SubjectInfoCard },
   data: () => ({
     subjectDialog: {},
+    patientToSubject: {},
     expand: false,
     headers: [
       { text: 'ID', value: 'id', align: 'left' },
@@ -86,7 +95,12 @@ export default {
       { text: 'Last Name', value: 'familyName' },
       { text: 'Sex', value: 'sex' },
       { text: 'Date of Birth', value: 'dateOfBirth' },
-      { text: 'Research Subject', value: 'subject' }
+      {
+        text: 'Research Subject',
+        value: 'subject',
+        align: 'right',
+        width: '50px'
+      }
     ],
     rowsPerPageItems: [
       10,
@@ -117,8 +131,15 @@ export default {
       const [year, month, day] = date.split('-')
       return `${day}/${month}/${year}`
     },
-    update() {
-      this.$refs.tableController.update()
+    ...mapActions('research', ['fetchSubjectByDicomPatientId'])
+  },
+  watch: {
+    patients: function(value) {
+      value.forEach(patient => {
+        this.fetchSubjectByDicomPatientId(patient.id).then(subject =>
+          this.$set(this.patientToSubject, patient.id, subject)
+        )
+      })
     }
   }
 }

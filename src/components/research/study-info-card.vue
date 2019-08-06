@@ -34,13 +34,22 @@
     <v-card-actions>
       <v-spacer />
       <v-btn
-        color="green darken-1"
+        color="warning"
         flat
-        @click="createStudy"
+        v-if="existingStudy"
         :disabled="$v.study.$error"
-        >Submit</v-btn
+        @click="updateExistingStudy"
+        >Update</v-btn
       >
-      <v-btn color="green darken-1" flat @click="$emit('close-study-dialog')"
+      <v-btn
+        color="success"
+        flat
+        v-else
+        :disabled="$v.study.$error"
+        @click="createNewStudy"
+        >Create</v-btn
+      >
+      <v-btn color="info" flat @click="$emit('close-study-dialog')"
         >Cancel</v-btn
       >
     </v-card-actions>
@@ -50,24 +59,18 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, maxLength } from 'vuelidate/lib/validators'
-import { mapGetters, mapState } from 'vuex'
-
-const cleanStudy = {
-  title: null,
-  description: null,
-  collaborators: [],
-  subjects: []
-}
+import { mapGetters, mapState, mapActions } from 'vuex'
 
 export default {
-  name: 'CreateStudyCard',
+  name: 'StudyInfoCard',
   props: {
-    study: { type: Object, default: Object.assign({}, cleanStudy) }
+    existingStudy: { type: Object }
   },
   created() {
-    this.$store.dispatch('accounts/fetchUsers')
+    this.study = cloneStudy(this.existingStudy)
+    this.$store.dispatch('accounts/fetchProfiles')
     this.selectedCollaborators = this.study.collaborators.map(collaborator =>
-      this.getCollaboratorName(this.getUserByUrl(collaborator))
+      this.getCollaboratorName(this.getProfileByUserUrl(collaborator))
     )
   },
   mixins: [validationMixin],
@@ -76,7 +79,7 @@ export default {
       selectedCollaborators: []
     }),
     possibleCollaborators: function() {
-      return this.users.map(user => this.getCollaboratorName(user))
+      return this.profiles.map(user => this.getCollaboratorName(user))
     },
     titleErrors: function() {
       const errors = []
@@ -87,8 +90,8 @@ export default {
       !this.$v.study.title.required && errors.push('Title is required.')
       return errors
     },
-    ...mapState('accounts', ['users']),
-    ...mapGetters('accounts', ['getUserByUsername', 'getUserByUrl'])
+    ...mapState('accounts', ['profiles']),
+    ...mapGetters('accounts', ['getUserByUsername', 'getProfileByUserUrl'])
   },
   validations: {
     study: {
@@ -116,15 +119,34 @@ export default {
       this.$v.$reset()
       this.$emit('close-study-dialog')
     },
-    createStudy: function() {
+    createNewStudy: function() {
       this.$v.study.$touch()
       if (this.$v.study.$error) return
       this.fixCollaboratorsProperty()
-      this.$store
-        .dispatch('research/createStudy', this.study)
-        .catch(console.error)
-      this.closeDialog()
-    }
+      this.createStudy(this.study).then(this.closeDialog())
+    },
+    updateExistingStudy() {
+      this.$v.study.$touch()
+      if (this.$v.study.$error) return
+      this.fixCollaboratorsProperty()
+      this.updateStudy(this.study).then(this.closeDialog())
+    },
+    ...mapActions('research', ['createStudy', 'updateStudy'])
+  }
+}
+
+const cleanStudy = {
+  title: null,
+  description: null,
+  collaborators: [],
+  subjects: []
+}
+
+function cloneStudy(value) {
+  if (value) {
+    return Object.assign({}, value)
+  } else {
+    return Object.assign({}, cleanStudy)
   }
 }
 </script>

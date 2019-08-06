@@ -11,7 +11,7 @@
           @click:append-outer.stop="createStudyDialog = true"
         />
         <v-dialog v-model="createStudyDialog" width="600px" lazy persistent>
-          <create-study-card
+          <study-info-card
             @close-study-dialog="createStudyDialog = false"
             @select-study="selectedStudyTitle = arguments[0]"
           />
@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import CreateStudyCard from '@/components/research/create-study-card.vue'
+import StudyInfoCard from '@/components/research/study-info-card.vue'
 import CreateGroupCard from '@/components/research/create-group-card.vue'
 import { mapGetters, mapState, mapActions } from 'vuex'
 
@@ -87,7 +87,7 @@ export default {
   props: {
     selectedScans: Array
   },
-  components: { CreateStudyCard, CreateGroupCard },
+  components: { StudyInfoCard, CreateGroupCard },
   created() {
     this.$store.dispatch('research/fetchStudies')
     this.$store.dispatch('research/fetchGroups')

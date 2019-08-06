@@ -121,9 +121,6 @@
           :label="editable ? 'Edit Mode' : 'View Mode'"
         />
       </v-flex>
-      <!-- <v-btn flat v-if="existingSubject" color="error" @click="disassociate">
-        Undo Association
-      </v-btn> -->
       <v-spacer />
       <v-btn
         flat
@@ -137,18 +134,9 @@
         flat
         v-if="!existingSubject && radioGroup == 'new'"
         color="success"
-        @click="associateNewSubject"
+        @click="createNewSubject"
       >
         Create
-      </v-btn>
-      <v-btn
-        flat
-        v-if="!existingSubject && radioGroup == 'existing'"
-        color="success"
-        @click="associateExistingSubject"
-        :disabled="!selectedSubject"
-      >
-        Associate
       </v-btn>
       <v-btn color="green darken-1" flat @click="closeDialog">
         Cancel
@@ -222,24 +210,10 @@ export default {
         this.subject.dominantHand = this.dominantHandOptions[newValue]
       }
     },
-    selectedSubject: function() {
-      return this.subjects.find(
-        subject =>
-          this.getSubjectRepresentation(subject) ==
-          this.selectedSubjectRepresentation
-      )
-    },
     formattedDate: function() {
       return formatDate(this.subject.dateOfBirth)
     },
     ...mapState('research', ['subjects'])
-  },
-  watch: {
-    editable: function(isEditable) {
-      if (!isEditable) {
-        this.subject = Object.assign({}, this.existingSubject)
-      }
-    }
   },
   methods: {
     closeDialog() {
@@ -247,20 +221,14 @@ export default {
       this.$emit('close-subject-dialog')
     },
     updateExistingSubject() {
-      this.updateSubject(this.subject).then(this.closeDialog())
-    },
-    associateNewSubject() {
-      this.createSubject(this.subject)
-        .then(result => this.$emit('associate-patient', result))
-        .then((this.editable = false))
+      this.updateSubject(this.subject)
+        .then(data => (this.subject = Object.assign({}, data)))
         .then(this.closeDialog())
     },
-    associateExistingSubject() {
-      this.$emit('associate-patient', this.selectedSubject)
-    },
-    disassociate() {
-      this.$emit('disassociate-patient')
-      this.subject = Object.assign({}, cleanSubject)
+    createNewSubject() {
+      this.createSubject(this.subject)
+        .then((this.editable = false))
+        .then(this.closeDialog())
     },
     getSubjectRepresentation(subject) {
       let rep = `Subject #${subject.id}`
@@ -270,6 +238,13 @@ export default {
       return rep
     },
     ...mapActions('research', ['createSubject', 'updateSubject'])
+  },
+  watch: {
+    editable: function(isEditable) {
+      if (!isEditable) {
+        this.subject = Object.assign({}, this.existingSubject)
+      }
+    }
   }
 }
 

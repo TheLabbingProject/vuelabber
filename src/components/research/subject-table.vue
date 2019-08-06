@@ -15,7 +15,11 @@
         />
       </v-dialog>
     </v-flex>
-    <subject-table-controls />
+    <subject-table-controls
+      :pagination="pagination"
+      @fetch-subjects-start="loading = true"
+      @fetch-subjects-end="loading = false"
+    />
     <v-flex>
       <v-data-table
         item-key="id"
@@ -28,7 +32,7 @@
             @click="setSelectedSubjectId(props.item.id)"
             :class="{ selected: props.item.id === selectedSubjectId }"
           >
-            <td class="text-xs-left">
+            <td class="text-xs-left" style="width: 50px;">
               {{ props.item.id }}
             </td>
 
@@ -50,7 +54,7 @@
             <td class="text-xs-left">
               {{ getSubjectDominantHandDisplay(props.item) }}
             </td>
-            <td class="text-xs-left">
+            <td class="text-xs-left" style="width: 50px;">
               <v-dialog
                 v-model="editSubjectDialog[props.item.id]"
                 lazy
@@ -90,7 +94,7 @@ export default {
     SubjectTableControls
   },
   created() {
-    this.fetchSubjects()
+    this.fetchSubjects({ filters: this.filters, pagination: this.pagination })
   },
   data: () => ({
     headers: [
@@ -109,6 +113,13 @@ export default {
       50,
       { text: '$vuetify.dataIterator.rowsPerPageAll', value: 100000 }
     ],
+    pagination: {
+      rowsPerPage: 100,
+      page: 1,
+      ordering: 'id',
+      descending: true
+    },
+    loading: false,
     createSubjectDialog: false,
     editSubjectDialog: {},
     sexOptions,

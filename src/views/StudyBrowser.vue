@@ -12,9 +12,9 @@
               edit
             </v-icon>
           </template>
-          <create-study-card
+          <study-info-card
             :key="editStudyDialog[study.id]"
-            :study="study"
+            :existingStudy="study"
             @close-study-dialog="editStudyDialog[study.id] = false"
           />
         </v-dialog>
@@ -30,16 +30,16 @@
       <v-card-actions>
         <div v-for="collaborator in study.collaborators" :key="collaborator">
           <v-avatar
-            v-if="getUserByUrl(collaborator)"
+            v-if="getProfileByUserUrl(collaborator)"
             class="m-1 white--text"
             :color="randomColor()"
           >
             <img
-              v-if="getUserByUrl(collaborator).image"
-              :src="getUserByUrl(collaborator).image"
+              v-if="getProfileByUserUrl(collaborator).image"
+              :src="getProfileByUserUrl(collaborator).image"
             />
             <div v-else>
-              {{ getUserInitialsFromUrl(collaborator) }}
+              {{ getUserInitialsFromProfileUrl(collaborator) }}
             </div>
           </v-avatar>
         </div>
@@ -50,13 +50,13 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex'
-import CreateStudyCard from '@/components/research/create-study-card.vue'
+import StudyInfoCard from '@/components/research/study-info-card.vue'
 
 export default {
   name: 'StudyBrowser',
-  components: { CreateStudyCard },
+  components: { StudyInfoCard },
   created() {
-    this.fetchUsers().then(this.fetchStudies())
+    this.fetchProfiles().then(this.fetchStudies())
   },
   data: () => ({
     editStudyDialog: {},
@@ -73,8 +73,8 @@ export default {
   }),
   computed: {
     ...mapGetters('accounts', [
-      'getUserByUrl',
-      'getUserInitialsFromUrl',
+      'getProfileByUserUrl',
+      'getUserInitialsFromProfileUrl',
       'currentUser'
     ]),
     ...mapState('accounts', ['users']),
@@ -84,7 +84,7 @@ export default {
     randomColor() {
       return randomize(this.colors)
     },
-    ...mapActions('accounts', ['fetchUsers']),
+    ...mapActions('accounts', ['fetchProfiles']),
     ...mapActions('research', ['fetchStudies'])
   }
 }

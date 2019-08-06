@@ -4,7 +4,7 @@
       outlined
       label="ID"
       v-model="filters.id"
-      style="width: 50px;"
+      style="width: 2px;"
     />
     <v-spacer />
     <v-text-field

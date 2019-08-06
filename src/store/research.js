@@ -1,6 +1,16 @@
 import session from '@/api/session'
-import { GROUPS, STUDIES, SUBJECTS } from '@/api/research/endpoints'
-import { camelToSnakeCase } from '@/utils'
+import {
+  GROUPS,
+  STUDIES,
+  SUBJECTS,
+  SUBJECT_BY_DICOM_PATIENT
+} from '@/api/research/endpoints'
+import { camelToSnakeCase, replaceNull } from '@/utils'
+import {
+  sexOptions,
+  genderOptions,
+  dominantHandOptions
+} from '@/components/research/choices'
 const camelcaseKeys = require('camelcase-keys')
 
 const state = {
@@ -44,6 +54,9 @@ const mutations = {
   setSubjects(state, subjects) {
     state.subjects = subjects
   },
+  addSubject(state, subject) {
+    state.subjects.push(subject)
+  },
   setSelectedSubjectId(state, selectedSubjectId) {
     state.selectedSubjectId = selectedSubjectId
   },
@@ -53,14 +66,26 @@ const mutations = {
   addStudy(state, study) {
     state.studies.push(study)
   },
+  updateStudyState(state, updatedStudy) {
+    let index = state.studies.indexOf(
+      state.studies.find(study => study.id === updatedStudy.id)
+    )
+    // Mutating an array directly causes reactivity problems
+    let newStudies = state.studies.slice()
+    newStudies[index] = updatedStudy
+    state.studies = newStudies
+  },
   addGroup(state, group) {
     state.groups.push(group)
   },
-  updateSubjectState(state, subject) {
-    state.subjects = state.subjects.filter(
-      existingSubject => existingSubject.id != subject.id
+  updateSubjectState(state, updatedSubject) {
+    let index = state.subjects.indexOf(
+      state.subjects.find(subject => subject.id === updatedSubject.id)
     )
-    state.subjects.push(subject)
+    // Mutating an array directly causes reactivity problems
+    let newSubjects = state.subjects.slice()
+    newSubjects[index] = updatedSubject
+    state.subjects = newSubjects
   },
   removeSubjectFromState(state, subject) {
     state.subjects = state.subjects.filter(
@@ -76,12 +101,23 @@ const actions = {
       .then(({ data }) => commit('setStudies', data.results))
       .catch(console.error)
   },
-  fetchSubjects({ commit }) {
+  fetchSubjects({ commit }, { filters, pagination }) {
+    let queryString = getSubjectsQueryString({ filters, pagination })
     return session
-      .get(SUBJECTS)
+      .get(`${SUBJECTS}/${queryString}`)
       .then(({ data }) =>
         commit('setSubjects', data.results.map(item => camelcaseKeys(item)))
       )
+      .catch(console.error)
+  },
+  fetchSubjectByDicomPatientId({ commit }, patientId) {
+    return session
+      .get(`${SUBJECT_BY_DICOM_PATIENT}/${patientId}/`)
+      .then(({ data }) => camelcaseKeys(data))
+      .then(data => {
+        commit('addSubject', data)
+        return data
+      })
       .catch(console.error)
   },
   fetchGroups({ commit }) {
@@ -98,6 +134,16 @@ const actions = {
           .get('/api/research/studies/' + data.id)
           .then(({ data }) => commit('addStudy', data))
       )
+      .catch(console.error)
+  },
+  updateStudy({ commit }, study) {
+    return session
+      .patch(`${STUDIES}/${study.id}/`, camelToSnakeCase(study))
+      .then(({ data }) => camelcaseKeys(data))
+      .then(data => {
+        commit('updateStudyState', data)
+        return data
+      })
       .catch(console.error)
   },
   createGroup({ commit }, group) {
@@ -135,14 +181,6 @@ const actions = {
       .delete(`${SUBJECTS}/${subject.id}/`)
       .then(() => commit('removeSubjectFromState', subject))
       .catch(console.error)
-  },
-  filterSubjects({ commit }, filterString) {
-    return session
-      .get(`${SUBJECTS}/?${filterString}`)
-      .then(({ data }) =>
-        commit('setSubjects', data.results.map(item => camelcaseKeys(item)))
-      )
-      .catch(console.error)
   }
 }
 
@@ -152,4 +190,20 @@ export default {
   getters,
   mutations,
   actions
+}
+
+const getSubjectsQueryString = ({ filters, pagination }) => {
+  filters = replaceNull(filters)
+  pagination = replaceNull(pagination)
+  return `?id=${filters.id || ''}&first_name=${filters.firstName ||
+    ''}&first_name_lookup=icontains&last_name=${filters.lastName ||
+    ''}&last_name_lookup=icontains&sex=${sexOptions[filters.sex] ||
+    ''}&gender=${genderOptions[filters.gender] ||
+    ''}&born_after_date=${filters.bornAfter ||
+    ''}&born_before_date=${filters.bornBefore ||
+    ''}&dominant_hand=${dominantHandOptions[filters.dominantHand] ||
+    ''}&page_size=${pagination.rowsPerPage || 100}&page=${pagination.page ||
+    1}&ordering=${
+    pagination.descending ? '-' + pagination.ordering : pagination.ordering
+  }`
 }

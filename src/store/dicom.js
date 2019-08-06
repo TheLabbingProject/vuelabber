@@ -29,7 +29,7 @@ const actions = {
   fetchPatients({ commit }, { filters, pagination }) {
     let queryString = getPatientQueryString({ filters, pagination })
     return session
-      .get(`/api/dicom/patients/?${queryString}`)
+      .get(`/api/dicom/patients/${queryString}`)
       .then(({ data }) =>
         commit('setPatients', data.results.map(item => camelcaseKeys(item)))
       )
@@ -56,7 +56,7 @@ export default {
 const getPatientQueryString = ({ filters, pagination }) => {
   filters = replaceNull(filters)
   pagination = replaceNull(pagination)
-  return `id=${filters.id || ''}&uid=${filters.uid ||
+  return `?id=${filters.id || ''}&uid=${filters.uid ||
     ''}&uid_lookup=icontains&born_after_date=${filters.bornAfter ||
     ''}&born_before_date=${filters.bornBefore ||
     ''}&name_prefix=&given_name=${filters.firstName ||

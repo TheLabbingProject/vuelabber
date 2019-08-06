@@ -1,7 +1,7 @@
 <template>
   <v-layout column>
     <v-flex xs5 p-2 v-if="selectedSubjectId">
-      <subject-info />
+      <subject-data />
       <br />
       <hr />
       <br />
@@ -15,13 +15,13 @@
 </template>
 
 <script>
-import SubjectInfo from '@/components/research/subject-info.vue'
+import SubjectData from '@/components/research/subject-data.vue'
 import SubjectTable from '@/components/research/subject-table.vue'
 import { mapState } from 'vuex'
 
 export default {
   name: 'SubjectBrowser',
-  components: { SubjectInfo, SubjectTable },
+  components: { SubjectData, SubjectTable },
   // data: () => ({
 
   // }),

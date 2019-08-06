@@ -24,7 +24,7 @@ import { mapGetters, mapMutations } from 'vuex'
 import ScanTable from '@/components/mri/scan-table.vue'
 
 export default {
-  name: 'SubjectInfo',
+  name: 'SubjectData',
   components: {
     ScanTable
   },
