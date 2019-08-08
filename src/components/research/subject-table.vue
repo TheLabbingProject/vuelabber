@@ -3,7 +3,7 @@
     <v-flex row pl-3>
       <div class="title text-left pb-3">Subjects</div>
       <v-spacer />
-      <v-dialog v-model="createSubjectDialog" lazy width="800px">
+      <v-dialog v-model="createSubjectDialog" lazy width="400px">
         <template v-slot:activator="{ on }">
           <v-btn color="success" v-on="on">
             New Subject
@@ -25,6 +25,7 @@
         item-key="id"
         :headers="headers"
         :items="subjects"
+        :pagination.sync="pagination"
         :rows-per-page-items="rowsPerPageItems"
       >
         <template v-slot:items="props">
@@ -54,11 +55,15 @@
             <td class="text-xs-left">
               {{ getSubjectDominantHandDisplay(props.item) }}
             </td>
-            <td class="text-xs-left" style="width: 50px;">
+            <td
+              v-if="currentUserIsStaff"
+              class="text-xs-left"
+              style="width: 50px;"
+            >
               <v-dialog
                 v-model="editSubjectDialog[props.item.id]"
                 lazy
-                width="800px"
+                width="400px"
               >
                 <template v-slot:activator="{ on }">
                   <v-icon v-on="on">
@@ -81,7 +86,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex'
+import { mapActions, mapMutations, mapState, mapGetters } from 'vuex'
 import SubjectInfoCard from '@/components/research/subject-info-card.vue'
 import SubjectTableControls from '@/components/research/subject-table-controls.vue'
 import { sexOptions, genderOptions, dominantHandOptions } from './choices.js'
@@ -95,6 +100,9 @@ export default {
   },
   created() {
     this.fetchSubjects({ filters: this.filters, pagination: this.pagination })
+
+    // Add edit column for staff users
+    this.fetchProfiles().then(() => this.appendEditColumn())
   },
   data: () => ({
     headers: [
@@ -104,8 +112,7 @@ export default {
       { text: 'Date of Birth', value: 'dateOfBirth' },
       { text: 'Sex', value: 'sex' },
       { text: 'Gender', value: 'gender' },
-      { text: 'Dominant Hand', value: 'dominantHand' },
-      { text: 'Edit', value: 'editSubject' }
+      { text: 'Dominant Hand', value: 'dominantHand' }
     ],
     rowsPerPageItems: [
       10,
@@ -127,7 +134,8 @@ export default {
     dominantHandOptions
   }),
   computed: {
-    ...mapState('research', ['subjects', 'selectedSubjectId'])
+    ...mapState('research', ['subjects', 'selectedSubjectId']),
+    ...mapGetters('accounts', ['currentUserIsStaff'])
   },
   methods: {
     getSubjectSexDisplay: function(subject) {
@@ -144,7 +152,13 @@ export default {
       let [year, month, day] = date.split('-')
       return `${day}/${month}/${year}`
     },
+    appendEditColumn() {
+      if (this.currentUserIsStaff) {
+        this.headers.push({ text: 'Edit', value: 'editSubject' })
+      }
+    },
     ...mapActions('research', ['fetchSubjects']),
+    ...mapActions('accounts', ['fetchProfiles']),
     ...mapMutations('research', ['setSelectedSubjectId'])
   }
 }

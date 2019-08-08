@@ -1,4 +1,4 @@
-import axios from 'axios'
+import session from '@/api/session'
 const camelcaseKeys = require('camelcase-keys')
 
 const state = {
@@ -19,10 +19,13 @@ const getters = {
       return `${user.first_name[0]}${user.last_name[0]}`
     }
   },
-  currentUser(state, getters, rootState) {
+  currentUserProfile(state, getters, rootState) {
     return state.profiles.find(
-      user => user.user.username === rootState.auth.user.username
+      profile => profile.user.username === rootState.auth.user.username
     )
+  },
+  currentUserIsStaff(state, getters) {
+    return getters.currentUserProfile.user.is_staff
   }
 }
 
@@ -34,11 +37,10 @@ const mutations = {
 
 const actions = {
   fetchProfiles({ commit }) {
-    return axios
+    return session
       .get('/api/accounts/profiles/')
-      .then(({ data }) =>
-        commit('setProfiles', data.results.map(item => camelcaseKeys(item)))
-      )
+      .then(({ data }) => data.results.map(item => camelcaseKeys(item)))
+      .then(data => commit('setProfiles', data))
       .catch(console.error)
   }
 }

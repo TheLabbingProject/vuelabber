@@ -8,7 +8,7 @@
         <v-spacer />
         <v-dialog v-model="editStudyDialog[study.id]" width="600px" lazy>
           <template v-slot:activator="{ on }">
-            <v-icon v-if="currentUser.user.is_staff" v-on="on">
+            <v-icon v-if="currentUserIsStaff" v-on="on">
               edit
             </v-icon>
           </template>
@@ -56,7 +56,7 @@ export default {
   name: 'StudyBrowser',
   components: { StudyInfoCard },
   created() {
-    this.fetchProfiles().then(this.fetchStudies())
+    this.fetchProfiles().then(() => this.fetchStudies())
   },
   data: () => ({
     editStudyDialog: {},
@@ -75,7 +75,7 @@ export default {
     ...mapGetters('accounts', [
       'getProfileByUserUrl',
       'getUserInitialsFromProfileUrl',
-      'currentUser'
+      'currentUserIsStaff'
     ]),
     ...mapState('accounts', ['users']),
     ...mapState('research', ['studies'])

@@ -31,85 +31,67 @@
           </v-flex>
         </v-layout>
         <v-form v-if="radioGroup == 'new'" @submit.prevent="submit">
-          <v-flex row mx-0>
-            <v-flex pr-5>
+          <v-text-field
+            v-model="subject.firstName"
+            label="First Name"
+            :counter="64"
+            :disabled="!(editable || subject.firstName)"
+            :readonly="!editable"
+          />
+          <v-text-field
+            v-model="subject.lastName"
+            label="Last Name"
+            :counter="64"
+            :disabled="!(editable || subject.lastName)"
+            :readonly="!editable"
+          />
+          <v-select
+            v-model="subjectDominantHand"
+            label="Dominant Hand"
+            :items="Object.keys(dominantHandOptions)"
+            :readonly="!editable"
+            :disabled="!(editable || subjectDominantHand)"
+          />
+          <v-select
+            v-model="subjectSex"
+            label="Sex"
+            :items="Object.keys(sexOptions)"
+            :readonly="!editable"
+            :disabled="!(editable || subjectSex)"
+          />
+          <v-spacer />
+          <v-select
+            v-model="subjectGender"
+            label="Gender"
+            :items="Object.keys(genderOptions)"
+            :readonly="!editable"
+            :disabled="!(editable || subjectGender)"
+          />
+          <v-menu
+            v-model="dob_menu"
+            :close-on-content-click="false"
+            :nudge-right="40"
+            lazy
+            transition="scale-transition"
+            offset-y
+            full-width
+            min-width="290px"
+          >
+            <template v-slot:activator="{ on }">
               <v-text-field
-                v-model="subject.firstName"
-                label="First Name"
-                :counter="64"
-                :disabled="!(editable || subject.firstName)"
+                v-model="formattedDate"
+                label="Date of Birth"
+                prepend-icon="cake"
+                :disabled="!(editable || formattedDate)"
                 :readonly="!editable"
-              />
-            </v-flex>
-            <v-flex>
-              <v-text-field
-                v-model="subject.lastName"
-                label="Last Name"
-                :counter="64"
-                :disabled="!(editable || subject.lastName)"
-                :readonly="!editable"
-              />
-            </v-flex>
-          </v-flex>
-          <v-flex row mx-0>
-            <v-flex>
-              <v-menu
-                v-model="dob_menu"
-                :close-on-content-click="false"
-                :nudge-right="40"
-                lazy
-                transition="scale-transition"
-                offset-y
-                full-width
-                min-width="290px"
-              >
-                <template v-slot:activator="{ on }">
-                  <v-text-field
-                    v-model="formattedDate"
-                    label="Date of Birth"
-                    prepend-icon="cake"
-                    :disabled="!(editable || formattedDate)"
-                    :readonly="!editable"
-                    v-on="on"
-                  ></v-text-field>
-                </template>
-                <v-date-picker
-                  v-model="subject.dateOfBirth"
-                  @input="dob_menu = false"
-                ></v-date-picker>
-              </v-menu>
-            </v-flex>
-            <v-flex pl-4>
-              <v-select
-                v-model="subjectDominantHand"
-                label="Dominant Hand"
-                :items="Object.keys(dominantHandOptions)"
-                :readonly="!editable"
-                :disabled="!(editable || subjectDominantHand)"
-              />
-            </v-flex>
-            <v-flex row mx-0>
-              <v-flex>
-                <v-select
-                  v-model="subjectSex"
-                  label="Sex"
-                  :items="Object.keys(sexOptions)"
-                  :readonly="!editable"
-                  :disabled="!(editable || subjectSex)"
-                />
-              </v-flex>
-              <v-spacer />
-              <v-flex>
-                <v-select
-                  v-model="subjectGender"
-                  label="Gender"
-                  :items="Object.keys(genderOptions)"
-                  :readonly="!editable"
-                  :disabled="!(editable || subjectGender)"
-                />
-              </v-flex>
-            </v-flex>
-          </v-flex>
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="subject.dateOfBirth"
+              @input="dob_menu = false"
+            ></v-date-picker>
+          </v-menu>
         </v-form>
       </v-layout>
     </v-card-text>

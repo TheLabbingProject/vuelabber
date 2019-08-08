@@ -13,6 +13,7 @@
         :headers="headers"
         :items="patients"
         :loading="loading"
+        :pagination.sync="pagination"
         :rows-per-page-items="rowsPerPageItems"
       >
         <template v-slot:items="props">
