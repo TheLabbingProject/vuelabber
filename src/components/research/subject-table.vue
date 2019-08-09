@@ -1,6 +1,6 @@
 <template>
-  <v-layout column>
-    <v-flex row pl-3>
+  <div>
+    <v-layout row pl-3>
       <div class="title text-left pb-3">Subjects</div>
       <v-spacer />
       <v-dialog v-model="createSubjectDialog" lazy width="400px">
@@ -14,7 +14,7 @@
           @close-subject-dialog="createSubjectDialog = false"
         />
       </v-dialog>
-    </v-flex>
+    </v-layout>
     <subject-table-controls
       :pagination="pagination"
       @fetch-subjects-start="loading = true"
@@ -82,7 +82,7 @@
         </template>
       </v-data-table>
     </v-flex>
-  </v-layout>
+  </div>
 </template>
 
 <script>

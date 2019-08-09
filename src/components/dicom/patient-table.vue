@@ -65,9 +65,10 @@
           </tr>
         </template>
         <template v-slot:expand="props">
-          <v-card flat>
+          <v-flex pl-4 py-4>
             <series-table :patient="props.item"></series-table>
-          </v-card>
+            <hr />
+          </v-flex>
         </template>
       </v-data-table>
     </v-flex>
