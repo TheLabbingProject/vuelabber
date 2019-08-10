@@ -6,72 +6,69 @@
       @fetch-patients-start="loading = true"
       @fetch-patients-end="loading = false"
     />
-    <v-flex>
-      <v-data-table
-        item-key="id"
-        :expand="expand"
-        :headers="headers"
-        :items="patients"
-        :loading="loading"
-        :pagination.sync="pagination"
-        :rows-per-page-items="rowsPerPageItems"
-      >
-        <template v-slot:items="props">
-          <tr @click="props.expanded = !props.expanded">
-            <td class="text-xs-left" style="width: 50px;">
-              {{ props.item.id }}
-            </td>
-            <td class="text-xs-left">
-              {{ props.item.uid }}
-            </td>
-            <td class="text-xs-left">
-              {{ props.item.givenName }}
-            </td>
-            <td class="text-xs-left">
-              {{ props.item.familyName }}
-            </td>
-            <td class="text-xs-left">
-              {{ getPatientSex(props.item) }}
-            </td>
-            <td class="text-xs-left">
-              {{ formatDate(props.item.dateOfBirth) }}
-            </td>
-            <td class="text-xs-right">
-              <v-dialog
-                v-model="subjectDialog[props.item.id]"
-                lazy
-                width="800px"
-              >
-                <template v-slot:activator="{ on }">
-                  <v-btn
-                    small
-                    color="success"
-                    v-on="on"
-                    v-if="patientToSubject[props.item.id]"
-                  >
-                    Subject #{{ patientToSubject[props.item.id].id }}
-                  </v-btn>
-                  <v-btn v-else small color="warning" v-on="on" disabled>
-                    Create
-                  </v-btn>
-                </template>
-                <subject-info-card
-                  :existingSubject="patientToSubject[props.item.id]"
-                  :key="subjectDialog[props.item.id]"
-                  @close-subject-dialog="subjectDialog[props.item.id] = false"
-                />
-              </v-dialog>
-            </td>
-          </tr>
-        </template>
-        <template v-slot:expand="props">
-          <v-flex pl-4 py-4>
-            <series-table :patient="props.item"></series-table>
-            <hr />
-          </v-flex>
-        </template>
-      </v-data-table>
-    </v-flex>
+    <v-data-table
+      item-key="id"
+      :expand="expand"
+      :headers="headers"
+      :items="patients"
+      :loading="loading"
+      :pagination.sync="pagination"
+      :rows-per-page-items="rowsPerPageItems"
+    >
+      <template v-slot:items="props">
+        <tr
+          @click="selectPatient(props)"
+          :class="{ selected: props.item.id === selectedPatientId }"
+        >
+          <td class="text-xs-left" style="width: 50px;">
+            {{ props.item.id }}
+          </td>
+          <td class="text-xs-left">
+            {{ props.item.uid }}
+          </td>
+          <td class="text-xs-left">
+            {{ props.item.givenName }}
+          </td>
+          <td class="text-xs-left">
+            {{ props.item.familyName }}
+          </td>
+          <td class="text-xs-left">
+            {{ getPatientSex(props.item) }}
+          </td>
+          <td class="text-xs-left">
+            {{ formatDate(props.item.dateOfBirth) }}
+          </td>
+          <td class="text-xs-right">
+            <v-dialog v-model="subjectDialog[props.item.id]" lazy width="800px">
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  small
+                  color="success"
+                  v-on="on"
+                  v-if="patientToSubject[props.item.id]"
+                >
+                  Subject #{{ patientToSubject[props.item.id].id }}
+                </v-btn>
+                <v-btn v-else small color="warning" v-on="on" disabled>
+                  Create
+                </v-btn>
+              </template>
+              <subject-info-card
+                :existingSubject="patientToSubject[props.item.id]"
+                :key="subjectDialog[props.item.id]"
+                @close-subject-dialog="subjectDialog[props.item.id] = false"
+              />
+            </v-dialog>
+          </td>
+        </tr>
+      </template>
+      <template v-slot:expand="props">
+        <v-flex class="embeded-table" px-2 py-2>
+          <series-table :patient="props.item"></series-table>
+          <hr />
+        </v-flex>
+      </template>
+    </v-data-table>
   </v-layout>
 </template>
 
@@ -79,7 +76,7 @@
 import PatientTableControls from './patient-table-controls.vue'
 import SeriesTable from './series-table.vue'
 import SubjectInfoCard from '@/components/research/subject-info-card.vue'
-import { mapGetters, mapState, mapActions } from 'vuex'
+import { mapGetters, mapState, mapActions, mapMutations } from 'vuex'
 import { getKeyByValue } from '@/utils'
 import { sexOptions } from './utils'
 
@@ -113,14 +110,14 @@ export default {
     pagination: {
       rowsPerPage: 25,
       page: 1,
-      ordering: 'id',
+      sortBy: 'id',
       descending: false
     },
     loading: false,
     sexOptions
   }),
   computed: {
-    ...mapState('dicom', ['patients']),
+    ...mapState('dicom', ['patients', 'selectedPatientId']),
     ...mapGetters('research', ['getSubjectByUrl'])
   },
   methods: {
@@ -133,6 +130,13 @@ export default {
       const [year, month, day] = date.split('-')
       return `${day}/${month}/${year}`
     },
+    selectPatient(props) {
+      props.expanded = !props.expanded
+      props.expanded
+        ? this.setSelectedPatientId(props.item.id)
+        : this.setSelectedPatientId(null)
+    },
+    ...mapMutations('dicom', ['setSelectedPatientId']),
     ...mapActions('research', ['fetchSubjectByDicomPatientId'])
   },
   watch: {
@@ -148,7 +152,10 @@ export default {
 </script>
 
 <style scoped>
-td {
-  vertical-align: middle;
+>>> tr.selected {
+  background-color: #b3d4fc77;
+}
+div.embeded-table {
+  background-color: #b3d4fc77;
 }
 </style>

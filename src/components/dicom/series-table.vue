@@ -100,6 +100,7 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex'
+import { formatSpatialResolution } from '@/components/dicom/utils'
 import ProtocolInformation from './protocol-information.vue'
 import SeriesTableControls from '@/components/dicom/series-table-controls.vue'
 import ScanInfo from '@/components/mri/scan-info.vue'
@@ -120,7 +121,12 @@ export default {
       { text: 'Time', value: 'time' },
       { text: 'Sequence Type', value: 'sequenceType' },
       { text: 'Spatial Resolution (mm)', value: 'spatialResolution' },
-      { text: 'Scan Instance', value: 'scanInstance' }
+      {
+        text: 'Scan Instance',
+        value: 'scanInstance',
+        align: 'right',
+        width: '50px'
+      }
     ],
     pagination: {
       rowsPerPage: 100,
@@ -133,7 +139,7 @@ export default {
   computed: {
     ...mapState('dicom', ['seriesList']),
     ...mapState('mri', ['sequenceTypes']),
-    ...mapGetters('mri', ['getDicomSeriesSequenceType'])
+    ...mapGetters('mri', ['getDicomSeriesSequenceType', 'getScanByDicomSeries'])
   },
   methods: {
     getSequenceTypeTitle(series) {
@@ -146,23 +152,8 @@ export default {
     },
     stringifyGroup(group) {
       return `${group.study.title} | ${group.title}`
-    },
-    getScanByDicomSeries(series) {
-      console.log(series)
-      return
-      // let filters = Object.assign({}, this.filters)
-      // filters.dicomId = series.id
-      // return this.fetchScans({ filters, pagination: this.pagination })[0]
     }
   }
-}
-
-function formatSpatialResolution(floatArray) {
-  return floatArray
-    .map(item => parseFloat(item.toFixed(2)))
-    .toString()
-    .replace(/,/g, ' x ')
-    .trim()
 }
 </script>
 

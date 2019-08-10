@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   name: 'SeriesTableControls',
@@ -24,14 +24,25 @@ export default {
       patientId: ''
     }
   }),
+  computed: {
+    ...mapState('dicom', ['seriesList'])
+  },
   methods: {
     update() {
       this.$emit('fetch-series-start')
-      this.fetchSeries({ filters: this.filters, pagination: this.pagination })
+      this.fetchSeries({
+        filters: this.filters,
+        pagination: this.pagination
+      }).then(() =>
+        this.fetchScans({
+          filters: { dicomIdIn: this.seriesList.map(series => series.id) },
+          pagination: this.pagination
+        })
+      )
       this.$emit('fetch-series-end')
     },
     ...mapActions('dicom', ['fetchSeries']),
-    ...mapActions('mri', ['fetchSequenceTypes'])
+    ...mapActions('mri', ['fetchSequenceTypes', 'fetchScans'])
   },
   watch: {
     filters: {

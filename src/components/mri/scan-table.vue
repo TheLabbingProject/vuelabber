@@ -168,7 +168,7 @@ export default {
     pagination: {
       rowsPerPage: 25,
       page: 1,
-      ordering: 'number',
+      sortBy: 'number',
       descending: false
     },
     loading: false

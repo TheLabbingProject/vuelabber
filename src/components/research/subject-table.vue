@@ -1,7 +1,7 @@
 <template>
   <div>
-    <v-layout row pl-3>
-      <div class="title text-left pb-3">Subjects</div>
+    <v-layout row pl-3 pb-3>
+      <div class="title text-left">Subjects</div>
       <v-spacer />
       <v-dialog v-model="createSubjectDialog" lazy width="400px">
         <template v-slot:activator="{ on }">
@@ -99,8 +99,6 @@ export default {
     SubjectTableControls
   },
   created() {
-    this.fetchSubjects({ filters: this.filters, pagination: this.pagination })
-
     // Add edit column for staff users
     this.fetchProfiles().then(() => this.appendEditColumn())
   },
@@ -123,7 +121,7 @@ export default {
     pagination: {
       rowsPerPage: 100,
       page: 1,
-      ordering: 'id',
+      sortBy: 'id',
       descending: true
     },
     loading: false,
@@ -157,7 +155,6 @@ export default {
         this.headers.push({ text: 'Edit', value: 'editSubject' })
       }
     },
-    ...mapActions('research', ['fetchSubjects']),
     ...mapActions('accounts', ['fetchProfiles']),
     ...mapMutations('research', ['setSelectedSubjectId'])
   }

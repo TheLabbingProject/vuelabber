@@ -25,7 +25,9 @@ const getters = {
     )
   },
   currentUserIsStaff(state, getters) {
-    return getters.currentUserProfile.user.is_staff
+    let profile = getters.currentUserProfile
+    if (profile) return profile.user.is_staff
+    return false
   }
 }
 

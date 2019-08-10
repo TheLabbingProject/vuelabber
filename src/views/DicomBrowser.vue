@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid p-0>
+  <v-layout column>
     <v-tabs v-model="active">
       <v-tab ripple>
         Patients
@@ -8,7 +8,7 @@
         <patient-table />
       </v-tab-item>
     </v-tabs>
-  </v-container>
+  </v-layout>
 </template>
 
 <script>

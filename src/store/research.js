@@ -5,12 +5,9 @@ import {
   SUBJECTS,
   SUBJECT_BY_DICOM_PATIENT
 } from '@/api/research/endpoints'
-import { camelToSnakeCase, replaceNull } from '@/utils'
-import {
-  sexOptions,
-  genderOptions,
-  dominantHandOptions
-} from '@/components/research/choices'
+import { getSubjectQueryString } from '@/api/research/query'
+import { camelToSnakeCase } from '@/utils'
+
 const camelcaseKeys = require('camelcase-keys')
 
 const state = {
@@ -102,7 +99,7 @@ const actions = {
       .catch(console.error)
   },
   fetchSubjects({ commit }, { filters, pagination }) {
-    let queryString = getSubjectsQueryString({ filters, pagination })
+    let queryString = getSubjectQueryString({ filters, pagination })
     return session
       .get(`${SUBJECTS}/${queryString}`)
       .then(({ data }) =>
@@ -190,20 +187,4 @@ export default {
   getters,
   mutations,
   actions
-}
-
-const getSubjectsQueryString = ({ filters, pagination }) => {
-  filters = replaceNull(filters)
-  pagination = replaceNull(pagination)
-  return `?id=${filters.id || ''}&first_name=${filters.firstName ||
-    ''}&first_name_lookup=icontains&last_name=${filters.lastName ||
-    ''}&last_name_lookup=icontains&sex=${sexOptions[filters.sex] ||
-    ''}&gender=${genderOptions[filters.gender] ||
-    ''}&born_after_date=${filters.bornAfter ||
-    ''}&born_before_date=${filters.bornBefore ||
-    ''}&dominant_hand=${dominantHandOptions[filters.dominantHand] ||
-    ''}&page_size=${pagination.rowsPerPage || 100}&page=${pagination.page ||
-    1}&ordering=${
-    pagination.descending ? '-' + pagination.ordering : pagination.ordering
-  }`
 }
