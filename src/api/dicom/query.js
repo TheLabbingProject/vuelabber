@@ -6,20 +6,20 @@ const getPatientQueryString = ({ filters, pagination }) => {
     ''}&given_name_lookup=icontains&middle_name=&middle_name_lookup=&family_name=${filters.lastName ||
     ''}&family_name_lookup=icontains&name_suffix=&sex=${
     filters.sex ? filters.sex[0] : ''
-  }&page_size=${pagination.rowsPerPage || 100}&page=${pagination.page ||
-    1}&ordering=${
+  }&study__id=${filters.studyId || ''}&page_size=${pagination.rowsPerPage ||
+    100}&page=${pagination.page || 1}&ordering=${
     pagination.descending ? '-' + pagination.sortBy : pagination.sortBy
   }`
 }
 
 const getSeriesQueryString = ({ filters, pagination }) => {
   return `?id=${filters.id || ''}&uid=${filters.uid ||
-    ''}&study_uid=${filters.study_uid ||
+    ''}&study_uid=${filters.studyUid ||
     ''}&study_description=${filters.study_description ||
     ''}&modality=${filters.modality || ''}&description=${filters.description ||
     ''}&description_lookup=icontains&protocol_name=&number=${filters.number ||
     ''}&created_after_date=${filters.afterDate ||
-    ''}&created_before_date=${filters.beforeDate ||
+    ''}&created_before_date=${filters.beforeDate || ''}&date=${filters.date ||
     ''}&created_after_time=${filters.afterTime ||
     ''}&created_before_time=${filters.beforeTime ||
     ''}&echo_time=${filters.echoTime ||
@@ -38,4 +38,17 @@ const getSeriesQueryString = ({ filters, pagination }) => {
   }`
 }
 
-export { getPatientQueryString, getSeriesQueryString }
+const getStudyQueryString = ({ filters, pagination }) => {
+  return `?id=${filters.id || ''}&uid=${filters.uid ||
+    ''}&description=${filters.description ||
+    ''}&description_lookup=icontains&created_after_date=${filters.afterDate ||
+    ''}&created_before_date=${filters.beforeDate ||
+    ''}&created_after_time=${filters.afterTime ||
+    ''}&created_before_time=${filters.beforeTime ||
+    ''}&page_size=${pagination.rowsPerPage || 100}&page=${pagination.page ||
+    1}&ordering=${
+    pagination.descending ? '-' + pagination.sortBy : pagination.sortBy
+  }`
+}
+
+export { getPatientQueryString, getSeriesQueryString, getStudyQueryString }

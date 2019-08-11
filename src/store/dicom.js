@@ -1,12 +1,21 @@
 import session from '@/api/session'
-import { PATIENTS, SERIES } from '@/api/dicom/endpoints'
-import { getPatientQueryString, getSeriesQueryString } from '@/api/dicom/query'
+import { PATIENTS, SERIES, STUDIES } from '@/api/dicom/endpoints'
+import {
+  getPatientQueryString,
+  getSeriesQueryString,
+  getStudyQueryString
+} from '@/api/dicom/query'
 const camelcaseKeys = require('camelcase-keys')
 
 const state = {
   patients: [],
+  patientCount: 0,
   selectedPatientId: null,
-  seriesList: []
+  seriesList: [],
+  seriesCount: 0,
+  studies: [],
+  studyCount: 0,
+  selectedStudyId: null
 }
 
 const getters = {
@@ -19,14 +28,29 @@ const getters = {
 }
 
 const mutations = {
-  setSeries(state, seriesList) {
-    state.seriesList = seriesList
-  },
   setPatients(state, patients) {
     state.patients = patients
   },
+  setPatientCount(state, count) {
+    state.patientCount = count
+  },
   setSelectedPatientId(state, selectedPatientId) {
     state.selectedPatientId = selectedPatientId
+  },
+  setSeries(state, seriesList) {
+    state.seriesList = seriesList
+  },
+  setSeriesCount(state, count) {
+    state.seriesCount = count
+  },
+  setStudies(state, studies) {
+    state.studies = studies
+  },
+  setStudyCount(state, count) {
+    state.studyCount = count
+  },
+  setSelectedStudyId(state, selectedStudyId) {
+    state.selectedStudyId = selectedStudyId
   }
 }
 
@@ -35,18 +59,30 @@ const actions = {
     let queryString = getPatientQueryString({ filters, pagination })
     return session
       .get(`${PATIENTS}/${queryString}`)
-      .then(({ data }) =>
+      .then(({ data }) => {
         commit('setPatients', data.results.map(item => camelcaseKeys(item)))
-      )
+        commit('setPatientCount', data.count)
+      })
       .catch(console.error)
   },
   fetchSeries({ commit }, { filters, pagination }) {
     let queryString = getSeriesQueryString({ filters, pagination })
     return session
       .get(`${SERIES}/${queryString}`)
-      .then(({ data }) =>
+      .then(({ data }) => {
         commit('setSeries', data.results.map(item => camelcaseKeys(item)))
-      )
+        commit('setSeriesCount', data.count)
+      })
+      .catch(console.error)
+  },
+  fetchStudies({ commit }, { filters, pagination }) {
+    let queryString = getStudyQueryString({ filters, pagination })
+    return session
+      .get(`${STUDIES}/${queryString}`)
+      .then(({ data }) => {
+        commit('setStudies', data.results.map(item => camelcaseKeys(item)))
+        commit('setStudyCount', data.count)
+      })
       .catch(console.error)
   }
 }

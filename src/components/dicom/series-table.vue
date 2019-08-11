@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-layout column pb-5>
     <series-table-controls
       ref="tableController"
       :pagination="pagination"
@@ -8,18 +8,19 @@
       @fetch-series-end="loading = false"
     />
     <v-data-table
-      hide-actions
       item-key="id"
       v-model="selectedSeries"
       :headers="headers"
       :items="seriesList"
       :loading="loading"
       :pagination.sync="pagination"
+      :rows-per-page-items="pagination.rowsPerPageItems"
+      :total-items="seriesCount"
     >
       <template v-slot:items="props">
         <tr>
           <!-- Number -->
-          <td class="text-xs-left">
+          <td class="text-xs-left" style="width: 50px;">
             {{ props.item.number }}
           </td>
 
@@ -39,7 +40,7 @@
           </td>
 
           <!-- Protocol Information -->
-          <td class="text-xs-left">
+          <td class="text-xs-center">
             <v-dialog
               v-model="protocolInformationDialog[props.item.id]"
               lazy
@@ -55,34 +56,21 @@
           </td>
 
           <!-- Spatial Resolution -->
-          <td class="text-xs-left">
+          <td class="text-xs-center">
             {{ getSpatialResolution(props.item) }}
           </td>
 
           <!-- Scan Instance Dialog -->
           <td class="text-xs-left">
             <v-dialog
-              v-model="scanInfoDialog[props.item.id]"
               lazy
+              v-if="getScanByDicomSeries(props.item)"
+              v-model="scanInfoDialog[props.item.id]"
               width="800px"
             >
               <template v-slot:activator="{ on }">
-                <v-btn
-                  small
-                  color="success"
-                  v-if="getScanByDicomSeries(props.item)"
-                  v-on="on"
-                >
+                <v-btn small color="success" v-on="on">
                   {{ `Scan #${getScanByDicomSeries(props.item).id}` }}
-                </v-btn>
-                <v-btn
-                  small
-                  v-else
-                  color="warning"
-                  v-on="on"
-                  :disabled="!patient.subject"
-                >
-                  Create
                 </v-btn>
               </template>
               <scan-info
@@ -95,7 +83,7 @@
         </tr>
       </template>
     </v-data-table>
-  </div>
+  </v-layout>
 </template>
 
 <script>
@@ -115,29 +103,53 @@ export default {
     studyGroups: {},
     selectedSeries: [],
     headers: [
-      { text: 'Number', value: 'number' },
-      { text: 'Description', value: 'description' },
-      { text: 'Date', value: 'date' },
-      { text: 'Time', value: 'time' },
-      { text: 'Sequence Type', value: 'sequenceType' },
-      { text: 'Spatial Resolution (mm)', value: 'spatialResolution' },
+      { text: 'Number', value: 'number', width: '20px' },
+      {
+        text: 'Description',
+        value: 'description',
+        width: '400px',
+        sortable: false
+      },
+      { text: 'Date', value: 'date', width: '100px' },
+      { text: 'Time', value: 'time', width: '100px' },
+      {
+        text: 'Sequence Type',
+        value: 'sequenceType',
+        width: '200px',
+        sortable: false,
+        align: 'center'
+      },
+      {
+        text: 'Spatial Resolution (mm)',
+        value: 'spatialResolution',
+        sortable: false,
+        align: 'center',
+        width: '100px'
+      },
       {
         text: 'Scan Instance',
         value: 'scanInstance',
-        align: 'right',
+        sortable: false,
         width: '50px'
       }
     ],
     pagination: {
-      rowsPerPage: 100,
+      rowsPerPage: 10,
       page: 1,
       sortBy: 'number',
-      descending: false
+      descending: false,
+      rowsPerPageItems: [
+        10,
+        25,
+        50,
+        { text: '$vuetify.dataIterator.rowsPerPageAll', value: 100000 }
+      ]
     },
+
     loading: false
   }),
   computed: {
-    ...mapState('dicom', ['seriesList']),
+    ...mapState('dicom', ['seriesList', 'seriesCount']),
     ...mapState('mri', ['sequenceTypes']),
     ...mapGetters('mri', ['getDicomSeriesSequenceType', 'getScanByDicomSeries'])
   },

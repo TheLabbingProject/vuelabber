@@ -1,8 +1,9 @@
 <template>
-  <v-layout column>
+  <v-layout column pb-5>
     <patient-table-controls
       ref="tableController"
       :pagination="pagination"
+      :studyId="studyId"
       @fetch-patients-start="loading = true"
       @fetch-patients-end="loading = false"
     />
@@ -13,7 +14,8 @@
       :items="patients"
       :loading="loading"
       :pagination.sync="pagination"
-      :rows-per-page-items="rowsPerPageItems"
+      :rows-per-page-items="pagination.rowsPerPageItems"
+      :total-items="patientCount"
     >
       <template v-slot:items="props">
         <tr
@@ -36,10 +38,10 @@
             {{ getPatientSex(props.item) }}
           </td>
           <td class="text-xs-left">
-            {{ formatDate(props.item.dateOfBirth) }}
+            {{ props.item.dateOfBirth | formatDate }}
           </td>
           <td class="text-xs-right">
-            <v-dialog v-model="subjectDialog[props.item.id]" lazy width="800px">
+            <v-dialog v-model="subjectDialog[props.item.id]" lazy width="400px">
               <template v-slot:activator="{ on }">
                 <v-btn
                   small
@@ -76,13 +78,14 @@
 import PatientTableControls from './patient-table-controls.vue'
 import SeriesTable from './series-table.vue'
 import SubjectInfoCard from '@/components/research/subject-info-card.vue'
-import { mapGetters, mapState, mapActions, mapMutations } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
 import { getKeyByValue } from '@/utils'
 import { sexOptions } from './utils'
 
 export default {
   name: 'PatientTable',
   components: { PatientTableControls, SeriesTable, SubjectInfoCard },
+  props: { studyId: Number },
   data: () => ({
     subjectDialog: {},
     patientToSubject: {},
@@ -93,42 +96,35 @@ export default {
       { text: 'First Name', value: 'givenName' },
       { text: 'Last Name', value: 'familyName' },
       { text: 'Sex', value: 'sex' },
-      { text: 'Date of Birth', value: 'dateOfBirth' },
+      { text: 'Date of Birth', value: 'dateOfBirth', sortable: false },
       {
         text: 'Research Subject',
         value: 'subject',
-        align: 'right',
-        width: '50px'
+        width: '50px',
+        sortable: false
       }
-    ],
-    rowsPerPageItems: [
-      10,
-      25,
-      50,
-      { text: '$vuetify.dataIterator.rowsPerPageAll', value: 100000 }
     ],
     pagination: {
       rowsPerPage: 25,
       page: 1,
-      sortBy: 'id',
-      descending: false
+      sortBy: 'number',
+      descending: false,
+      rowsPerPageItems: [
+        10,
+        25,
+        50,
+        { text: '$vuetify.dataIterator.rowsPerPageAll', value: 100000 }
+      ]
     },
     loading: false,
     sexOptions
   }),
   computed: {
-    ...mapState('dicom', ['patients', 'selectedPatientId']),
-    ...mapGetters('research', ['getSubjectByUrl'])
+    ...mapState('dicom', ['patients', 'patientCount', 'selectedPatientId'])
   },
   methods: {
     getPatientSex: function(patient) {
       return getKeyByValue(this.sexOptions, patient.sex)
-    },
-    formatDate: function(date) {
-      if (!date) return null
-
-      const [year, month, day] = date.split('-')
-      return `${day}/${month}/${year}`
     },
     selectPatient(props) {
       props.expanded = !props.expanded
@@ -153,9 +149,9 @@ export default {
 
 <style scoped>
 >>> tr.selected {
-  background-color: #b3d4fc77;
+  background-color: #ffebee;
 }
 div.embeded-table {
-  background-color: #b3d4fc77;
+  background-color: #e3f2fd;
 }
 </style>

@@ -1,11 +1,6 @@
 <template>
-  <v-layout row px-4>
-    <v-text-field
-      outlined
-      label="ID"
-      v-model="filters.id"
-      style="width: 2px;"
-    />
+  <v-layout row px-3>
+    <v-text-field label="ID" v-model="filters.id" style="width: 2px;" />
     <v-spacer />
     <v-text-field
       label="Patient UID"
@@ -104,19 +99,21 @@ import { sexOptions } from './utils'
 
 export default {
   name: 'PatientTableControls',
-  props: { pagination: Object },
+  props: { pagination: Object, studyId: Number },
   created() {
-    this.fetchPatients({ filters: this.filters, pagination: this.pagination })
+    if (this.studyId) this.filters.studyId = this.studyId
+    this.update()
   },
   data: () => ({
     filters: {
-      id: '',
-      uid: '',
-      firstName: '',
-      lastName: '',
-      sex: '',
-      bornAfter: '',
-      bornBefore: ''
+      id: null,
+      uid: null,
+      firstName: null,
+      lastName: null,
+      sex: null,
+      bornAfter: null,
+      bornBefore: null,
+      studyId: null
     },
     bornAfterMenu: false,
     bornBeforeMenu: false,

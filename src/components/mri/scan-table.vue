@@ -46,7 +46,7 @@
       :headers="headers"
       :loading="loading"
       :items="scans"
-      :rows-per-page-items="rowsPerPageItems"
+      :rows-per-page-items="pagination.rowsPerPageItems"
       :pagination.sync="pagination"
       :total-items="totalScanCount"
     >
@@ -159,17 +159,17 @@ export default {
       { text: 'Study Groups', value: 'studyGroups', sortable: false }
     ],
     selected: [],
-    rowsPerPageItems: [
-      10,
-      25,
-      50,
-      { text: '$vuetify.dataIterator.rowsPerPageAll', value: 100000 }
-    ],
     pagination: {
       rowsPerPage: 25,
       page: 1,
       sortBy: 'number',
-      descending: false
+      descending: false,
+      rowsPerPageItems: [
+        10,
+        25,
+        50,
+        { text: '$vuetify.dataIterator.rowsPerPageAll', value: 100000 }
+      ]
     },
     loading: false
   }),
