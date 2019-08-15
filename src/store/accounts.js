@@ -40,7 +40,7 @@ const mutations = {
 const actions = {
   fetchProfiles({ commit }) {
     return session
-      .get('/api/accounts/profiles/')
+      .get('/api/accounts/profile/')
       .then(({ data }) => data.results.map(item => camelcaseKeys(item)))
       .then(data => commit('setProfiles', data))
       .catch(console.error)

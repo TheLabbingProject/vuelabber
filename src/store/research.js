@@ -76,13 +76,13 @@ const mutations = {
     state.groups.push(group)
   },
   updateSubjectState(state, updatedSubject) {
-    let index = state.subjects.indexOf(
-      state.subjects.find(subject => subject.id === updatedSubject.id)
+    // Remove the old version
+    let subjects = state.subjects.filter(
+      subject => subject.id != updatedSubject.id
     )
-    // Mutating an array directly causes reactivity problems
-    let newSubjects = state.subjects.slice()
-    newSubjects[index] = updatedSubject
-    state.subjects = newSubjects
+    // Add the updated version
+    subjects.push(updatedSubject)
+    state.subjects = subjects
   },
   removeSubjectFromState(state, subject) {
     state.subjects = state.subjects.filter(
@@ -158,7 +158,7 @@ const actions = {
       .post(SUBJECTS, camelToSnakeCase(subject))
       .then(({ data }) => camelcaseKeys(data))
       .then(data => {
-        commit('updateSubjectState', data)
+        commit('addSubject', data)
         return data
       })
       .catch(console.error)

@@ -44,7 +44,7 @@
               {{ props.item.lastName }}
             </td>
             <td class="text-xs-left">
-              {{ formatDate(props.item.dateOfBirth) }}
+              {{ props.item.dateOfBirth | formatDate }}
             </td>
             <td class="text-xs-left">
               {{ getSubjectSexDisplay(props.item) }}
@@ -144,11 +144,6 @@ export default {
     },
     getSubjectDominantHandDisplay: function(subject) {
       return getKeyByValue(this.dominantHandOptions, subject.dominantHand)
-    },
-    formatDate(date) {
-      if (!date) return null
-      let [year, month, day] = date.split('-')
-      return `${day}/${month}/${year}`
     },
     appendEditColumn() {
       if (this.currentUserIsStaff) {

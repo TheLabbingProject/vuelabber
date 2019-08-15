@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import session from '@/api/session'
 
 export default {
   name: 'ScanUpload',
@@ -90,7 +90,7 @@ export default {
       this.totalProgressLabel = 'Total progress'
     },
     submitFile(formData) {
-      return axios
+      return session
         .post(`/api/mri/scan/from_file/`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
