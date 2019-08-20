@@ -1,10 +1,5 @@
 import session from '@/api/session'
-import {
-  GROUPS,
-  STUDIES,
-  SUBJECTS,
-  SUBJECT_BY_DICOM_PATIENT
-} from '@/api/research/endpoints'
+import { GROUPS, STUDIES, SUBJECTS } from '@/api/research/endpoints'
 import { getSubjectQueryString } from '@/api/research/query'
 import { camelToSnakeCase } from '@/utils'
 
@@ -102,17 +97,9 @@ const actions = {
     let queryString = getSubjectQueryString({ filters, pagination })
     return session
       .get(`${SUBJECTS}/${queryString}`)
-      .then(({ data }) =>
-        commit('setSubjects', data.results.map(item => camelcaseKeys(item)))
-      )
-      .catch(console.error)
-  },
-  fetchSubjectByDicomPatientId({ commit }, patientId) {
-    return session
-      .get(`${SUBJECT_BY_DICOM_PATIENT}/${patientId}/`)
-      .then(({ data }) => camelcaseKeys(data))
+      .then(({ data }) => data.results.map(item => camelcaseKeys(item)))
       .then(data => {
-        commit('addSubject', data)
+        commit('setSubjects', data)
         return data
       })
       .catch(console.error)

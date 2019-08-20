@@ -133,13 +133,16 @@ export default {
         : this.setSelectedPatientId(null)
     },
     ...mapMutations('dicom', ['setSelectedPatientId']),
-    ...mapActions('research', ['fetchSubjectByDicomPatientId'])
+    ...mapActions('research', ['fetchSubjects'])
   },
   watch: {
     patients: function(value) {
       value.forEach(patient => {
-        this.fetchSubjectByDicomPatientId(patient.id).then(subject =>
-          this.$set(this.patientToSubject, patient.id, subject)
+        this.fetchSubjects({
+          filters: { dicomPatientId: patient.id },
+          pagination: {}
+        }).then(results =>
+          this.$set(this.patientToSubject, patient.id, results[0])
         )
       })
     }

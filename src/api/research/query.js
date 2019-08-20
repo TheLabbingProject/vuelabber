@@ -12,6 +12,7 @@ const getSubjectQueryString = ({ filters, pagination }) => {
     ''}&born_after_date=${filters.bornAfter ||
     ''}&born_before_date=${filters.bornBefore ||
     ''}&dominant_hand=${dominantHandOptions[filters.dominantHand] ||
+    ''}&dicom_patient=${filters.dicomPatientId ||
     ''}&page_size=${pagination.rowsPerPage || 100}&page=${pagination.page ||
     1}&ordering=${
     pagination.descending ? '-' + pagination.sortBy : pagination.sortBy
