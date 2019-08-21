@@ -1,36 +1,41 @@
 <template>
   <div>
-    <!-- Scan Upload -->
-    <v-expansion-panel>
-      <v-expansion-panel-content>
-        <template v-slot:header>
-          <div>
-            Upload
-          </div>
-        </template>
-        <v-card>
-          <v-card-text>
-            <scan-upload :subject="subject" @file-upload-complete="update()" />
-          </v-card-text>
-        </v-card>
-      </v-expansion-panel-content>
-    </v-expansion-panel>
+    <v-layout column v-if="currentUserIsStaff">
+      <!-- Scan Upload -->
+      <v-expansion-panel popout>
+        <v-expansion-panel-content>
+          <template v-slot:header>
+            <div>
+              Upload
+            </div>
+          </template>
+          <v-card>
+            <v-card-text>
+              <scan-upload
+                :subject="subject"
+                @file-upload-complete="update()"
+              />
+            </v-card-text>
+          </v-card>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
 
-    <!-- Group Association -->
-    <v-expansion-panel>
-      <v-expansion-panel-content>
-        <template v-slot:header>
-          <div>
-            Study Group Association
-          </div>
-        </template>
-        <v-card>
-          <v-card-text>
-            <group-association :selectedScans="selected" />
-          </v-card-text>
-        </v-card>
-      </v-expansion-panel-content>
-    </v-expansion-panel>
+      <!-- Group Association -->
+      <v-expansion-panel popout>
+        <v-expansion-panel-content>
+          <template v-slot:header>
+            <div>
+              Study Group Association
+            </div>
+          </template>
+          <v-card>
+            <v-card-text>
+              <group-association :selectedScans="selected" />
+            </v-card-text>
+          </v-card>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+    </v-layout>
 
     <!-- Scan Table -->
     <scan-table-controls
@@ -174,6 +179,7 @@ export default {
     loading: false
   }),
   computed: {
+    ...mapGetters('accounts', ['currentUserIsStaff']),
     ...mapState('mri', ['scans', 'totalScanCount']),
     ...mapGetters('mri', ['getSequenceTypeByUrl']),
     ...mapGetters('research', { subject: 'getSelectedSubject' }),

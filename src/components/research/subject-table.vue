@@ -23,14 +23,16 @@
     <v-flex>
       <v-data-table
         item-key="id"
+        :expand="expand"
         :headers="headers"
         :items="subjects"
+        :loading="loading"
         :pagination.sync="pagination"
         :rows-per-page-items="rowsPerPageItems"
       >
         <template v-slot:items="props">
           <tr
-            @click="setSelectedSubjectId(props.item.id)"
+            @click="selectSubject(props)"
             :class="{ selected: props.item.id === selectedSubjectId }"
           >
             <td class="text-xs-left" style="width: 50px;">
@@ -80,21 +82,29 @@
             </td>
           </tr>
         </template>
+        <template v-slot:expand="props">
+          <v-flex class="embeded-table" px-2 py-2>
+            <subject-data />
+            <hr />
+          </v-flex>
+        </template>
       </v-data-table>
     </v-flex>
   </div>
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState, mapGetters } from 'vuex'
+import SubjectData from '@/components/research/subject-data.vue'
 import SubjectInfoCard from '@/components/research/subject-info-card.vue'
 import SubjectTableControls from '@/components/research/subject-table-controls.vue'
 import { sexOptions, genderOptions, dominantHandOptions } from './choices.js'
 import { getKeyByValue } from './utils.js'
+import { mapActions, mapMutations, mapState, mapGetters } from 'vuex'
 
 export default {
   name: 'SubjectTable',
   components: {
+    SubjectData,
     SubjectInfoCard,
     SubjectTableControls
   },
@@ -124,6 +134,7 @@ export default {
       sortBy: 'id',
       descending: true
     },
+    expand: false,
     loading: false,
     createSubjectDialog: false,
     editSubjectDialog: {},
@@ -150,6 +161,12 @@ export default {
         this.headers.push({ text: 'Edit', value: 'editSubject' })
       }
     },
+    selectSubject(props) {
+      props.expanded = !props.expanded
+      props.expanded
+        ? this.setSelectedSubjectId(props.item.id)
+        : this.setSelectedSubjectId(null)
+    },
     ...mapActions('accounts', ['fetchProfiles']),
     ...mapMutations('research', ['setSelectedSubjectId'])
   }
@@ -159,5 +176,8 @@ export default {
 <style scoped>
 tr.selected {
   background-color: #b3d4fc77;
+}
+div.embeded-table {
+  background-color: white;
 }
 </style>
