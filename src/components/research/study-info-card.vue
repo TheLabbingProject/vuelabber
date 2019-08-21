@@ -1,57 +1,78 @@
 <template>
   <v-card>
+    <!-- Title -->
     <v-card-title class="headline green darken-3 white--text">
-      Create New Study
+      <span>
+        {{ cardTitle }}
+      </span>
+      <v-spacer />
+      <v-icon
+        v-if="existingStudy"
+        @dblclick="deleteStudy(study)"
+        style="cursor: pointer;"
+      >
+        delete
+      </v-icon>
     </v-card-title>
+
+    <!-- Body -->
     <v-card-text>
       <v-layout wrap column>
         <v-form @submit.prevent="submit">
-          <v-flex pb-4>
-            <v-text-field
-              v-model="study.title"
-              label="Title"
-              :class="{ hasError: $v.study.title.$error }"
-              :counter="255"
-              :error-messages="titleErrors"
-              @blur="$v.study.$touch()"
-            />
-          </v-flex>
-          <v-flex>
-            <v-textarea v-model="study.description" label="Description" />
-          </v-flex>
-          <v-flex pb-4>
-            <v-combobox
-              v-model="selectedCollaborators"
-              label="Collaborators"
-              chips
-              multiple
-              :items="possibleCollaborators"
-            />
-          </v-flex>
+          <!-- Title -->
+          <v-text-field
+            label="Title"
+            v-model="study.title"
+            :class="{ hasError: $v.study.title.$error }"
+            :counter="255"
+            :error-messages="titleErrors"
+            @blur="$v.study.$touch()"
+          />
+
+          <!-- Description -->
+          <v-textarea v-model="study.description" label="Description" />
+
+          <!-- Collaborators -->
+          <v-combobox
+            label="Collaborators"
+            v-model="selectedCollaborators"
+            chips
+            multiple
+            :items="possibleCollaborators"
+          />
         </v-form>
       </v-layout>
     </v-card-text>
+
+    <!-- Actions -->
     <v-card-actions>
       <v-spacer />
-      <v-btn
-        color="warning"
-        flat
-        v-if="existingStudy"
-        :disabled="$v.study.$error"
-        @click="updateExistingStudy"
-        >Update</v-btn
-      >
+      <!-- Create new study -->
       <v-btn
         color="success"
         flat
-        v-else
+        v-if="!existingStudy"
         :disabled="$v.study.$error"
         @click="createNewStudy"
-        >Create</v-btn
       >
-      <v-btn color="info" flat @click="$emit('close-study-dialog')"
-        >Cancel</v-btn
+        Create
+      </v-btn>
+
+      <!-- Update existing study -->
+      <v-btn
+        color="warning"
+        flat
+        v-else
+        :disabled="$v.study.$error"
+        @click="updateExistingStudy"
       >
+        Update
+      </v-btn>
+
+      <!-- Cancel study creation/update -->
+      <v-btn color="error" flat @click="$emit('close-study-dialog')">
+        Cancel
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -80,6 +101,12 @@ export default {
     }),
     possibleCollaborators: function() {
       return this.profiles.map(user => this.getCollaboratorName(user))
+    },
+    cardTitle: function() {
+      if (this.existingStudy) {
+        return 'Edit Existing Study'
+      }
+      return 'Create New Study'
     },
     titleErrors: function() {
       const errors = []
@@ -131,7 +158,7 @@ export default {
       this.fixCollaboratorsProperty()
       this.updateStudy(this.study).then(this.closeDialog())
     },
-    ...mapActions('research', ['createStudy', 'updateStudy'])
+    ...mapActions('research', ['createStudy', 'updateStudy', 'deleteStudy'])
   }
 }
 

@@ -83,6 +83,11 @@ const mutations = {
     state.subjects = state.subjects.filter(
       existingSubject => existingSubject.id != subject.id
     )
+  },
+  removeStudyFromState(state, study) {
+    state.studies = state.studies.filter(
+      existingStudy => existingStudy.id != study.id
+    )
   }
 }
 
@@ -113,11 +118,8 @@ const actions = {
   createStudy({ commit }, study) {
     return session
       .post(STUDIES, study)
-      .then(({ data }) =>
-        session
-          .get('/api/research/studies/' + data.id)
-          .then(({ data }) => commit('addStudy', data))
-      )
+      .then(({ data }) => camelcaseKeys(data))
+      .then(data => commit('addStudy', data))
       .catch(console.error)
   },
   updateStudy({ commit }, study) {
@@ -128,6 +130,12 @@ const actions = {
         commit('updateStudyState', data)
         return data
       })
+      .catch(console.error)
+  },
+  deleteStudy({ commit }, study) {
+    return session
+      .delete(`${STUDIES}/${study.id}/`)
+      .then(() => commit('removeStudyFromState', study))
       .catch(console.error)
   },
   createGroup({ commit }, group) {

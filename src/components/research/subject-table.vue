@@ -62,8 +62,8 @@
             >
               <v-dialog
                 v-model="editSubjectDialog[props.item.id]"
-                lazy
                 width="400px"
+                lazy
               >
                 <template v-slot:activator="{ on }">
                   <v-icon v-on="on">

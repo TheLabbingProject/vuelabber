@@ -1,12 +1,28 @@
 <template>
   <v-layout column>
-    <v-card class="mb-4 mx-3" v-for="study in studies" :key="study.id">
+    <!-- Create new study button -->
+    <v-layout mx-0 row v-if="currentUserIsStaff">
+      <v-spacer />
+      <v-dialog v-model="createStudyDialog" width="400px" lazy>
+        <template v-slot:activator="{ on }">
+          <v-btn v-on="on" class="info">
+            New Study
+          </v-btn>
+        </template>
+        <study-info-card @close-study-dialog="createStudyDialog = false" />
+      </v-dialog>
+    </v-layout>
+
+    <!-- Existing study card -->
+    <v-card class="mb-4 mx-2" v-for="study in studies" :key="study.id">
+      <!-- Title -->
       <v-card-title class="title purple darken-2 white--text">
         <span>
           {{ study.title }}
         </span>
         <v-spacer />
-        <v-dialog v-model="editStudyDialog[study.id]" width="600px" lazy>
+        <!-- Edit study dialog button -->
+        <v-dialog v-model="editStudyDialog[study.id]" width="400px" lazy>
           <template v-slot:activator="{ on }">
             <v-icon v-if="currentUserIsStaff" v-on="on">
               edit
@@ -19,7 +35,10 @@
           />
         </v-dialog>
       </v-card-title>
+
+      <!-- Body -->
       <v-card-text class="text-xs-left">
+        <!-- Study Description -->
         <div v-if="study.description">
           {{ study.description }}
         </div>
@@ -27,8 +46,15 @@
           No description available
         </div>
       </v-card-text>
+
+      <!-- Actions -->
       <v-card-actions>
-        <div v-for="collaborator in study.collaborators" :key="collaborator">
+        <!-- Collaborator avatars -->
+        <div
+          class="px-1"
+          v-for="collaborator in study.collaborators"
+          :key="collaborator"
+        >
           <v-avatar
             v-if="getProfileByUserUrl(collaborator)"
             class="m-1 white--text"
@@ -69,7 +95,8 @@ export default {
       'pink',
       'teal',
       'orange'
-    ]
+    ],
+    createStudyDialog: false
   }),
   computed: {
     ...mapGetters('accounts', [
