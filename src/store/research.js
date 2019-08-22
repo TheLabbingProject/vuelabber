@@ -141,11 +141,8 @@ const actions = {
   createGroup({ commit }, group) {
     return session
       .post(GROUPS, group)
-      .then(({ data }) =>
-        session
-          .get('/api/research/groups/' + data.id)
-          .then(({ data }) => commit('addGroup', data))
-      )
+      .then(({ data }) => camelcaseKeys(data))
+      .then(data => commit('addGroup', data))
       .catch(console.error)
   },
   createSubject({ commit }, subject) {

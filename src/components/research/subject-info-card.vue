@@ -1,5 +1,6 @@
 <template>
   <v-card>
+    <!-- Title -->
     <v-card-title class="green darken-3">
       <div class="headline">
         <span class="white--text">
@@ -9,82 +10,82 @@
           {{ `#${subject.id}` }}
         </span>
       </div>
+      <v-spacer />
+
+      <!-- Delete Button -->
+      <v-icon
+        v-if="editable && currentUserIsStaff"
+        style="cursor: pointer;"
+        @dblclick="deleteSubject(existingSubject)"
+      >
+        delete
+      </v-icon>
     </v-card-title>
+
+    <!-- Body -->
     <v-card-text>
-      <v-layout wrap column>
-        <v-radio-group
-          row
-          v-model="radioGroup"
-          v-if="!(existingSubject || createMode)"
-        >
-          <v-radio label="New Subject" value="new" />
-          <v-radio label="Existing subject" value="existing" />
-        </v-radio-group>
-        <v-layout row pl-3 v-if="radioGroup == 'existing'">
-          <v-flex>
-            <v-select
-              v-model="selectedSubjectRepresentation"
-              :items="
-                subjects.map(subject => getSubjectRepresentation(subject))
-              "
-            />
-          </v-flex>
-        </v-layout>
-        <v-form v-if="radioGroup == 'new'" @submit.prevent="submit">
+      <v-layout column>
+        <v-form @submit.prevent="submit">
+          <!-- First Name -->
           <v-text-field
-            v-model="subject.firstName"
             label="First Name"
+            v-model="subject.firstName"
             :counter="64"
             :disabled="!(editable || subject.firstName)"
             :readonly="!editable"
           />
+
+          <!-- Last Name -->
           <v-text-field
-            v-model="subject.lastName"
             label="Last Name"
+            v-model="subject.lastName"
             :counter="64"
             :disabled="!(editable || subject.lastName)"
             :readonly="!editable"
           />
+
+          <!-- Dominant Hand -->
           <v-select
-            v-model="subjectDominantHand"
             label="Dominant Hand"
+            v-model="subjectDominantHand"
             :items="Object.keys(dominantHandOptions)"
             :readonly="!editable"
             :disabled="!(editable || subjectDominantHand)"
           />
+
+          <!-- Sex -->
           <v-select
-            v-model="subjectSex"
             label="Sex"
+            v-model="subjectSex"
+            :disabled="!(editable || subjectSex)"
             :items="Object.keys(sexOptions)"
             :readonly="!editable"
-            :disabled="!(editable || subjectSex)"
           />
-          <v-spacer />
+
+          <!-- Gender -->
           <v-select
-            v-model="subjectGender"
             label="Gender"
+            v-model="subjectGender"
+            :disabled="!(editable || subjectGender)"
             :items="Object.keys(genderOptions)"
             :readonly="!editable"
-            :disabled="!(editable || subjectGender)"
           />
+
+          <!-- Date of Birth -->
           <v-menu
             v-model="dob_menu"
-            :close-on-content-click="false"
-            :nudge-right="40"
             lazy
-            transition="scale-transition"
-            offset-y
-            full-width
             min-width="290px"
+            :close-on-content-click="false"
           >
             <template v-slot:activator="{ on }">
               <v-text-field
-                v-model="formattedDate"
                 label="Date of Birth"
                 prepend-icon="cake"
+                v-model="formattedDate"
+                v-on="on"
                 :disabled="!(editable || formattedDate)"
                 :readonly="!editable"
-                v-on="on"
               ></v-text-field>
             </template>
             <v-date-picker
@@ -95,8 +96,11 @@
         </v-form>
       </v-layout>
     </v-card-text>
+
+    <!-- Actions -->
     <v-card-actions>
-      <v-flex shrink px-3>
+      <!-- View/Edit mode switch -->
+      <v-flex v-if="currentUserIsStaff" px-3>
         <v-switch
           v-if="existingSubject"
           v-model="editable"
@@ -104,23 +108,29 @@
         />
       </v-flex>
       <v-spacer />
+      <!-- Update -->
       <v-btn
+        color="warning"
         flat
         v-if="editable && existingSubject"
-        color="warning"
+        :disabled="!currentUserIsStaff"
         @click="updateExistingSubject()"
       >
         Update
       </v-btn>
+
+      <!-- Create -->
       <v-btn
-        flat
-        v-if="!existingSubject && radioGroup == 'new'"
         color="success"
+        flat
+        v-if="!existingSubject && currentUserIsStaff"
         @click="createNewSubject"
       >
         Create
       </v-btn>
-      <v-btn color="green darken-1" flat @click="closeDialog">
+
+      <!-- Cancel -->
+      <v-btn color="error" flat @click="closeDialog">
         Cancel
       </v-btn>
     </v-card-actions>
@@ -128,7 +138,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState, mapGetters } from 'vuex'
 import { sexOptions, genderOptions, dominantHandOptions } from './choices.js'
 import { getKeyByValue } from './utils.js'
 
@@ -195,7 +205,8 @@ export default {
     formattedDate: function() {
       return formatDate(this.subject.dateOfBirth)
     },
-    ...mapState('research', ['subjects'])
+    ...mapState('research', ['subjects']),
+    ...mapGetters('accounts', ['currentUserIsStaff'])
   },
   methods: {
     closeDialog() {
@@ -219,7 +230,11 @@ export default {
       }
       return rep
     },
-    ...mapActions('research', ['createSubject', 'updateSubject'])
+    ...mapActions('research', [
+      'createSubject',
+      'updateSubject',
+      'deleteSubject'
+    ])
   },
   watch: {
     editable: function(isEditable) {
