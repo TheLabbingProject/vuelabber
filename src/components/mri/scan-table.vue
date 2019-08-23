@@ -147,6 +147,7 @@ export default {
   },
   created() {
     this.fetchSequenceTypes()
+    this.fetchGroups()
   },
   data: () => ({
     sequenceTypeDialog: {},
@@ -216,7 +217,8 @@ export default {
     update() {
       this.$refs.tableController.update()
     },
-    ...mapActions('mri', ['fetchSequenceTypes', 'updateScan'])
+    ...mapActions('mri', ['fetchSequenceTypes', 'updateScan']),
+    ...mapActions('research', ['fetchGroups'])
   }
 }
 </script>

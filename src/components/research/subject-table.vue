@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-layout row pl-3 pb-3>
+    <v-layout row pl-3 pb-3 v-if="currentUserIsStaff">
       <div class="title text-left">Subjects</div>
       <v-spacer />
       <v-dialog v-model="createSubjectDialog" lazy width="400px">
