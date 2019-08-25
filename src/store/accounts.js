@@ -1,48 +1,59 @@
 import session from '@/api/session'
+import { USERS, LABS } from '@/api/accounts/endpoints'
+import { getUserQueryString } from '@/api/accounts/query'
 const camelcaseKeys = require('camelcase-keys')
 
 const state = {
-  profiles: []
+  users: [],
+  labs: []
 }
 
 const getters = {
   getUserByUsername(state) {
-    return username =>
-      state.profiles.find(profile => profile.user.username == username)
+    return username => state.users.find(user => user.username == username)
   },
-  getProfileByUserUrl(state) {
-    return url => state.profiles.find(profile => profile.user.url == url)
+  getUserByUrl(state) {
+    return url => state.users.find(user => user.url == url)
   },
-  getUserInitialsFromProfileUrl(state, getters) {
+  getUserInitialsFromUrl(state, getters) {
     return url => {
-      let user = getters.getProfileByUserUrl(url).user
-      return `${user.first_name[0]}${user.last_name[0]}`
+      let user = getters.getUserByUrl(url).user
+      return `${user.firstName[0]}${user.lastName[0]}`
     }
   },
-  currentUserProfile(state, getters, rootState) {
-    return state.profiles.find(
-      profile => profile.user.username === rootState.auth.user.username
+  currentUser(state, getters, rootState) {
+    return state.users.find(
+      user => user.username === rootState.auth.user.username
     )
   },
   currentUserIsStaff(state, getters) {
-    let profile = getters.currentUserProfile
-    if (profile) return profile.user.is_staff
-    return false
+    return getters.currentUser ? getters.currentUser.isStaff : false
   }
 }
 
 const mutations = {
-  setProfiles(state, profiles) {
-    state.profiles = profiles
+  setUsers(state, users) {
+    state.users = users
+  },
+  setLabs(state, labs) {
+    state.labs = labs
   }
 }
 
 const actions = {
-  fetchProfiles({ commit }) {
+  fetchUsers({ commit }, { filters, pagination }) {
+    let queryString = getUserQueryString({ filters, pagination })
     return session
-      .get('/api/accounts/profile/')
+      .get(`${USERS}/${queryString}`)
       .then(({ data }) => data.results.map(item => camelcaseKeys(item)))
-      .then(data => commit('setProfiles', data))
+      .then(data => commit('setUsers', data))
+      .catch(console.error)
+  },
+  fetchLabs({ commit }) {
+    return session
+      .get(LABS)
+      .then(({ data }) => data.results.map(item => camelcaseKeys(item)))
+      .then(data => commit('setLabs', data))
       .catch(console.error)
   }
 }

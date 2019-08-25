@@ -110,7 +110,9 @@ export default {
   },
   created() {
     // Add edit column for staff users
-    this.fetchProfiles().then(() => this.appendEditColumn())
+    this.fetchUsers({ filters: {}, pagination: {} }).then(() =>
+      this.appendEditColumn()
+    )
   },
   data: () => ({
     headers: [
@@ -167,7 +169,7 @@ export default {
         ? this.setSelectedSubjectId(props.item.id)
         : this.setSelectedSubjectId(null)
     },
-    ...mapActions('accounts', ['fetchProfiles']),
+    ...mapActions('accounts', ['fetchUsers']),
     ...mapMutations('research', ['setSelectedSubjectId'])
   }
 }

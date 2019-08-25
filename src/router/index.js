@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Login from '../views/Login.vue'
 import Lost from '../views/Lost.vue'
 import Home from '../views/Home.vue'
+import User from '../views/User.vue'
 import DicomBrowser from '../views/DicomBrowser.vue'
 import StudyBrowser from '../views/StudyBrowser.vue'
 import SubjectBrowser from '../views/SubjectBrowser.vue'
@@ -47,6 +48,12 @@ export default new Router({
       path: '/home',
       component: Home,
       beforeEnter: requireAuthenticated
+    },
+    {
+      path: '/user/:username',
+      name: 'userInformation',
+      component: User,
+      props: true
     },
     {
       path: '/login',

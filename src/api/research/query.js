@@ -5,9 +5,9 @@ import {
 } from '@/components/research/choices'
 
 const getSubjectQueryString = ({ filters, pagination }) => {
-  return `?id=${filters.id || ''}&first_name=${filters.firstName ||
-    ''}&first_name_lookup=icontains&last_name=${filters.lastName ||
-    ''}&last_name_lookup=icontains&sex=${sexOptions[filters.sex] ||
+  return `?id=${filters.id || ''}&firstName=${filters.firstName ||
+    ''}&firstName_lookup=icontains&lastName=${filters.lastName ||
+    ''}&lastName_lookup=icontains&sex=${sexOptions[filters.sex] ||
     ''}&gender=${genderOptions[filters.gender] ||
     ''}&born_after_date=${filters.bornAfter ||
     ''}&born_before_date=${filters.bornBefore ||

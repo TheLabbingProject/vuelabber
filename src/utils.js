@@ -27,3 +27,10 @@ export const camelToSnakeCase = obj => {
 export function getKeyByValue(object, value) {
   return Object.keys(object).find(key => object[key] === value)
 }
+
+export const titlesDictionary = {
+  BSC: 'B.Sc.',
+  MSC: 'M.Sc.',
+  PHD: 'Ph.D.',
+  PROF: 'Prof.'
+}

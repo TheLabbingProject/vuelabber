@@ -89,9 +89,10 @@ export default {
   },
   created() {
     this.study = cloneStudy(this.existingStudy)
-    this.$store.dispatch('accounts/fetchProfiles')
-    this.selectedCollaborators = this.study.collaborators.map(collaborator =>
-      this.getCollaboratorName(this.getProfileByUserUrl(collaborator))
+    this.fetchUsers({ filters: {}, pagination: {} }).then(
+      (this.selectedCollaborators = this.study.collaborators.map(collaborator =>
+        this.getCollaboratorName(this.getUserByUrl(collaborator))
+      ))
     )
   },
   mixins: [validationMixin],
@@ -100,7 +101,7 @@ export default {
       selectedCollaborators: []
     }),
     possibleCollaborators: function() {
-      return this.profiles.map(user => this.getCollaboratorName(user))
+      return this.users.map(user => this.getCollaboratorName(user))
     },
     cardTitle: function() {
       if (this.existingStudy) {
@@ -117,8 +118,8 @@ export default {
       !this.$v.study.title.required && errors.push('Title is required.')
       return errors
     },
-    ...mapState('accounts', ['profiles']),
-    ...mapGetters('accounts', ['getUserByUsername', 'getProfileByUserUrl'])
+    ...mapState('accounts', ['users']),
+    ...mapGetters('accounts', ['getUserByUsername', 'getUserByUrl'])
   },
   validations: {
     study: {
@@ -127,7 +128,7 @@ export default {
   },
   methods: {
     getCollaboratorName: user =>
-      `${user.user.first_name} ${user.user.last_name} [${user.user.username}]`,
+      `${user.firstName} ${user.lastName} [${user.username}]`,
     parseCollaboratorUsername: collaborator =>
       collaborator.split('[')[1].slice(0, -1),
     getUserFromCollaboratorChoice: function(collaborator) {
@@ -136,8 +137,7 @@ export default {
     },
     fixCollaboratorsProperty: function() {
       this.study.collaborators = this.selectedCollaborators.map(
-        collaborator =>
-          this.getUserFromCollaboratorChoice(collaborator).user.url
+        collaborator => this.getUserFromCollaboratorChoice(collaborator).url
       )
     },
     closeDialog: function() {
@@ -158,6 +158,7 @@ export default {
       this.fixCollaboratorsProperty()
       this.updateStudy(this.study).then(this.closeDialog())
     },
+    ...mapActions('accounts', ['fetchUsers']),
     ...mapActions('research', ['createStudy', 'updateStudy', 'deleteStudy'])
   }
 }

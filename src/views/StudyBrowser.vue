@@ -56,16 +56,16 @@
           :key="collaborator"
         >
           <v-avatar
-            v-if="getProfileByUserUrl(collaborator)"
+            v-if="getUserByUrl(collaborator)"
             class="m-1 white--text"
             :color="randomColor()"
           >
             <img
-              v-if="getProfileByUserUrl(collaborator).image"
-              :src="getProfileByUserUrl(collaborator).image"
+              v-if="getUserByUrl(collaborator).image"
+              :src="getUserByUrl(collaborator).image"
             />
             <div v-else>
-              {{ getUserInitialsFromProfileUrl(collaborator) }}
+              {{ getUserInitialsFromUrl(collaborator) }}
             </div>
           </v-avatar>
         </div>
@@ -82,7 +82,9 @@ export default {
   name: 'StudyBrowser',
   components: { StudyInfoCard },
   created() {
-    this.fetchProfiles().then(() => this.fetchStudies())
+    this.fetchUsers({ filters: {}, pagination: {} }).then(() =>
+      this.fetchStudies()
+    )
   },
   data: () => ({
     editStudyDialog: {},
@@ -100,8 +102,8 @@ export default {
   }),
   computed: {
     ...mapGetters('accounts', [
-      'getProfileByUserUrl',
-      'getUserInitialsFromProfileUrl',
+      'getUserByUrl',
+      'getUserInitialsFromUrl',
       'currentUserIsStaff'
     ]),
     ...mapState('accounts', ['users']),
@@ -111,7 +113,7 @@ export default {
     randomColor() {
       return randomize(this.colors)
     },
-    ...mapActions('accounts', ['fetchProfiles']),
+    ...mapActions('accounts', ['fetchUsers']),
     ...mapActions('research', ['fetchStudies'])
   }
 }
