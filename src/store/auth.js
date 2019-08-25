@@ -23,37 +23,6 @@ const getters = {
   isAuthenticated: state => !!state.token
 }
 
-const actions = {
-  login({ commit }, { username, password }) {
-    commit(LOGIN_BEGIN)
-    return auth
-      .login(username, password)
-      .then(({ data }) => commit(SET_TOKEN, data.key))
-      .then(() => commit(SET_USER))
-      .then(() => commit(LOGIN_SUCCESS))
-      .catch(() => commit(LOGIN_FAILURE))
-  },
-  logout({ commit }) {
-    return auth
-      .logout()
-      .then(() => commit(LOGOUT))
-      .finally(() => commit(REMOVE_TOKEN))
-  },
-  initialize({ commit, dispatch }) {
-    const token = localStorage.getItem(TOKEN_STORAGE_KEY)
-
-    if (token) {
-      commit(SET_TOKEN, token)
-      dispatch('getUser')
-    } else {
-      return
-    }
-  },
-  getUser({ commit }) {
-    return auth.getAccountDetails().then(({ data }) => commit(SET_USER, data))
-  }
-}
-
 const mutations = {
   [LOGIN_BEGIN](state) {
     state.authenticating = true
@@ -83,6 +52,37 @@ const mutations = {
   },
   [SET_USER](state, user) {
     state.user = user
+  }
+}
+
+const actions = {
+  login({ commit }, { username, password }) {
+    commit(LOGIN_BEGIN)
+    return auth
+      .login(username, password)
+      .then(({ data }) => commit(SET_TOKEN, data.key))
+      .then(() => commit(SET_USER))
+      .then(() => commit(LOGIN_SUCCESS))
+      .catch(() => commit(LOGIN_FAILURE))
+  },
+  logout({ commit }) {
+    return auth
+      .logout()
+      .then(() => commit(LOGOUT))
+      .finally(() => commit(REMOVE_TOKEN))
+  },
+  initialize({ commit, dispatch }) {
+    const token = localStorage.getItem(TOKEN_STORAGE_KEY)
+
+    if (token) {
+      commit(SET_TOKEN, token)
+      dispatch('getUser')
+    } else {
+      return
+    }
+  },
+  getUser({ commit }) {
+    return auth.getAccountDetails().then(({ data }) => commit(SET_USER, data))
   }
 }
 

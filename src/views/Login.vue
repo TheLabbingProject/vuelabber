@@ -1,48 +1,52 @@
 <template>
   <div id="login-view">
+    <v-alert :value="error" type="error">
+      Invalid username or password!
+    </v-alert>
     <form @submit.prevent="submit">
-      <v-flex>
-        <v-text-field
-          v-model="inputs.username"
-          type="text"
-          id="username"
-          label="Username"
-          required
-        />
-      </v-flex>
-      <v-flex>
-        <v-text-field
-          v-model="inputs.password"
-          type="password"
-          id="password"
-          label="Password"
-          required
-        />
-      </v-flex>
-      <v-btn @click="login(inputs)" color="success" id="login-button"
-        >login</v-btn
-      >
+      <v-text-field
+        v-model="inputs.username"
+        type="text"
+        id="username"
+        label="Username"
+        required
+      />
+      <v-text-field
+        v-model="inputs.password"
+        type="password"
+        id="password"
+        label="Password"
+        required
+      />
+      <v-btn @click="loginHandler(inputs)" color="success" id="login-button">
+        Login
+      </v-btn>
     </form>
   </div>
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex'
 export default {
   name: 'LoginView',
-  data: () => {
-    return {
-      inputs: {
-        username: '',
-        password: ''
-      }
+  data: () => ({
+    inputs: {
+      username: '',
+      password: ''
     }
+  }),
+  computed: {
+    ...mapState('auth', ['error'])
   },
   methods: {
-    login({ username, password }) {
-      this.$store
-        .dispatch('auth/login', { username, password })
-        .then(() => this.$router.push('/'))
-    }
+    loginHandler({ username, password }) {
+      this.login({ username, password }).then(() => {
+        if (!this.error) {
+          this.$router.push('/')
+        }
+      })
+    },
+    ...mapActions('auth', ['login'])
   }
 }
 </script>
