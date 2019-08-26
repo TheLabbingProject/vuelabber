@@ -55,7 +55,7 @@
               <v-card-title primary-title>
                 <div class="text-xs-left">
                   <div class="title">
-                    {{ composeFullName(user) }}
+                    {{ user | formatResearcherName }}
                   </div>
                   <div class="grey--text font-italic">
                     {{ user.institute }}
@@ -72,7 +72,6 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import { titlesDictionary } from '@/utils'
 
 export default {
   name: 'HomeView',
@@ -84,12 +83,6 @@ export default {
     ...mapState('accounts', ['labs', 'users'])
   },
   methods: {
-    composeFullName(user) {
-      let title = titlesDictionary[user.title]
-      return title
-        ? `${title} ${user.firstName} ${user.lastName}`
-        : `${user.firstName} ${user.lastName}`
-    },
     ...mapActions('accounts', ['fetchLabs', 'fetchUsers'])
   }
 }

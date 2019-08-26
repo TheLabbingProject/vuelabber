@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <v-container fluid>
     <user-information :username="username" />
-  </div>
+  </v-container>
 </template>
 
 <script>

@@ -1,17 +1,24 @@
 <template>
-  <div>
+  <v-layout row>
     <v-alert :value="!user" type="error">
       No user found!
     </v-alert>
-    <div v-if="user">
-      <div>
-        {{ user.firstName }}
-      </div>
-      <div>
-        {{ user.lastName }}
-      </div>
-    </div>
-  </div>
+    <v-layout v-if="user" row>
+      <v-flex xs10>
+        <v-layout column class="text-xs-left">
+          <v-flex pb-4 class="title">
+            {{ user | formatResearcherName }}
+          </v-flex>
+          <v-flex> Institute: {{ user.institute }} </v-flex>
+          <v-flex> Email: {{ user.email }} </v-flex>
+          <v-flex> Date of Birth: {{ user.dateOfBirth | formatDate }} </v-flex>
+        </v-layout>
+      </v-flex>
+      <v-flex xs2>
+        <v-img :src="user.image" height="240px" width="240px" />
+      </v-flex>
+    </v-layout>
+  </v-layout>
 </template>
 
 <script>
