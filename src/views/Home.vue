@@ -12,16 +12,27 @@
           class="ma-3"
           color="grey lighten-3"
           v-for="lab in labs"
+          width="300px"
           :key="lab.id"
         >
-          <v-img v-if="lab.image" :src="lab.image" aspect-ratio="2.5" />
-          <v-img v-else src="/Laboratory.jpg" aspect-ratio="2.5" />
+          <v-img
+            v-if="lab.image"
+            :src="lab.image"
+            aspect-ratio="2.5"
+            width="300px"
+          />
+          <v-img
+            v-else
+            src="/Laboratory.jpg"
+            aspect-ratio="2.5"
+            width="300px"
+          />
           <v-card-title primary-title>
-            <div>
-              <h3 class="headline mb-0">{{ lab.title }}</h3>
-              <div>{{ lab.description }}</div>
-            </div>
+            <h3 class="headline mb-0">{{ lab.title }}</h3>
           </v-card-title>
+          <v-card-text class="text-xs-left">
+            <div>{{ lab.description }}</div>
+          </v-card-text>
         </v-card>
       </v-layout>
     </v-flex>
