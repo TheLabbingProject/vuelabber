@@ -26,7 +26,8 @@ const getters = {
     return url => state.groups.find(group => group.url === url)
   },
   getStudyGroups(state) {
-    return study => state.groups.filter(group => group.study.id === study.id)
+    return study =>
+      study ? state.groups.filter(group => group.study.id === study.id) : []
   },
   getSubjectById(state) {
     return id => state.subjects.find(subject => subject.id === id)

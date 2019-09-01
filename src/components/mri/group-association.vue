@@ -115,7 +115,7 @@ export default {
       }
     },
     selectedGroup: function() {
-      if (this.selectedGroupTitle != '' && this.selectedStudy != null) {
+      if (this.selectedStudy && this.selectedGroupTitle) {
         return this.getStudyGroupByTitle({
           study: this.selectedStudy,
           groupTitle: this.selectedGroupTitle
@@ -125,11 +125,7 @@ export default {
       }
     },
     studyGroups: function() {
-      if (this.selectedStudy != null) {
-        return this.getStudyGroups(this.selectedStudy)
-      } else {
-        return []
-      }
+      return this.selectedStudy ? this.getStudyGroups(this.selectedStudy) : []
     },
     validStudyGroupSelection: function() {
       let notAlreadySelected =
