@@ -67,27 +67,27 @@
           </td>
 
           <!-- Scan Number -->
-          <td class="text-left">
+          <td class="text-xs-center">
             {{ props.item.number }}
           </td>
 
           <!-- Description -->
-          <td class="text-left">
+          <td class="text-xs-left">
             {{ props.item.description }}
           </td>
 
           <!-- Date -->
-          <td class="text-left">
+          <td class="text-xs-left">
             {{ formatDate(props.item.time) }}
           </td>
 
           <!-- Time -->
-          <td class="text-left">
+          <td class="text-xs-left">
             {{ formatTime(props.item.time) }}
           </td>
 
           <!-- Sequence Type -->
-          <td class="text-left">
+          <td class="text-xs-left">
             <v-dialog
               v-model="sequenceTypeDialog[props.item.id]"
               v-if="props.item.sequenceType"
@@ -104,7 +104,7 @@
           </td>
 
           <!-- Spatial Resolution -->
-          <td class="text-left">
+          <td class="text-xs-left">
             {{ formatSpatialResolution(props.item.spatialResolution) }}
           </td>
 

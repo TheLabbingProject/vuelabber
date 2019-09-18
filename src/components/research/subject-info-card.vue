@@ -142,16 +142,6 @@ import { mapActions, mapState, mapGetters } from 'vuex'
 import { sexOptions, genderOptions, dominantHandOptions } from './choices.js'
 import { getKeyByValue } from './utils.js'
 
-const cleanSubject = {
-  idNumber: '',
-  firstName: '',
-  lastName: '',
-  dateOfBirth: null,
-  dominantHand: null,
-  sex: null,
-  gender: null
-}
-
 export default {
   name: 'SubjectInfoCard',
   props: {
@@ -220,7 +210,7 @@ export default {
     },
     createNewSubject() {
       this.createSubject(this.subject)
-        .then((this.editable = false))
+        .then(() => (this.editable = false))
         .then(this.closeDialog())
     },
     getSubjectRepresentation(subject) {
@@ -243,6 +233,16 @@ export default {
       }
     }
   }
+}
+
+const cleanSubject = {
+  idNumber: '',
+  firstName: '',
+  lastName: '',
+  dateOfBirth: null,
+  dominantHand: null,
+  sex: null,
+  gender: null
 }
 
 function formatDate(date) {

@@ -80,7 +80,7 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, maxLength } from 'vuelidate/lib/validators'
-import { mapGetters, mapState, mapActions } from 'vuex'
+import { mapGetters, mapState, mapActions, mapMutations } from 'vuex'
 
 export default {
   name: 'StudyInfoCard',
@@ -141,7 +141,6 @@ export default {
       )
     },
     closeDialog: function() {
-      this.$emit('select-study', this.study.title)
       this.study = Object.assign({}, cleanStudy)
       this.$v.$reset()
       this.$emit('close-study-dialog')
@@ -150,7 +149,9 @@ export default {
       this.$v.study.$touch()
       if (this.$v.study.$error) return
       this.fixCollaboratorsProperty()
-      this.createStudy(this.study).then(this.closeDialog())
+      this.createStudy(this.study)
+        .then(() => this.setSelectedStudyByTitle(this.study.title))
+        .then(() => this.closeDialog())
     },
     updateExistingStudy() {
       this.$v.study.$touch()
@@ -159,7 +160,8 @@ export default {
       this.updateStudy(this.study).then(this.closeDialog())
     },
     ...mapActions('accounts', ['fetchUsers']),
-    ...mapActions('research', ['createStudy', 'updateStudy', 'deleteStudy'])
+    ...mapActions('research', ['createStudy', 'updateStudy', 'deleteStudy']),
+    ...mapMutations('research', ['setSelectedStudyByTitle'])
   }
 }
 
