@@ -10,7 +10,7 @@ const state = {
 
 const getters = {
   getUserByUsername(state) {
-    return username => state.users.find(user => user.username == username)
+    return username => state.users.find(user => user.username === username)
   },
   getUserByUrl(state) {
     return url => state.users.find(user => user.url == url)

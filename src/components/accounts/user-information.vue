@@ -6,7 +6,7 @@
     </v-alert>
 
     <!-- For a valid user, display user information -->
-    <v-layout v-if="user" row>
+    <v-layout v-if="user && !editMode" row>
       <!-- Information -->
       <v-flex xs10>
         <v-layout column class="text-xs-left">
@@ -14,14 +14,21 @@
             <span>
               {{ user | formatResearcherName }}
             </span>
-            <v-dialog v-model="editUserDialog" width="400px">
+            <v-icon
+              class="pl-2"
+              v-if="editPermissions"
+              @click="editMode = true"
+            >
+              edit
+            </v-icon>
+            <!-- <v-dialog v-model="editUserDialog" width="400px">
               <template v-slot:activator="{ on }">
                 <v-icon class="pl-2" v-if="editPermissions" v-on="on">
                   edit
                 </v-icon>
               </template>
               <user-information-card />
-            </v-dialog>
+            </v-dialog> -->
           </v-flex>
           <v-flex> Institute: {{ user.institute }} </v-flex>
           <v-flex> Email: {{ user.email }} </v-flex>
@@ -34,23 +41,33 @@
         <v-img :src="user.image" height="240px" width="240px" />
       </v-flex>
     </v-layout>
+    <edit-user-information
+      v-if="user && editMode"
+      :userInformation="user"
+      @finished-edit="editMode = false"
+    />
   </v-layout>
 </template>
 
 <script>
-import UserInformationCard from '@/components/accounts/user-information-card.vue'
-import { mapGetters, mapActions } from 'vuex'
+// import UserInformationCard from '@/components/accounts/user-information-card.vue'
+import EditUserInformation from '@/components/accounts/edit-user-information.vue'
+import { mapGetters, mapActions, mapState } from 'vuex'
 
 export default {
   name: 'UserInformation',
-  components: { UserInformationCard },
+  created() {
+    this.fetchUsers({ filters: { username: this.username }, pagination: {} })
+  },
+  components: { EditUserInformation },
   props: { username: String },
   data: () => ({
+    editMode: false,
     editUserDialog: false
   }),
   computed: {
     user: function() {
-      return this.getUserByUsername(this.username)
+      return this.users[0]
     },
     editPermissions: function() {
       if (this.user && this.currentUser) {
@@ -58,11 +75,8 @@ export default {
       }
       return false
     },
-    ...mapGetters('accounts', [
-      'currentUser',
-      'currentUserIsStaff',
-      'getUserByUsername'
-    ])
+    ...mapState('accounts', ['users']),
+    ...mapGetters('accounts', ['currentUser', 'currentUserIsStaff'])
   },
   methods: {
     ...mapActions('accounts', ['fetchUsers'])
