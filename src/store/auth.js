@@ -57,12 +57,12 @@ const mutations = {
 }
 
 const actions = {
-  login({ commit }, { username, password }) {
+  login({ commit, dispatch }, { username, password }) {
     commit(LOGIN_BEGIN)
     return auth
       .login(username, password)
       .then(({ data }) => commit(SET_TOKEN, data.key))
-      .then(() => commit(SET_USER))
+      .then(() => dispatch('initialize'))
       .then(() => commit(LOGIN_SUCCESS))
       .catch(() => commit(LOGIN_FAILURE))
   },
