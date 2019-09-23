@@ -14,7 +14,7 @@
 
       <!-- Delete Button -->
       <v-icon
-        v-if="editable && currentUserIsStaff"
+        v-if="editable && currentUser.isStaff"
         style="cursor: pointer;"
         @dblclick="deleteSubject(existingSubject)"
       >
@@ -100,7 +100,7 @@
     <!-- Actions -->
     <v-card-actions>
       <!-- View/Edit mode switch -->
-      <v-flex v-if="currentUserIsStaff" px-3>
+      <v-flex v-if="currentUser.isStaff" px-3>
         <v-switch
           v-if="existingSubject"
           v-model="editable"
@@ -113,7 +113,7 @@
         color="warning"
         flat
         v-if="editable && existingSubject"
-        :disabled="!currentUserIsStaff"
+        :disabled="!currentUser.isStaff"
         @click="updateExistingSubject()"
       >
         Update
@@ -123,7 +123,7 @@
       <v-btn
         color="success"
         flat
-        v-if="!existingSubject && currentUserIsStaff"
+        v-if="!existingSubject && currentUser.isStaff"
         @click="createNewSubject"
       >
         Create
@@ -138,7 +138,7 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 import { sexOptions, genderOptions, dominantHandOptions } from './choices.js'
 import { getKeyByValue } from './utils.js'
 
@@ -196,7 +196,7 @@ export default {
       return formatDate(this.subject.dateOfBirth)
     },
     ...mapState('research', ['subjects']),
-    ...mapGetters('accounts', ['currentUserIsStaff'])
+    ...mapState('auth', { currentUser: 'user' })
   },
   methods: {
     closeDialog() {

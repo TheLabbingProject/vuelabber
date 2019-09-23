@@ -7,13 +7,13 @@
 
     <!-- For a valid user, display user information -->
     <v-layout v-if="user && !editMode" row>
-      <!-- Information -->
       <v-flex xs10>
         <v-layout column class="text-xs-left">
           <v-flex pb-4 class="title">
             <span>
               {{ user | formatResearcherName }}
             </span>
+            <!-- If current user is the viewed user, or staff, display edit icon -->
             <v-icon
               class="pl-2"
               v-if="editPermissions"
@@ -21,18 +21,13 @@
             >
               edit
             </v-icon>
-            <!-- <v-dialog v-model="editUserDialog" width="400px">
-              <template v-slot:activator="{ on }">
-                <v-icon class="pl-2" v-if="editPermissions" v-on="on">
-                  edit
-                </v-icon>
-              </template>
-              <user-information-card />
-            </v-dialog> -->
           </v-flex>
-          <v-flex> Institute: {{ user.institute }} </v-flex>
-          <v-flex> Email: {{ user.email }} </v-flex>
-          <v-flex> Date of Birth: {{ user.dateOfBirth | formatDate }} </v-flex>
+          <v-flex pb-2> Institute: {{ user.institute }} </v-flex>
+          <v-flex pb-2> Email: {{ user.email }} </v-flex>
+          <v-flex pb-2>
+            Date of Birth: {{ user.dateOfBirth | formatDate }}
+          </v-flex>
+          <v-flex pb-2> Bio: {{ user.bio }} </v-flex>
         </v-layout>
       </v-flex>
 
@@ -52,7 +47,7 @@
 <script>
 // import UserInformationCard from '@/components/accounts/user-information-card.vue'
 import EditUserInformation from '@/components/accounts/edit-user-information.vue'
-import { mapGetters, mapActions, mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   name: 'UserInformation',
@@ -71,12 +66,13 @@ export default {
     },
     editPermissions: function() {
       if (this.user && this.currentUser) {
-        return this.currentUser.id === this.user.id || this.currentUserIsStaff
+        let isCurrentUser = this.currentUser.id === this.user.id
+        return isCurrentUser || this.currentUser.isStaff
       }
       return false
     },
     ...mapState('accounts', ['users']),
-    ...mapGetters('accounts', ['currentUser', 'currentUserIsStaff'])
+    ...mapState('auth', { currentUser: 'user' })
   },
   methods: {
     ...mapActions('accounts', ['fetchUsers'])

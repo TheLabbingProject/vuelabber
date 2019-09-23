@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-layout column v-if="currentUserIsStaff">
+    <v-layout column v-if="currentUser.isStaff">
       <!-- Scan Upload -->
       <v-expansion-panel popout>
         <v-expansion-panel-content>
@@ -180,7 +180,7 @@ export default {
     loading: false
   }),
   computed: {
-    ...mapGetters('accounts', ['currentUserIsStaff']),
+    ...mapState('auth', { currentUser: 'user' }),
     ...mapState('mri', ['scans', 'totalScanCount']),
     ...mapGetters('mri', ['getSequenceTypeByUrl']),
     ...mapGetters('research', { subject: 'getSelectedSubject' }),

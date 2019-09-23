@@ -1,5 +1,5 @@
 <template>
-  <v-layout column>
+  <v-flex column xs3>
     <v-form @submit.prevent="submit">
       <v-text-field label="Username" v-model="user.username" disabled />
       <v-select
@@ -20,7 +20,7 @@
           <v-text-field
             label="Date of Birth"
             prepend-icon="cake"
-            v-model="user.dateOfBirth"
+            v-model="dateOfBirth"
             v-on="on"
           ></v-text-field>
         </template>
@@ -29,25 +29,40 @@
           @input="dateOfBirthMenu = false"
         ></v-date-picker>
       </v-menu>
+      <v-textarea
+        hint="A short summary of who you are and what you're up to."
+        label="Bio"
+        v-model="user.bio"
+      />
     </v-form>
-    <v-btn @click="cancel">
-      Cancel
-    </v-btn>
-  </v-layout>
+    <v-layout row>
+      <v-spacer />
+      <v-btn color="success" @click="save">
+        Save
+      </v-btn>
+      <v-btn @click="cancel">
+        Cancel
+      </v-btn>
+    </v-layout>
+  </v-flex>
 </template>
 
 <script>
 import { getKeyByValue, titlesDictionary } from '@/utils'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'EditUserInformation',
   props: { userInformation: Object },
   created() {
     this.user = Object.assign({}, this.userInformation)
+    // Until image upload is fixed...
+    delete this.user.image
   },
   data: () => ({
     titlesDictionary,
-    dateOfBirthMenu: false
+    dateOfBirthMenu: false,
+    user: {}
   }),
   computed: {
     title: {
@@ -57,13 +72,25 @@ export default {
       set: function(selectedTitle) {
         this.user.title = getKeyByValue(this.titlesDictionary, selectedTitle)
       }
+    },
+    dateOfBirth: {
+      get: function() {
+        return this.$options.filters.formatDate(this.user.dateOfBirth)
+      },
+      set: function(newValue) {
+        this.user.formatDate = newValue
+      }
     }
   },
   methods: {
+    save: function() {
+      this.updateUser(this.user).then(() => this.$emit('finished-edit'))
+    },
     cancel: function() {
       this.user = Object.assign({}, this.userInformation)
       this.$emit('finished-edit')
-    }
+    },
+    ...mapActions('accounts', ['updateUser'])
   }
 }
 </script>
