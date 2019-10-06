@@ -138,6 +138,9 @@ const actions = {
         commit('updateScanState', updatedScan)
       })
       .catch(console.error)
+  },
+  fetchPlot() {
+    return session.get(`${SCANS}/plot/1/`).catch(console.error)
   }
 }
 
