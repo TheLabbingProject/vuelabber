@@ -132,8 +132,8 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex'
-import ProtocolInformation from '@/components/dicom/protocol-information.vue'
 import GroupAssociation from '@/components/mri/group-association.vue'
+import ProtocolInformation from '@/components/dicom/protocol-information.vue'
 import ScanUpload from '@/components/mri/scan-upload.vue'
 import ScanTableControls from '@/components/mri/scan-table-controls.vue'
 
