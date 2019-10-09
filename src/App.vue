@@ -54,13 +54,16 @@
                 </v-list-tile-title>
               </v-list-tile>
             </template>
-            <v-list>
-              <v-list-tile to="/dicom-browser" class="drawer-link">
-                <v-list-tile-title>
-                  DICOM
-                </v-list-tile-title>
-              </v-list-tile>
-            </v-list>
+            <v-list-tile to="/mri-sequence-types" class="drawer-link">
+              <v-list-tile-title>
+                Scanning Sequences
+              </v-list-tile-title>
+            </v-list-tile>
+            <v-list-tile to="/dicom-browser" class="drawer-link">
+              <v-list-tile-title>
+                DICOM
+              </v-list-tile-title>
+            </v-list-tile>
           </v-list-group>
         </v-list-group>
       </v-list>

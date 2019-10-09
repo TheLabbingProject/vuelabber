@@ -8,6 +8,8 @@ const camelcaseKeys = require('camelcase-keys')
 const state = {
   studies: [],
   groups: [],
+  selectedStudy: null,
+  selectedStudyGroups: [],
   subjects: [],
   selectedSubjectId: null
 }
@@ -16,17 +18,16 @@ const getters = {
   getStudyByTitle(state) {
     return studyTitle => state.studies.find(study => study.title === studyTitle)
   },
-  getStudyGroupByTitle(state) {
-    return ({ study, groupTitle }) =>
-      state.groups.find(
-        group => group.title === groupTitle && group.study.id === study.id
-      )
+  getSelectedStudyGroupByTitle(state) {
+    return title =>
+      state.selectedStudyGroups.find(group => group.title === title)
   },
   getGroupByUrl(state) {
     return url => state.groups.find(group => group.url === url)
   },
   getStudyGroups(state) {
-    return study => state.groups.filter(group => group.study.id === study.id)
+    return study =>
+      study ? state.groups.filter(group => group.study.id === study.id) : []
   },
   getSubjectById(state) {
     return id => state.subjects.find(subject => subject.id === id)
@@ -36,6 +37,9 @@ const getters = {
   },
   getSubjectByUrl(state) {
     return url => state.subjects.find(subject => subject.url === url)
+  },
+  getSelectedStudyTitle(state) {
+    return state.selectedStudy ? state.selectedStudy.title : null
   }
 }
 
@@ -52,8 +56,11 @@ const mutations = {
   setSelectedSubjectId(state, selectedSubjectId) {
     state.selectedSubjectId = selectedSubjectId
   },
-  setGroups(state, groupList) {
-    state.groups = groupList
+  setGroups(state, groups) {
+    state.groups = groups
+  },
+  setSelectedStudyGroups(state, selectedStudyGroups) {
+    state.selectedStudyGroups = selectedStudyGroups
   },
   addStudy(state, study) {
     state.studies.push(study)
@@ -88,6 +95,9 @@ const mutations = {
     state.studies = state.studies.filter(
       existingStudy => existingStudy.id != study.id
     )
+  },
+  setSelectedStudyByTitle(state, title) {
+    state.selectedStudy = state.studies.find(study => study.title === title)
   }
 }
 
@@ -112,7 +122,18 @@ const actions = {
   fetchGroups({ commit }) {
     return session
       .get(GROUPS)
-      .then(({ data }) => commit('setGroups', camelcaseKeys(data.results)))
+      .then(({ data }) => data.results.map(item => camelcaseKeys(item)))
+      .then(data => commit('setGroups', data))
+      .catch(console.error)
+  },
+  fetchSelectedStudyGroups({ commit, state }) {
+    return session
+      .get(`${GROUPS}/?study__id=${state.selectedStudy.id}`)
+      .then(({ data }) => data.results.map(item => camelcaseKeys(item)))
+      .then(data => {
+        console.log(data)
+        commit('setSelectedStudyGroups', data)
+      })
       .catch(console.error)
   },
   createStudy({ commit }, study) {
@@ -138,12 +159,18 @@ const actions = {
       .then(() => commit('removeStudyFromState', study))
       .catch(console.error)
   },
-  createGroup({ commit }, group) {
-    return session
-      .post(GROUPS, group)
-      .then(({ data }) => camelcaseKeys(data))
-      .then(data => commit('addGroup', data))
-      .catch(console.error)
+  createGroup({ dispatch }, group) {
+    return (
+      session
+        .post(GROUPS, group)
+        // Can't just add the returned value because GET
+        // and POST return different JSONs (the POST result)
+        // doesn't contain Study as an object but as a url
+        // TODO: Make more efficient by getting just the
+        // new created Group instance (by ID) and committing it.
+        .then(() => dispatch('fetchGroups'))
+        .catch(console.error)
+    )
   },
   createSubject({ commit }, subject) {
     return session

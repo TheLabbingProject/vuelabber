@@ -5,6 +5,7 @@ import Lost from '../views/Lost.vue'
 import Home from '../views/Home.vue'
 import User from '../views/User.vue'
 import DicomBrowser from '../views/DicomBrowser.vue'
+import SequenceTypes from '../views/SequenceTypes.vue'
 import StudyBrowser from '../views/StudyBrowser.vue'
 import SubjectBrowser from '../views/SubjectBrowser.vue'
 import store from '../store'
@@ -76,6 +77,12 @@ export default new Router({
       // which is lazy-loaded when the route is visited.
       component: () =>
         import(/* webpackChunkName: "about" */ '../views/About.vue')
+    },
+    {
+      path: '/mri-sequence-types',
+      name: 'sequenceTypes',
+      component: SequenceTypes,
+      beforeEnter: requireAuthenticated
     },
     {
       path: '/dicom-browser',

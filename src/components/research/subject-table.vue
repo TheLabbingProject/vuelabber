@@ -1,9 +1,14 @@
 <template>
   <div>
-    <v-layout row pl-3 pb-3 v-if="currentUserIsStaff">
+    <v-layout row pl-3 pb-3>
       <div class="title text-left">Subjects</div>
       <v-spacer />
-      <v-dialog v-model="createSubjectDialog" lazy width="400px">
+      <v-dialog
+        v-model="createSubjectDialog"
+        lazy
+        width="400px"
+        v-if="currentUser.isStaff"
+      >
         <template v-slot:activator="{ on }">
           <v-btn color="success" v-on="on">
             New Subject
@@ -58,7 +63,7 @@
               {{ getSubjectDominantHandDisplay(props.item) }}
             </td>
             <td
-              v-if="currentUserIsStaff"
+              v-if="currentUser.isStaff"
               class="text-xs-left"
               style="width: 50px;"
             >
@@ -99,7 +104,7 @@ import SubjectInfoCard from '@/components/research/subject-info-card.vue'
 import SubjectTableControls from '@/components/research/subject-table-controls.vue'
 import { sexOptions, genderOptions, dominantHandOptions } from './choices.js'
 import { getKeyByValue } from './utils.js'
-import { mapActions, mapMutations, mapState, mapGetters } from 'vuex'
+import { mapActions, mapMutations, mapState } from 'vuex'
 
 export default {
   name: 'SubjectTable',
@@ -146,7 +151,7 @@ export default {
   }),
   computed: {
     ...mapState('research', ['subjects', 'selectedSubjectId']),
-    ...mapGetters('accounts', ['currentUserIsStaff'])
+    ...mapState('auth', { currentUser: 'user' })
   },
   methods: {
     getSubjectSexDisplay: function(subject) {
@@ -159,7 +164,7 @@ export default {
       return getKeyByValue(this.dominantHandOptions, subject.dominantHand)
     },
     appendEditColumn() {
-      if (this.currentUserIsStaff) {
+      if (this.currentUser.isStaff) {
         this.headers.push({ text: 'Edit', value: 'editSubject' })
       }
     },

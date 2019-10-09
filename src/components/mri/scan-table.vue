@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-layout column v-if="currentUserIsStaff">
+    <v-layout column v-if="currentUser.isStaff">
       <!-- Scan Upload -->
       <v-expansion-panel popout>
         <v-expansion-panel-content>
@@ -67,27 +67,27 @@
           </td>
 
           <!-- Scan Number -->
-          <td class="text-left">
+          <td class="text-xs-center">
             {{ props.item.number }}
           </td>
 
           <!-- Description -->
-          <td class="text-left">
+          <td class="text-xs-left">
             {{ props.item.description }}
           </td>
 
           <!-- Date -->
-          <td class="text-left">
+          <td class="text-xs-left">
             {{ formatDate(props.item.time) }}
           </td>
 
           <!-- Time -->
-          <td class="text-left">
+          <td class="text-xs-left">
             {{ formatTime(props.item.time) }}
           </td>
 
           <!-- Sequence Type -->
-          <td class="text-left">
+          <td class="text-xs-left">
             <v-dialog
               v-model="sequenceTypeDialog[props.item.id]"
               v-if="props.item.sequenceType"
@@ -104,7 +104,7 @@
           </td>
 
           <!-- Spatial Resolution -->
-          <td class="text-left">
+          <td class="text-xs-left">
             {{ formatSpatialResolution(props.item.spatialResolution) }}
           </td>
 
@@ -180,7 +180,7 @@ export default {
     loading: false
   }),
   computed: {
-    ...mapGetters('accounts', ['currentUserIsStaff']),
+    ...mapState('auth', { currentUser: 'user' }),
     ...mapState('mri', ['scans', 'totalScanCount']),
     ...mapGetters('mri', ['getSequenceTypeByUrl']),
     ...mapGetters('research', { subject: 'getSelectedSubject' }),

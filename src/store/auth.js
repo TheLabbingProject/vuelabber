@@ -9,6 +9,7 @@ import {
   SET_TOKEN,
   SET_USER
 } from './types'
+const camelcaseKeys = require('camelcase-keys')
 
 const TOKEN_STORAGE_KEY = 'TOKEN_STORAGE_KEY'
 
@@ -56,12 +57,12 @@ const mutations = {
 }
 
 const actions = {
-  login({ commit }, { username, password }) {
+  login({ commit, dispatch }, { username, password }) {
     commit(LOGIN_BEGIN)
     return auth
       .login(username, password)
       .then(({ data }) => commit(SET_TOKEN, data.key))
-      .then(() => commit(SET_USER))
+      .then(() => dispatch('initialize'))
       .then(() => commit(LOGIN_SUCCESS))
       .catch(() => commit(LOGIN_FAILURE))
   },
@@ -82,7 +83,10 @@ const actions = {
     }
   },
   getUser({ commit }) {
-    return auth.getAccountDetails().then(({ data }) => commit(SET_USER, data))
+    return auth
+      .getAccountDetails()
+      .then(({ data }) => camelcaseKeys(data))
+      .then(data => commit(SET_USER, data))
   }
 }
 

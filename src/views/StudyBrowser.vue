@@ -1,7 +1,7 @@
 <template>
   <v-layout column>
     <!-- Create new study button -->
-    <v-layout mx-0 row v-if="currentUserIsStaff">
+    <v-layout mx-0 row v-if="currentUser.isStaff">
       <v-spacer />
       <v-dialog v-model="createStudyDialog" width="400px" lazy>
         <template v-slot:activator="{ on }">
@@ -24,7 +24,7 @@
         <!-- Edit study dialog button -->
         <v-dialog v-model="editStudyDialog[study.id]" width="400px" lazy>
           <template v-slot:activator="{ on }">
-            <v-icon v-if="currentUserIsStaff" v-on="on">
+            <v-icon v-if="currentUser.isStaff" v-on="on">
               edit
             </v-icon>
           </template>
@@ -101,13 +101,10 @@ export default {
     createStudyDialog: false
   }),
   computed: {
-    ...mapGetters('accounts', [
-      'getUserByUrl',
-      'getUserInitialsFromUrl',
-      'currentUserIsStaff'
-    ]),
     ...mapState('accounts', ['users']),
-    ...mapState('research', ['studies'])
+    ...mapState('auth', { currentUser: 'user' }),
+    ...mapState('research', ['studies']),
+    ...mapGetters('accounts', ['getUserByUrl', 'getUserInitialsFromUrl'])
   },
   methods: {
     randomColor() {

@@ -34,15 +34,16 @@
     <v-card-actions>
       <v-spacer />
       <v-btn
-        color="cyan darken-1"
+        color="success"
         flat
-        @click="createGroup"
+        @click="createGroupCaller"
         :disabled="$v.group.$error"
-        >Submit</v-btn
       >
-      <v-btn color="cyan darken-1" flat @click="$emit('close-group-dialog')"
-        >Cancel</v-btn
-      >
+        Submit
+      </v-btn>
+      <v-btn color="error" flat @click="$emit('close-group-dialog')">
+        Cancel
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -50,28 +51,20 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, maxLength } from 'vuelidate/lib/validators'
-import { mapState } from 'vuex'
-
-const cleanGroup = {
-  title: '',
-  description: '',
-  study: { title: '' }
-}
+import { mapState, mapActions, mapMutations } from 'vuex'
 
 export default {
   name: 'CreateGroupCard',
   created() {
-    this.$store.dispatch('research/fetchStudies')
+    this.fetchStudies()
+    this.group.study = this.selectedStudy.url
   },
-  props: { selectedStudy: Object },
   mixins: [validationMixin],
   validations: {
     group: {
       title: { required, maxLength: maxLength(255) }
     },
-    selectedStudyTitle: {
-      required
-    }
+    selectedStudyTitle: { required }
   },
   data: () => ({
     group: Object.assign({}, cleanGroup)
@@ -81,9 +74,9 @@ export default {
       get: function() {
         return this.selectedStudy.title
       },
-      set: function(newValue) {
-        if (!newValue) return
-        this.$emit('select-study', newValue)
+      set: function(title) {
+        this.setSelectedStudyByTitle(title)
+        this.group.study = this.selectedStudy.url
       }
     },
     titleErrors: function() {
@@ -101,25 +94,36 @@ export default {
         errors.push('Study selection is required.')
       return errors
     },
-    ...mapState('research', ['studies'])
+    ...mapState('research', ['studies', 'selectedStudy'])
   },
   methods: {
-    closeDialog: function() {
-      this.$emit('select-group', this.group.title)
+    resetDialogState: function() {
       this.group = Object.assign({}, cleanGroup)
       this.$v.$reset()
-      this.$emit('close-group-dialog')
     },
-    createGroup: function() {
-      this.group.study = this.selectedStudy.url
+    closeDialog: function() {
+      let title = this.group.title
+      this.resetDialogState()
+      this.$emit('close-group-dialog', title)
+    },
+    createGroupCaller: function() {
       this.$v.group.$touch()
       if (this.$v.group.$error) return
-      this.$store
-        .dispatch('research/createGroup', this.group)
-        .catch(console.error)
-      this.closeDialog()
-    }
+      this.createGroup(this.group).then(() => this.closeDialog())
+    },
+    ...mapActions('research', [
+      'createGroup',
+      'fetchStudies',
+      'fetchSelectedStudyGroups'
+    ]),
+    ...mapMutations('research', ['setSelectedStudyByTitle'])
   }
+}
+
+const cleanGroup = {
+  title: '',
+  description: '',
+  study: ''
 }
 </script>
 
