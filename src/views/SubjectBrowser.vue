@@ -1,6 +1,6 @@
 <template>
   <v-layout column>
-    <bokeh-vue :plot="plot" />
+    <!-- <bokeh-vue :plot="plot" /> -->
     <v-flex grow p-2>
       <v-layout column>
         <subject-table />
@@ -10,18 +10,19 @@
 </template>
 
 <script>
-import BokehVue from '@/components/BokehVue.vue'
+// import BokehVue from '@/components/BokehVue.vue'
 import SubjectTable from '@/components/research/subject-table.vue'
 import { mapState, mapActions } from 'vuex'
 
 export default {
   name: 'SubjectBrowser',
-  components: { BokehVue, SubjectTable },
+  // components: { BokehVue, SubjectTable },
+  components: { SubjectTable },
   mounted() {
-    this.fetchPlot().then(({ data }) => (this.plot = data))
+    // this.fetchPlot().then(({ data }) => (this.plot = data))
   },
   data: () => ({
-    plot: null
+    plot: { div: [], script: [] }
   }),
   computed: {
     ...mapState('research', ['selectedSubjectId'])

@@ -14,7 +14,7 @@
 
       <!-- Delete Button -->
       <v-icon
-        v-if="editable && currentUser.isStaff"
+        v-if="existingSubject && editable && currentUser.isStaff"
         style="cursor: pointer;"
         @dblclick="deleteSubject(existingSubject)"
       >
@@ -29,19 +29,41 @@
           <!-- First Name -->
           <v-text-field
             label="First Name"
+            v-if="existingSubject"
             v-model="subject.firstName"
             :counter="64"
             :disabled="!(editable || subject.firstName)"
             :readonly="!editable"
           />
+          <v-text-field
+            append-outer-icon="casino"
+            label="First Name"
+            v-else
+            v-model="subject.firstName"
+            :counter="64"
+            :disabled="!(editable || subject.firstName)"
+            :readonly="!editable"
+            @click:append-outer="generateFirstName"
+          />
 
           <!-- Last Name -->
           <v-text-field
             label="Last Name"
+            v-if="existingSubject"
             v-model="subject.lastName"
             :counter="64"
             :disabled="!(editable || subject.lastName)"
             :readonly="!editable"
+          />
+          <v-text-field
+            append-outer-icon="casino"
+            label="Last Name"
+            v-else
+            v-model="subject.lastName"
+            :counter="64"
+            :disabled="!(editable || subject.lastName)"
+            :readonly="!editable"
+            @click:append-outer="generateLastName"
           />
 
           <!-- Dominant Hand -->
@@ -138,6 +160,7 @@
 </template>
 
 <script>
+import faker from 'faker'
 import { mapActions, mapState } from 'vuex'
 import { sexOptions, genderOptions, dominantHandOptions } from './choices.js'
 import { getKeyByValue } from './utils.js'
@@ -219,6 +242,12 @@ export default {
         rep = rep.concat(` [${subject.firstName} ${subject.lastName}]`)
       }
       return rep
+    },
+    generateFirstName() {
+      this.subject.firstName = faker.name.firstName()
+    },
+    generateLastName() {
+      this.subject.lastName = faker.name.lastName()
     },
     ...mapActions('research', [
       'createSubject',
