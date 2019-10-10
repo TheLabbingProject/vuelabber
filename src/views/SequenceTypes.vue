@@ -1,5 +1,16 @@
 <template>
-  <div>
+  <v-layout column>
+    <v-layout pb-2 row>
+      <v-spacer />
+      <v-dialog v-model="createSequenceTypeDialog" width="400px" lazy>
+        <template v-slot:activator="{ on }">
+          <v-btn class="success" v-on="on">
+            Create
+          </v-btn>
+        </template>
+        <edit-sequence-type />
+      </v-dialog>
+    </v-layout>
     <v-data-table
       item-key="id"
       :headers="headers"
@@ -49,15 +60,17 @@
         </tr>
       </template>
     </v-data-table>
-  </div>
+  </v-layout>
 </template>
 
 <script>
 import { mapActions, mapState } from 'vuex'
 import { scanningSequences, sequenceVariants } from '@/components/mri/utils'
+import EditSequenceType from '@/components/mri/edit-sequence-type.vue'
 
 export default {
   name: 'SequenceTypes',
+  components: { EditSequenceType },
   created() {
     this.fetchSequenceTypes()
   },
@@ -68,7 +81,8 @@ export default {
       { text: 'Scanning Sequence', value: 'scanningSequence', align: 'left' },
       { text: 'Variants', value: 'sequenceVariants', align: 'left' },
       { text: 'Description', value: 'description', align: 'left' }
-    ]
+    ],
+    createSequenceTypeDialog: false
   }),
   computed: {
     ...mapState('mri', ['sequenceTypes'])
