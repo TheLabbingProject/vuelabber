@@ -56,7 +56,7 @@
             </template>
             <v-list-tile to="/mri-sequence-types" class="drawer-link">
               <v-list-tile-title>
-                Scanning Sequences
+                Sequence Types
               </v-list-tile-title>
             </v-list-tile>
             <v-list-tile to="/dicom-browser" class="drawer-link">

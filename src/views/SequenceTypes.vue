@@ -1,6 +1,7 @@
 <template>
   <v-layout column>
     <v-layout pb-2 row>
+      <span class="headline">MRI Sequence Types</span>
       <v-spacer />
       <v-dialog v-model="createSequenceTypeDialog" width="400px" lazy>
         <template v-slot:activator="{ on }">
@@ -71,6 +72,24 @@
               <edit-sequence-type :existingSequenceType="props.item" />
             </v-dialog>
           </td>
+          <td class="text-xs-left" style="width: 50px;">
+            <v-dialog
+              v-model="deleteSequenceTypeDialog[props.item.id]"
+              width="400px"
+              lazy
+            >
+              <template v-slot:activator="{ on }">
+                <v-icon v-on="on">
+                  delete
+                </v-icon>
+              </template>
+              <delete-dialog
+                :action="deleteSequenceType"
+                :input="props.item"
+                @close-dialog="deleteSequenceTypeDialog[props.item.id] = false"
+              />
+            </v-dialog>
+          </td>
         </tr>
       </template>
     </v-data-table>
@@ -81,10 +100,11 @@
 import { mapActions, mapState } from 'vuex'
 import { scanningSequences, sequenceVariants } from '@/components/mri/utils'
 import EditSequenceType from '@/components/mri/edit-sequence-type.vue'
+import DeleteDialog from '@/components/deleteDialog.vue'
 
 export default {
   name: 'SequenceTypes',
-  components: { EditSequenceType },
+  components: { DeleteDialog, EditSequenceType },
   created() {
     this.fetchSequenceTypes()
   },
@@ -95,9 +115,11 @@ export default {
       { text: 'Scanning Sequence', value: 'scanningSequence', align: 'left' },
       { text: 'Variants', value: 'sequenceVariants', align: 'left' },
       { text: 'Description', value: 'description', align: 'left' },
-      { text: 'Edit', value: 'edit', align: 'left' }
+      { text: 'Edit', value: 'edit', align: 'left' },
+      { text: 'Delete', value: 'delete', align: 'left' }
     ],
     createSequenceTypeDialog: false,
+    deleteSequenceTypeDialog: {},
     editSequenceTypeDialog: {}
   }),
   computed: {
@@ -116,7 +138,7 @@ export default {
     getSequenceVariantColor(abbreviation) {
       return sequenceVariants[abbreviation].color
     },
-    ...mapActions('mri', ['fetchSequenceTypes'])
+    ...mapActions('mri', ['fetchSequenceTypes', 'deleteSequenceType'])
   }
 }
 </script>

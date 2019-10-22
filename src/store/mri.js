@@ -54,6 +54,11 @@ const mutations = {
   },
   addSequenceType(state, sequenceType) {
     state.sequenceTypes.push(sequenceType)
+  },
+  removeSequenceTypeFromState(state, removedSequence) {
+    state.sequenceTypes = state.sequenceTypes.filter(
+      sequence => sequence.id != removedSequence.id
+    )
   }
 }
 
@@ -150,6 +155,12 @@ const actions = {
       .post(SEQUENCE_TYPES, camelToSnakeCase(sequenceType))
       .then(({ data }) => camelcaseKeys(data))
       .then(data => commit('addSequenceType', data))
+      .catch(console.error)
+  },
+  deleteSequenceType({ commit }, sequenceType) {
+    return session
+      .delete(`${SEQUENCE_TYPES}/${sequenceType.id}/`)
+      .then(() => commit('removeSequenceTypeFromState', sequenceType))
       .catch(console.error)
   }
 }
