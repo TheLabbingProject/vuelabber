@@ -20,7 +20,7 @@
         multiple
         label="Scanning Sequence"
         v-model="sequenceType.scanningSequence"
-        :items="verboseScanningSequenceNames"
+        :items="scanningSequenceItems"
       />
 
       <!-- Sequence Variants -->
@@ -29,12 +29,12 @@
         multiple
         label="Sequence Variants"
         v-model="sequenceType.sequenceVariant"
-        :items="verboseSequenceVariantNames"
+        :items="sequenceVarianItems"
       />
     </v-card-text>
     <v-card-actions>
       <v-spacer />
-      <v-btn flat class="success">
+      <v-btn flat class="success" @click="createSequenceType(sequenceType)">
         Create
       </v-btn>
     </v-card-actions>
@@ -43,10 +43,13 @@
 
 <script>
 import { scanningSequences, sequenceVariants } from '@/components/mri/utils'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'EditSequenceType',
-  props: { existingSequenceType: Object },
+  props: {
+    existingSequenceType: { type: Object }
+  },
   created() {
     if (this.existingSequenceType) {
       this.sequenceType = Object.assign({}, this.existingSequenceType)
@@ -58,14 +61,25 @@ export default {
     sequenceVariants
   }),
   computed: {
-    verboseScanningSequenceNames: function() {
-      let keys = Object.keys(this.scanningSequences)
-      return keys.map(key => this.scanningSequences[key]['name'])
+    scanningSequenceItems: function() {
+      return this.createSelectItems(this.scanningSequences)
     },
-    verboseSequenceVariantNames: function() {
-      let keys = Object.keys(this.sequenceVariants)
-      return keys.map(key => this.sequenceVariants[key]['name'])
+    sequenceVarianItems: function() {
+      return this.createSelectItems(this.sequenceVariants)
     }
+  },
+  methods: {
+    createSelectItem(key, object) {
+      return {
+        text: object[key]['name'],
+        value: key
+      }
+    },
+    createSelectItems(object) {
+      let keys = Object.keys(object)
+      return keys.map(key => this.createSelectItem(key, object))
+    },
+    ...mapActions('mri', ['createSequenceType'])
   }
 }
 

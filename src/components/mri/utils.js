@@ -19,3 +19,8 @@ export const sequenceVariants = {
   OSP: { name: 'Oversampling Phase', color: 'blue-grey lighten-3' },
   NONE: { name: 'None', color: 'grey lighten-2' }
 }
+
+export function getKeyByName(object, name) {
+  let keys = Object.keys(object)
+  return keys.find(key => object[key]['name'] === name)
+}

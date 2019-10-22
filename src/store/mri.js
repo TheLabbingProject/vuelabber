@@ -51,6 +51,9 @@ const mutations = {
     let newScans = state.scans.slice()
     newScans[index] = updatedScan
     state.scans = newScans
+  },
+  addSequenceType(state, sequenceType) {
+    state.sequenceTypes.push(sequenceType)
   }
 }
 
@@ -141,6 +144,13 @@ const actions = {
   },
   fetchPlot() {
     return session.get(`${SCANS}/plot/1/`).catch(console.error)
+  },
+  createSequenceType({ commit }, sequenceType) {
+    return session
+      .post(SEQUENCE_TYPES, camelToSnakeCase(sequenceType))
+      .then(({ data }) => camelcaseKeys(data))
+      .then(data => commit('addSequenceType', data))
+      .catch(console.error)
   }
 }
 

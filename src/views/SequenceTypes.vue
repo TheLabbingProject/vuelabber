@@ -57,6 +57,20 @@
           <td class="text-xs-left">
             {{ props.item.description }}
           </td>
+          <td class="text-xs-left" style="width: 50px;">
+            <v-dialog
+              v-model="editSequenceTypeDialog[props.item.id]"
+              width="400px"
+              lazy
+            >
+              <template v-slot:activator="{ on }">
+                <v-icon v-on="on">
+                  edit
+                </v-icon>
+              </template>
+              <edit-sequence-type :existingSequenceType="props.item" />
+            </v-dialog>
+          </td>
         </tr>
       </template>
     </v-data-table>
@@ -80,9 +94,11 @@ export default {
       { text: 'Title', value: 'title', align: 'left' },
       { text: 'Scanning Sequence', value: 'scanningSequence', align: 'left' },
       { text: 'Variants', value: 'sequenceVariants', align: 'left' },
-      { text: 'Description', value: 'description', align: 'left' }
+      { text: 'Description', value: 'description', align: 'left' },
+      { text: 'Edit', value: 'edit', align: 'left' }
     ],
-    createSequenceTypeDialog: false
+    createSequenceTypeDialog: false,
+    editSequenceTypeDialog: {}
   }),
   computed: {
     ...mapState('mri', ['sequenceTypes'])
