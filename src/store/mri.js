@@ -69,7 +69,11 @@ const actions = {
       .get(`${SCANS}/${queryString}`)
       .then(({ data }) => {
         commit('setTotalScanCount', data.count)
-        return data.results.map(item => camelcaseKeys(item))
+        data.results = data.results.map(item => camelcaseKeys(item))
+        data.results.forEach(
+          scan => (scan.sequenceType = camelcaseKeys(scan.sequenceType))
+        )
+        return data
       })
       .then(scans => {
         commit('setScans', scans)

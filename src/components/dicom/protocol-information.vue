@@ -96,7 +96,7 @@ export default {
     if (this.series) {
       this.sequenceType = this.getDicomSeriesSequenceType(this.series)
     } else if (this.scan) {
-      this.sequenceType = this.getSequenceTypeByUrl(this.scan.sequenceType)
+      this.sequenceType = this.scan.sequenceType
     }
   },
   computed: {

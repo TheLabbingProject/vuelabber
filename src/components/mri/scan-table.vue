@@ -96,7 +96,7 @@
             >
               <template v-slot:activator="{ on }">
                 <v-btn small class="info" v-on="on">
-                  {{ sequenceTypeTitleFromUrl(props.item.sequenceType) }}
+                  {{ props.item.sequenceType.title }}
                 </v-btn>
               </template>
               <protocol-information :scan="props.item" />
