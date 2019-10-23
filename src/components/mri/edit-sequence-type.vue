@@ -34,9 +34,19 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer />
-      <v-btn flat class="success" @click="createSequenceType(sequenceType)">
-        Create
-      </v-btn>
+      <div v-if="existingSequenceType">
+        <v-btn flat class="warning" @click="closeDialog">
+          Cancel
+        </v-btn>
+        <v-btn flat class="success" @click="updateSequenceTypeCaller">
+          Update
+        </v-btn>
+      </div>
+      <div v-else>
+        <v-btn flat class="success" @click="createSequenceTypeCaller">
+          Create
+        </v-btn>
+      </div>
     </v-card-actions>
   </v-card>
 </template>
@@ -48,7 +58,7 @@ import { mapActions } from 'vuex'
 export default {
   name: 'EditSequenceType',
   props: {
-    existingSequenceType: { type: Object }
+    existingSequenceType: Object
   },
   created() {
     if (this.existingSequenceType) {
@@ -69,6 +79,9 @@ export default {
     }
   },
   methods: {
+    closeDialog() {
+      this.$emit('close-dialog')
+    },
     createSelectItem(key, object) {
       return {
         text: object[key]['name'],
@@ -79,7 +92,13 @@ export default {
       let keys = Object.keys(object)
       return keys.map(key => this.createSelectItem(key, object))
     },
-    ...mapActions('mri', ['createSequenceType'])
+    createSequenceTypeCaller() {
+      this.createSequenceType(this.sequenceType).then(this.closeDialog())
+    },
+    updateSequenceTypeCaller() {
+      this.updateSequenceType(this.sequenceType).then(this.closeDialog())
+    },
+    ...mapActions('mri', ['createSequenceType', 'updateSequenceType'])
   }
 }
 

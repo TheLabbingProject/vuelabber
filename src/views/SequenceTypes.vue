@@ -9,7 +9,7 @@
             Create
           </v-btn>
         </template>
-        <edit-sequence-type />
+        <edit-sequence-type @close-dialog="createSequenceTypeDialog = false" />
       </v-dialog>
     </v-layout>
     <v-data-table
@@ -69,7 +69,10 @@
                   edit
                 </v-icon>
               </template>
-              <edit-sequence-type :existingSequenceType="props.item" />
+              <edit-sequence-type
+                :existingSequenceType="props.item"
+                @close-dialog="editSequenceTypeDialog[props.item.id] = false"
+              />
             </v-dialog>
           </td>
           <td class="text-xs-left" style="width: 50px;">

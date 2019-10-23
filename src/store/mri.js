@@ -58,6 +58,17 @@ const mutations = {
     state.sequenceTypes = state.sequenceTypes.filter(
       sequence => sequence.id != removedSequence.id
     )
+  },
+  updateSequenceTypeState(state, updatedSequenceType) {
+    let index = state.sequenceTypes.indexOf(
+      state.sequenceTypes.find(
+        sequence => sequence.id === updatedSequenceType.id
+      )
+    )
+    // Mutating an array directly causes reactivity problems
+    let updatedSequenceTypes = state.sequenceTypes.slice()
+    updatedSequenceTypes[index] = updatedSequenceType
+    state.sequenceTypes = updatedSequenceTypes
   }
 }
 
@@ -133,7 +144,7 @@ const actions = {
   },
   updateScan({ commit }, scan) {
     return session
-      .patch(`${SCANS}/${scan.id}/`, camelToSnakeCase(scan))
+      .patch(`${SCANS}/${scan.id}/`, scan)
       .then(({ data }) => {
         commit('updateScanState', data)
       })
@@ -144,7 +155,7 @@ const actions = {
   },
   createSequenceType({ commit }, sequenceType) {
     return session
-      .post(SEQUENCE_TYPES, camelToSnakeCase(sequenceType))
+      .post(SEQUENCE_TYPES, sequenceType)
       .then(({ data }) => commit('addSequenceType', data))
       .catch(console.error)
   },
@@ -152,6 +163,14 @@ const actions = {
     return session
       .delete(`${SEQUENCE_TYPES}/${sequenceType.id}/`)
       .then(() => commit('removeSequenceTypeFromState', sequenceType))
+      .catch(console.error)
+  },
+  updateSequenceType({ commit }, sequenceType) {
+    return session
+      .patch(`${SEQUENCE_TYPES}/${sequenceType.id}/`, sequenceType)
+      .then(({ data }) => {
+        commit('updateSequenceTypeState', data)
+      })
       .catch(console.error)
   }
 }
