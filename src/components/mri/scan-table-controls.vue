@@ -61,13 +61,15 @@
     <v-combobox
       v-model="filters.sequenceType"
       label="Sequence Type"
-      :items="sequenceTypes.map(sequenceType => sequenceType.title)"
+      :items="sequenceTypeItems"
     />
   </v-layout>
 </template>
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex'
+import { createSelectItems } from '@/components/utils'
+
 export default {
   name: 'ScanTableControls',
   props: { pagination: Object },
@@ -88,6 +90,9 @@ export default {
     beforeDateMenu: false
   }),
   computed: {
+    sequenceTypeItems: function() {
+      return createSelectItems(this.sequenceTypes, 'title', 'id')
+    },
     ...mapState('mri', ['sequenceTypes']),
     ...mapGetters('research', { subject: 'getSelectedSubject' })
   },
