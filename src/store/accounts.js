@@ -1,8 +1,6 @@
 import session from '@/api/session'
 import { USERS, LABS } from '@/api/accounts/endpoints'
 import { getUserQueryString } from '@/api/accounts/query'
-import { camelToSnakeCase } from '@/utils'
-const camelcaseKeys = require('camelcase-keys')
 
 const state = {
   users: [],
@@ -45,15 +43,13 @@ const actions = {
     let queryString = getUserQueryString({ filters, pagination })
     return session
       .get(`${USERS}/${queryString}`)
-      .then(({ data }) => data.results.map(item => camelcaseKeys(item)))
-      .then(data => commit('setUsers', data))
+      .then(({ data }) => commit('setUsers', data.results))
       .catch(console.error)
   },
   updateUser({ commit }, user) {
     return session
-      .patch(`${USERS}/${user.id}/`, camelToSnakeCase(user))
-      .then(({ data }) => camelcaseKeys(data))
-      .then(data => {
+      .patch(`${USERS}/${user.id}/`, user)
+      .then(({ data }) => {
         commit('updateUserState', data)
         return data
       })
@@ -62,8 +58,7 @@ const actions = {
   fetchLabs({ commit }) {
     return session
       .get(LABS)
-      .then(({ data }) => data.results.map(item => camelcaseKeys(item)))
-      .then(data => commit('setLabs', data))
+      .then(({ data }) => commit('setLabs', data.results))
       .catch(console.error)
   }
 }

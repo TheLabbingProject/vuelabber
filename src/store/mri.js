@@ -2,7 +2,6 @@ import { SCANS, SEQUENCE_TYPES } from '@/api/mri/endpoints'
 import { getScanQueryString } from '@/api/mri/query'
 import { arraysEqual, camelToSnakeCase } from '@/utils'
 import session from '@/api/session'
-const camelcaseKeys = require('camelcase-keys')
 
 const state = {
   sequenceTypes: [],
@@ -69,11 +68,7 @@ const actions = {
       .get(`${SCANS}/${queryString}`)
       .then(({ data }) => {
         commit('setTotalScanCount', data.count)
-        data.results = data.results.map(item => camelcaseKeys(item))
-        data.results.forEach(
-          scan => (scan.sequenceType = camelcaseKeys(scan.sequenceType))
-        )
-        return data
+        return data.results
       })
       .then(scans => {
         commit('setScans', scans)
@@ -83,15 +78,13 @@ const actions = {
   fetchSequenceTypes({ commit }) {
     return session
       .get(SEQUENCE_TYPES)
-      .then(({ data }) => data.results.map(item => camelcaseKeys(item)))
-      .then(sequenceTypes => commit('setSequenceTypes', sequenceTypes))
+      .then(({ data }) => commit('setSequenceTypes', data.results))
       .catch(console.error)
   },
   getOrCreateScanFromDicomSeries({ commit }, dicomSeries) {
     return session
       .post(SCANS, { dicom: dicomSeries.url })
-      .then(({ data }) => camelcaseKeys(data))
-      .then(data => {
+      .then(({ data }) => {
         commit('addScan', data)
         return data
       })
@@ -100,9 +93,6 @@ const actions = {
   getOrCreateScanInfoFromDicomSeries(context, dicomSeries) {
     return session
       .get(`${SCANS}/from_dicom/${dicomSeries.id}/`)
-      .then(({ data }) => {
-        return camelcaseKeys(data)
-      })
       .catch(console.error)
   },
   associateDicomSeriesToStudyGroups(
@@ -129,8 +119,7 @@ const actions = {
   createScan({ commit }, scan) {
     return session
       .post(SCANS, camelToSnakeCase(scan))
-      .then(({ data }) => camelcaseKeys(data))
-      .then(data => {
+      .then(({ data }) => {
         commit('addScan', data)
         return data
       })
@@ -145,9 +134,8 @@ const actions = {
   updateScan({ commit }, scan) {
     return session
       .patch(`${SCANS}/${scan.id}/`, camelToSnakeCase(scan))
-      .then(({ data }) => camelcaseKeys(data))
-      .then(updatedScan => {
-        commit('updateScanState', updatedScan)
+      .then(({ data }) => {
+        commit('updateScanState', data)
       })
       .catch(console.error)
   },
@@ -157,8 +145,7 @@ const actions = {
   createSequenceType({ commit }, sequenceType) {
     return session
       .post(SEQUENCE_TYPES, camelToSnakeCase(sequenceType))
-      .then(({ data }) => camelcaseKeys(data))
-      .then(data => commit('addSequenceType', data))
+      .then(({ data }) => commit('addSequenceType', data))
       .catch(console.error)
   },
   deleteSequenceType({ commit }, sequenceType) {

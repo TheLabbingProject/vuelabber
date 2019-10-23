@@ -158,7 +158,7 @@ export default {
       { text: 'Time', value: 'time', sortable: false },
       { text: 'Sequence Type', value: 'sequenceType', sortable: false },
       {
-        text: 'Spatial Resolution',
+        text: 'Spatial Resolution (mm)',
         value: 'spatialResolution',
         sortable: false
       },

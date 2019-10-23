@@ -3,8 +3,6 @@ import { GROUPS, STUDIES, SUBJECTS } from '@/api/research/endpoints'
 import { getSubjectQueryString } from '@/api/research/query'
 import { camelToSnakeCase } from '@/utils'
 
-const camelcaseKeys = require('camelcase-keys')
-
 const state = {
   studies: [],
   groups: [],
@@ -112,9 +110,8 @@ const actions = {
     let queryString = getSubjectQueryString({ filters, pagination })
     return session
       .get(`${SUBJECTS}/${queryString}`)
-      .then(({ data }) => data.results.map(item => camelcaseKeys(item)))
-      .then(data => {
-        commit('setSubjects', data)
+      .then(({ data }) => {
+        commit('setSubjects', data.results)
         return data
       })
       .catch(console.error)
@@ -122,32 +119,27 @@ const actions = {
   fetchGroups({ commit }) {
     return session
       .get(GROUPS)
-      .then(({ data }) => data.results.map(item => camelcaseKeys(item)))
-      .then(data => commit('setGroups', data))
+      .then(({ data }) => commit('setGroups', data.results))
       .catch(console.error)
   },
   fetchSelectedStudyGroups({ commit, state }) {
     return session
       .get(`${GROUPS}/?study__id=${state.selectedStudy.id}`)
-      .then(({ data }) => data.results.map(item => camelcaseKeys(item)))
-      .then(data => {
-        console.log(data)
-        commit('setSelectedStudyGroups', data)
+      .then(({ data }) => {
+        commit('setSelectedStudyGroups', data.results)
       })
       .catch(console.error)
   },
   createStudy({ commit }, study) {
     return session
       .post(STUDIES, study)
-      .then(({ data }) => camelcaseKeys(data))
-      .then(data => commit('addStudy', data))
+      .then(({ data }) => commit('addStudy', data))
       .catch(console.error)
   },
   updateStudy({ commit }, study) {
     return session
       .patch(`${STUDIES}/${study.id}/`, camelToSnakeCase(study))
-      .then(({ data }) => camelcaseKeys(data))
-      .then(data => {
+      .then(({ data }) => {
         commit('updateStudyState', data)
         return data
       })
@@ -174,9 +166,8 @@ const actions = {
   },
   createSubject({ commit }, subject) {
     return session
-      .post(SUBJECTS, camelToSnakeCase(subject))
-      .then(({ data }) => camelcaseKeys(data))
-      .then(data => {
+      .post(SUBJECTS, subject)
+      .then(({ data }) => {
         commit('addSubject', data)
         return data
       })
@@ -185,8 +176,7 @@ const actions = {
   updateSubject({ commit }, subject) {
     return session
       .patch(`${SUBJECTS}/${subject.id}/`, camelToSnakeCase(subject))
-      .then(({ data }) => camelcaseKeys(data))
-      .then(data => {
+      .then(({ data }) => {
         commit('updateSubjectState', data)
         return data
       })

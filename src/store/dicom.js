@@ -5,7 +5,6 @@ import {
   getSeriesQueryString,
   getStudyQueryString
 } from '@/api/dicom/query'
-const camelcaseKeys = require('camelcase-keys')
 
 const state = {
   patients: [],
@@ -60,7 +59,7 @@ const actions = {
     return session
       .get(`${PATIENTS}/${queryString}`)
       .then(({ data }) => {
-        commit('setPatients', data.results.map(item => camelcaseKeys(item)))
+        commit('setPatients', data.results)
         commit('setPatientCount', data.count)
       })
       .catch(console.error)
@@ -70,7 +69,7 @@ const actions = {
     return session
       .get(`${SERIES}/${queryString}`)
       .then(({ data }) => {
-        commit('setSeries', data.results.map(item => camelcaseKeys(item)))
+        commit('setSeries', data.results)
         commit('setSeriesCount', data.count)
       })
       .catch(console.error)
@@ -80,7 +79,7 @@ const actions = {
     return session
       .get(`${STUDIES}/${queryString}`)
       .then(({ data }) => {
-        commit('setStudies', data.results.map(item => camelcaseKeys(item)))
+        commit('setStudies', data.results)
         commit('setStudyCount', data.count)
       })
       .catch(console.error)

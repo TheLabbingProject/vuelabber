@@ -9,7 +9,6 @@ import {
   SET_TOKEN,
   SET_USER
 } from './types'
-const camelcaseKeys = require('camelcase-keys')
 
 const TOKEN_STORAGE_KEY = 'TOKEN_STORAGE_KEY'
 
@@ -83,10 +82,7 @@ const actions = {
     }
   },
   getUser({ commit }) {
-    return auth
-      .getAccountDetails()
-      .then(({ data }) => camelcaseKeys(data))
-      .then(data => commit(SET_USER, data))
+    return auth.getAccountDetails().then(({ data }) => commit(SET_USER, data))
   }
 }
 
