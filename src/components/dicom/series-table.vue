@@ -66,7 +66,7 @@
               lazy
               v-if="getScanByDicomSeries(props.item)"
               v-model="scanInfoDialog[props.item.id]"
-              width="800px"
+              width="500px"
             >
               <template v-slot:activator="{ on }">
                 <v-btn small color="success" v-on="on">

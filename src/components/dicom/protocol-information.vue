@@ -100,7 +100,6 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('mri', ['getSequenceTypeByUrl']),
     ...mapGetters('mri', ['getDicomSeriesSequenceType'])
   },
   data: () => ({

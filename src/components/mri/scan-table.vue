@@ -210,10 +210,6 @@ export default {
     stringifyGroup(group) {
       return group ? `${group.study.title} | ${group.title}` : null
     },
-    sequenceTypeTitleFromUrl(url) {
-      let sequenceType = this.getSequenceTypeByUrl(url)
-      return sequenceType ? sequenceType.title : null
-    },
     update() {
       this.$refs.tableController.update()
     },

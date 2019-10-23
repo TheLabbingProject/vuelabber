@@ -54,6 +54,7 @@
 <script>
 import { scanningSequences, sequenceVariants } from '@/components/mri/utils'
 import { mapActions } from 'vuex'
+import { createSelectItems } from '@/components/utils'
 
 export default {
   name: 'EditSequenceType',
@@ -72,25 +73,15 @@ export default {
   }),
   computed: {
     scanningSequenceItems: function() {
-      return this.createSelectItems(this.scanningSequences)
+      return createSelectItems(this.scanningSequences, 'name')
     },
     sequenceVarianItems: function() {
-      return this.createSelectItems(this.sequenceVariants)
+      return createSelectItems(this.sequenceVariants, 'name')
     }
   },
   methods: {
     closeDialog() {
       this.$emit('close-dialog')
-    },
-    createSelectItem(key, object) {
-      return {
-        text: object[key]['name'],
-        value: key
-      }
-    },
-    createSelectItems(object) {
-      let keys = Object.keys(object)
-      return keys.map(key => this.createSelectItem(key, object))
     },
     createSequenceTypeCaller() {
       this.createSequenceType(this.sequenceType).then(this.closeDialog())

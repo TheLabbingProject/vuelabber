@@ -101,11 +101,6 @@ const actions = {
       })
       .catch(console.error)
   },
-  getOrCreateScanInfoFromDicomSeries(context, dicomSeries) {
-    return session
-      .get(`${SCANS}/from_dicom/${dicomSeries.id}/`)
-      .catch(console.error)
-  },
   associateDicomSeriesToStudyGroups(
     { commit, dispatch, getters },
     { dicomSeries, studyGroups }
