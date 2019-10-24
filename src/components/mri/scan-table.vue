@@ -1,9 +1,11 @@
 <template>
   <div>
     <v-layout column v-if="currentUser.isStaff">
+      <hr />
+      <br />
       <!-- Scan Upload -->
       <v-expansion-panel popout>
-        <v-expansion-panel-content>
+        <v-expansion-panel-content style="background: rgb(255, 210, 210);">
           <template v-slot:header>
             <div>
               Upload
@@ -22,7 +24,7 @@
 
       <!-- Group Association -->
       <v-expansion-panel popout>
-        <v-expansion-panel-content>
+        <v-expansion-panel-content style="background: rgb(255, 240, 218);">
           <template v-slot:header>
             <div>
               Study Group Association
@@ -35,6 +37,8 @@
           </v-card>
         </v-expansion-panel-content>
       </v-expansion-panel>
+      <br />
+      <hr />
     </v-layout>
 
     <!-- Scan Table -->
@@ -101,6 +105,23 @@
               </template>
               <protocol-information :scan="props.item" />
             </v-dialog>
+            <v-dialog
+              v-model="sequenceTypeDialog[props.item.id]"
+              v-else
+              lazy
+              width="400px"
+            >
+              <template v-slot:activator="{ on }">
+                <v-btn small class="warning" v-on="on">
+                  Create
+                </v-btn>
+              </template>
+              <edit-sequence-type
+                :fromScan="props.item"
+                @close-dialog="sequenceTypeDialog[props.item.id] = false"
+                @created-sequence-type="update"
+              />
+            </v-dialog>
           </td>
 
           <!-- Spatial Resolution -->
@@ -132,6 +153,7 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex'
+import EditSequenceType from '@/components/mri/edit-sequence-type.vue'
 import GroupAssociation from '@/components/mri/group-association.vue'
 import ProtocolInformation from '@/components/dicom/protocol-information.vue'
 import ScanUpload from '@/components/mri/scan-upload.vue'
@@ -140,6 +162,7 @@ import ScanTableControls from '@/components/mri/scan-table-controls.vue'
 export default {
   name: 'ScanTable',
   components: {
+    EditSequenceType,
     GroupAssociation,
     ProtocolInformation,
     ScanTableControls,
@@ -219,4 +242,8 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.check {
+  color: rgb(207, 255, 195);
+}
+</style>

@@ -181,10 +181,10 @@ export default {
 </script>
 
 <style scoped>
-tr.selected {
-  background-color: #b3d4fc77;
+>>> tr.selected {
+  background-color: #e4f3ff;
 }
 div.embeded-table {
-  background-color: white;
+  background-color: #e4f3ff;
 }
 </style>

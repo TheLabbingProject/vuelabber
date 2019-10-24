@@ -20,6 +20,7 @@
         multiple
         label="Scanning Sequence"
         v-model="sequenceType.scanningSequence"
+        :disabled="Boolean(fromScan)"
         :items="scanningSequenceItems"
       />
 
@@ -29,6 +30,7 @@
         multiple
         label="Sequence Variants"
         v-model="sequenceType.sequenceVariant"
+        :disabled="Boolean(fromScan)"
         :items="sequenceVarianItems"
       />
     </v-card-text>
@@ -53,17 +55,20 @@
 
 <script>
 import { scanningSequences, sequenceVariants } from '@/components/mri/utils'
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 import { createSelectItems } from '@/components/utils'
 
 export default {
   name: 'EditSequenceType',
   props: {
-    existingSequenceType: Object
+    existingSequenceType: Object,
+    fromScan: Object
   },
   created() {
     if (this.existingSequenceType) {
       this.sequenceType = Object.assign({}, this.existingSequenceType)
+    } else if (this.fromScan && this.fromScan.dicom) {
+      this.setSequenceDefinitionFromDicomUrl(this.fromScan.dicom)
     }
   },
   data: () => ({
@@ -77,18 +82,33 @@ export default {
     },
     sequenceVarianItems: function() {
       return createSelectItems(this.sequenceVariants, 'name')
-    }
+    },
+    ...mapState('dicom', ['seriesList'])
   },
   methods: {
+    setSequenceDefinitionFromDicomUrl(dicomUrl) {
+      let splitUrl = dicomUrl.split('/')
+      let dicomId = Number(splitUrl[splitUrl.length - 2])
+      this.fetchSeries({
+        filters: { id: dicomId },
+        pagination: {}
+      }).then(({ scanningSequence, sequenceVariant }) => {
+        this.sequenceType.scanningSequence = scanningSequence
+        this.sequenceType.sequenceVariant = sequenceVariant
+      })
+    },
     closeDialog() {
       this.$emit('close-dialog')
     },
     createSequenceTypeCaller() {
-      this.createSequenceType(this.sequenceType).then(this.closeDialog())
+      this.createSequenceType(this.sequenceType)
+        .then(this.$emit('created-sequence-type'))
+        .then(this.closeDialog())
     },
     updateSequenceTypeCaller() {
       this.updateSequenceType(this.sequenceType).then(this.closeDialog())
     },
+    ...mapActions('dicom', ['fetchSeries']),
     ...mapActions('mri', ['createSequenceType', 'updateSequenceType'])
   }
 }

@@ -71,6 +71,7 @@ const actions = {
       .then(({ data }) => {
         commit('setSeries', data.results)
         commit('setSeriesCount', data.count)
+        return filters.id ? data.results[0] : data.results
       })
       .catch(console.error)
   },
