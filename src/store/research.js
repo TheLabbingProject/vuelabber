@@ -112,7 +112,7 @@ const actions = {
       .get(`${SUBJECTS}/${queryString}`)
       .then(({ data }) => {
         commit('setSubjects', data.results)
-        return data
+        return data.results
       })
       .catch(console.error)
   },
