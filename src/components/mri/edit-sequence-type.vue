@@ -9,7 +9,12 @@
     </v-card-title>
     <v-card-text>
       <!-- Title -->
-      <v-text-field label="Title" v-model="sequenceType.title" :counter="64" />
+      <v-text-field
+        label="Title"
+        v-model="sequenceType.title"
+        :counter="64"
+        :rules="[rules.required]"
+      />
 
       <!-- Description -->
       <v-textarea label="Description" v-model="sequenceType.description" />
@@ -22,6 +27,7 @@
         v-model="sequenceType.scanningSequence"
         :disabled="Boolean(fromScan)"
         :items="scanningSequenceItems"
+        :rules="[rules.requiredMultiple]"
       />
 
       <!-- Sequence Variants -->
@@ -32,6 +38,7 @@
         v-model="sequenceType.sequenceVariant"
         :disabled="Boolean(fromScan)"
         :items="sequenceVarianItems"
+        :rules="[rules.requiredMultiple]"
       />
     </v-card-text>
     <v-card-actions>
@@ -74,7 +81,11 @@ export default {
   data: () => ({
     sequenceType: Object.assign({}, cleanSequenceType),
     scanningSequences,
-    sequenceVariants
+    sequenceVariants,
+    rules: {
+      required: value => !!value || 'Required!',
+      requiredMultiple: value => Boolean(value.length) || 'Required!'
+    }
   }),
   computed: {
     scanningSequenceItems: function() {

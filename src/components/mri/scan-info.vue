@@ -42,6 +42,7 @@
           v-model="scan.sequenceType"
           label="Sequence Type"
           hint="A unique combination of scanning sequence and variant."
+          :disabled="Boolean(existingScan)"
           :items="sequenceTypeItems"
           :readonly="!editable"
         />
@@ -74,7 +75,7 @@
           </v-menu>
         </v-flex>
         <v-spacer />
-        <v-flex pl-3>
+        <v-flex>
           <v-menu
             ref="timeMenuRef"
             v-model="timeMenu"
