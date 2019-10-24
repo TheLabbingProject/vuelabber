@@ -58,9 +58,11 @@
       </v-menu>
     </v-flex>
     <v-spacer />
-    <v-combobox
-      v-model="filters.sequenceType"
+    <v-select
+      chips
+      multiple
       label="Sequence Type"
+      v-model="filters.sequenceType"
       :items="sequenceTypeItems"
     />
   </v-layout>

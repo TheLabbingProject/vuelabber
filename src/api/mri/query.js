@@ -6,9 +6,9 @@ const getScanQueryString = ({ filters, pagination }) => {
     ''}&created_after=&created_before=&scan_time_after=${filters.afterDate ||
     ''}&scan_time_before=${filters.beforeDate ||
     ''}&echo_time=&inversion_time=&repetition_time=&institution_name=&is_updated_from_dicom=&dicom__id=${filters.dicomId ||
-    ''}&sequence_type=${filters.sequenceType.value ||
-    ''}&subject=${filters.subject || ''}&page_size=${pagination.rowsPerPage ||
-    100}&page=${pagination.page || 1}&ordering=${
+    ''}&sequence_type=${filters.sequenceType || ''}&subject=${filters.subject ||
+    ''}&page_size=${pagination.rowsPerPage || 100}&page=${pagination.page ||
+    1}&ordering=${
     pagination.descending ? '-' + pagination.sortBy : pagination.sortBy
   }`
 }
