@@ -1,5 +1,5 @@
-const sexOptions = { Male: 'M', Female: 'F', Other: 'U' }
-const genderOptions = { Cisgender: 'CIS', Transgender: 'TRANS', Other: 'OTHER' }
-const dominantHandOptions = { Right: 'R', Left: 'L', Ambidextrous: 'A' }
+const sexOptions = { M: 'Male', F: 'Female', U: 'Other' }
+const genderOptions = { CIS: 'Cisgender', TRANS: 'Transgender', OTHER: 'Other' }
+const dominantHandOptions = { R: 'Right', L: 'Left', A: 'Ambidextrous' }
 
 export { sexOptions, genderOptions, dominantHandOptions }

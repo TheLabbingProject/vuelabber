@@ -103,7 +103,6 @@ import SubjectData from '@/components/research/subject-data.vue'
 import SubjectInfoCard from '@/components/research/subject-info-card.vue'
 import SubjectTableControls from '@/components/research/subject-table-controls.vue'
 import { sexOptions, genderOptions, dominantHandOptions } from './choices.js'
-import { getKeyByValue } from './utils.js'
 import { mapActions, mapMutations, mapState } from 'vuex'
 
 export default {
@@ -144,10 +143,7 @@ export default {
     expand: false,
     loading: false,
     createSubjectDialog: false,
-    editSubjectDialog: {},
-    sexOptions,
-    genderOptions,
-    dominantHandOptions
+    editSubjectDialog: {}
   }),
   computed: {
     ...mapState('research', ['subjects', 'selectedSubjectId']),
@@ -155,13 +151,13 @@ export default {
   },
   methods: {
     getSubjectSexDisplay: function(subject) {
-      return getKeyByValue(this.sexOptions, subject.sex)
+      return sexOptions[subject.sex]
     },
     getSubjectGenderDisplay: function(subject) {
-      return getKeyByValue(this.genderOptions, subject.gender)
+      return genderOptions[subject.gender]
     },
     getSubjectDominantHandDisplay: function(subject) {
-      return getKeyByValue(this.dominantHandOptions, subject.dominantHand)
+      return dominantHandOptions[subject.dominantHand]
     },
     appendEditColumn() {
       if (this.currentUser.isStaff) {

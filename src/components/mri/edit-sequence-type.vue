@@ -37,7 +37,7 @@
         label="Sequence Variants"
         v-model="sequenceType.sequenceVariant"
         :disabled="Boolean(fromScan)"
-        :items="sequenceVarianItems"
+        :items="sequenceVariantItems"
         :rules="[rules.requiredMultiple]"
       />
     </v-card-text>
@@ -80,20 +80,14 @@ export default {
   },
   data: () => ({
     sequenceType: Object.assign({}, cleanSequenceType),
-    scanningSequences,
-    sequenceVariants,
+    scanningSequenceItems: createSelectItems(scanningSequences, 'name'),
+    sequenceVariantItems: createSelectItems(sequenceVariants, 'name'),
     rules: {
       required: value => !!value || 'Required!',
       requiredMultiple: value => Boolean(value.length) || 'Required!'
     }
   }),
   computed: {
-    scanningSequenceItems: function() {
-      return createSelectItems(this.scanningSequences, 'name')
-    },
-    sequenceVarianItems: function() {
-      return createSelectItems(this.sequenceVariants, 'name')
-    },
     ...mapState('dicom', ['seriesList'])
   },
   methods: {

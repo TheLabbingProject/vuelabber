@@ -81,7 +81,7 @@
       style="width: 70px;"
       v-model="filters.sex"
       :disabled="Boolean(filters.id)"
-      :items="Object.keys(sexOptions)"
+      :items="sexItems"
     />
     <v-spacer />
     <v-select
@@ -90,7 +90,7 @@
       style="width: 120px;"
       v-model="filters.gender"
       :disabled="Boolean(filters.id)"
-      :items="Object.keys(genderOptions)"
+      :items="genderItems"
     />
     <v-spacer />
     <v-select
@@ -99,7 +99,7 @@
       style="width: 120px;"
       v-model="filters.dominantHand"
       :disabled="Boolean(filters.id)"
-      :items="Object.keys(dominantHandOptions)"
+      :items="dominantHandItems"
     />
   </v-layout>
 </template>
@@ -107,6 +107,7 @@
 <script>
 import { mapActions } from 'vuex'
 import { sexOptions, genderOptions, dominantHandOptions } from './choices.js'
+import { createSelectItems } from '@/components/utils'
 
 export default {
   name: 'SubjectTableControls',
@@ -127,9 +128,9 @@ export default {
       gender: '',
       dominantHand: ''
     },
-    sexOptions,
-    genderOptions,
-    dominantHandOptions
+    sexItems: createSelectItems(sexOptions),
+    genderItems: createSelectItems(genderOptions),
+    dominantHandItems: createSelectItems(dominantHandOptions)
   }),
   methods: {
     update() {

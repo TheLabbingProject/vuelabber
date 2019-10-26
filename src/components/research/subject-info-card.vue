@@ -29,7 +29,7 @@
           <!-- First Name -->
           <v-text-field
             label="First Name"
-            v-if="existingSubject"
+            v-if="existingSubject && !editable"
             v-model="subject.firstName"
             :counter="64"
             :disabled="!(editable || subject.firstName)"
@@ -49,7 +49,7 @@
           <!-- Last Name -->
           <v-text-field
             label="Last Name"
-            v-if="existingSubject"
+            v-if="existingSubject && !editable"
             v-model="subject.lastName"
             :counter="64"
             :disabled="!(editable || subject.lastName)"
@@ -69,27 +69,27 @@
           <!-- Dominant Hand -->
           <v-select
             label="Dominant Hand"
-            v-model="subjectDominantHand"
-            :items="Object.keys(dominantHandOptions)"
+            v-model="subject.dominantHand"
+            :clearable="editable"
+            :items="dominantHandItems"
             :readonly="!editable"
-            :disabled="!(editable || subjectDominantHand)"
           />
 
           <!-- Sex -->
           <v-select
+            :clearable="editable"
             label="Sex"
-            v-model="subjectSex"
-            :disabled="!(editable || subjectSex)"
-            :items="Object.keys(sexOptions)"
+            v-model="subject.sex"
+            :items="sexItems"
             :readonly="!editable"
           />
 
           <!-- Gender -->
           <v-select
             label="Gender"
-            v-model="subjectGender"
-            :disabled="!(editable || subjectGender)"
-            :items="Object.keys(genderOptions)"
+            v-model="subject.gender"
+            :clearable="editable"
+            :items="genderItems"
             :readonly="!editable"
           />
 
@@ -106,6 +106,7 @@
                 prepend-icon="cake"
                 v-model="formattedDate"
                 v-on="on"
+                :clearable="editable"
                 :disabled="!(editable || formattedDate)"
                 :readonly="!editable"
               ></v-text-field>
@@ -115,6 +116,13 @@
               @input="dob_menu = false"
             ></v-date-picker>
           </v-menu>
+          <br />
+          <v-flex pl-1>
+            <div class="text-xs-left grey--text">
+              Custom attributes
+            </div>
+            <subject-attributes :subject="subject" />
+          </v-flex>
         </v-form>
       </v-layout>
     </v-card-text>
@@ -163,10 +171,12 @@
 import faker from 'faker'
 import { mapActions, mapState } from 'vuex'
 import { sexOptions, genderOptions, dominantHandOptions } from './choices.js'
-import { getKeyByValue } from './utils.js'
+import { createSelectItems } from '@/components/utils'
+import SubjectAttributes from '@/components/research/subject-attributes.vue'
 
 export default {
   name: 'SubjectInfoCard',
+  components: { SubjectAttributes },
   props: {
     existingSubject: Object,
     createMode: { type: Boolean, default: false }
@@ -183,38 +193,11 @@ export default {
     editable: true,
     dob_menu: false,
     radioGroup: 'new',
-    sexOptions,
-    genderOptions,
-    dominantHandOptions
+    sexItems: createSelectItems(sexOptions),
+    genderItems: createSelectItems(genderOptions),
+    dominantHandItems: createSelectItems(dominantHandOptions)
   }),
   computed: {
-    subjectSex: {
-      get: function() {
-        return getKeyByValue(this.sexOptions, this.subject.sex)
-      },
-      set: function(newValue) {
-        this.subject.sex = this.sexOptions[newValue]
-      }
-    },
-    subjectGender: {
-      get: function() {
-        return getKeyByValue(this.genderOptions, this.subject.gender)
-      },
-      set: function(newValue) {
-        this.subject.gender = this.genderOptions[newValue]
-      }
-    },
-    subjectDominantHand: {
-      get: function() {
-        return getKeyByValue(
-          this.dominantHandOptions,
-          this.subject.dominantHand
-        )
-      },
-      set: function(newValue) {
-        this.subject.dominantHand = this.dominantHandOptions[newValue]
-      }
-    },
     formattedDate: function() {
       return formatDate(this.subject.dateOfBirth)
     },
@@ -226,7 +209,16 @@ export default {
       if (this.existingSubject && this.editable) this.editable = false
       this.$emit('close-subject-dialog')
     },
+    undefinedToNull() {
+      let keys = Object.keys(this.subject)
+      keys.forEach(key => {
+        if (this.subject[key] === undefined) {
+          this.subject[key] = null
+        }
+      })
+    },
     updateExistingSubject() {
+      this.undefinedToNull()
       this.updateSubject(this.subject)
         .then(data => (this.subject = Object.assign({}, data)))
         .then(this.closeDialog())
