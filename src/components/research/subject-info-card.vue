@@ -121,7 +121,7 @@
             <div class="text-xs-left grey--text">
               Custom attributes
             </div>
-            <subject-attributes :subject="subject" />
+            <subject-attributes :existingObject="subject.customAttributes" />
           </v-flex>
         </v-form>
       </v-layout>
