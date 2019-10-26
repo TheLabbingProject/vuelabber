@@ -1,10 +1,12 @@
 <template>
-  <v-layout row px-4>
-    <v-text-field v-model="filters.number" label="Number" />
-    <v-spacer />
-    <v-text-field v-model="filters.description" label="Description" />
-    <v-spacer />
-    <v-flex>
+  <v-layout row px-4 xs12 wrap justify-space-between>
+    <v-flex xs1>
+      <v-text-field v-model="filters.number" label="Number" />
+    </v-flex>
+    <v-flex xs2>
+      <v-text-field v-model="filters.description" label="Description" />
+    </v-flex>
+    <v-flex xs2>
       <v-menu
         v-model="afterDateMenu"
         :close-on-content-click="false"
@@ -30,8 +32,7 @@
         ></v-date-picker>
       </v-menu>
     </v-flex>
-    <v-spacer />
-    <v-flex>
+    <v-flex xs2>
       <v-menu
         v-model="beforeDateMenu"
         :close-on-content-click="false"
@@ -57,14 +58,16 @@
         ></v-date-picker>
       </v-menu>
     </v-flex>
-    <v-spacer />
-    <v-select
-      chips
-      multiple
-      label="Sequence Type"
-      v-model="filters.sequenceType"
-      :items="sequenceTypeItems"
-    />
+    <v-flex xs2>
+      <v-select
+        chips
+        clearable
+        multiple
+        label="Sequence Type"
+        v-model="filters.sequenceType"
+        :items="sequenceTypeItems"
+      />
+    </v-flex>
   </v-layout>
 </template>
 
@@ -93,7 +96,9 @@ export default {
   }),
   computed: {
     sequenceTypeItems: function() {
-      return createSelectItems(this.sequenceTypes, 'title', 'id')
+      let items = createSelectItems(this.sequenceTypes, 'title', 'id')
+      items.push({ text: 'Undefined', value: -1 })
+      return items
     },
     ...mapState('mri', ['sequenceTypes']),
     ...mapGetters('research', { subject: 'getSelectedSubject' })
