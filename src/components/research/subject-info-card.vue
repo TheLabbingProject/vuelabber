@@ -118,10 +118,25 @@
           </v-menu>
           <br />
           <v-flex pl-1>
-            <div class="text-xs-left grey--text">
-              Custom attributes
-            </div>
-            <subject-attributes :existingObject="subject.customAttributes" />
+            <v-layout row align-center>
+              <span class="text-xs-left grey--text">
+                Custom attributes
+              </span>
+              <v-spacer />
+              <v-btn
+                small
+                color="success"
+                v-if="editable"
+                @click="createCustomAttribute"
+              >
+                Add
+              </v-btn>
+            </v-layout>
+            <object-table
+              :editable="editable"
+              :existingObject="subject.customAttributes"
+              @update-object="updateCustomAttributes"
+            />
           </v-flex>
         </v-form>
       </v-layout>
@@ -172,11 +187,11 @@ import faker from 'faker'
 import { mapActions, mapState } from 'vuex'
 import { sexOptions, genderOptions, dominantHandOptions } from './choices.js'
 import { createSelectItems } from '@/components/utils'
-import SubjectAttributes from '@/components/research/subject-attributes.vue'
+import ObjectTable from '@/components/object-table.vue'
 
 export default {
   name: 'SubjectInfoCard',
-  components: { SubjectAttributes },
+  components: { ObjectTable },
   props: {
     existingSubject: Object,
     createMode: { type: Boolean, default: false }
@@ -240,6 +255,19 @@ export default {
     },
     generateLastName() {
       this.subject.lastName = faker.name.lastName()
+    },
+    createCustomAttribute() {
+      if (this.subject.customAttributes === null) {
+        this.subject.customAttributes = {}
+      }
+      let newKey = { Key: 'Value' }
+      this.subject.customAttributes = Object.assign(
+        newKey,
+        this.subject.customAttributes
+      )
+    },
+    updateCustomAttributes(updatedAttributes) {
+      this.subject.customAttributes = updatedAttributes
     },
     ...mapActions('research', [
       'createSubject',

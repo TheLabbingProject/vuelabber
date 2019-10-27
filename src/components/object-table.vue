@@ -1,15 +1,16 @@
 <template>
   <v-data-table
     hide-actions
-    no-data-text="No custom attributes found."
     :headers="headers"
     :items="entries"
+    :no-data-text="noDataText"
   >
     <template v-slot:items="props">
       <tr>
         <td class="text-xs-left">
           <v-edit-dialog
             lazy
+            :readonly="!editable"
             :return-value.sync="props.item.key"
             @save="updateKeys"
           >
@@ -24,8 +25,11 @@
             </template>
           </v-edit-dialog>
         </td>
-        <td class="text-xs-left">
-          {{ props.item.value }}
+        <td class="text-xs-left">{{ props.item.value }}</td>
+        <td class="text-xs-right" v-if="editable">
+          <v-icon @click="removeEntry(props.item.key)">
+            delete
+          </v-icon>
         </td>
       </tr>
     </template>
@@ -34,18 +38,22 @@
 
 <script>
 export default {
-  name: 'SubjectAttributes',
-  props: { existingObject: Object },
+  name: 'ObjectTable',
+  props: {
+    existingObject: Object,
+    noDataText: { type: String, default: 'No existing entries.' },
+    editable: { type: Boolean, default: false }
+  },
   created() {
     if (this.existingObject) {
-      this.object = Object.assign(this.existingObject)
+      this.object = Object.assign({}, this.existingObject)
     }
+    this.editable
+      ? (this.headers = noEditHeaders.concat(deleteEntryHeader))
+      : (this.headers = noEditHeaders)
   },
   data: () => ({
-    headers: [
-      { text: 'Key', value: 'key', align: 'left' },
-      { text: 'Value', value: 'value', align: 'left' }
-    ],
+    headers: [],
     object: {}
   }),
   computed: {
@@ -76,8 +84,36 @@ export default {
       updatedObject[this.updatedKey] = updatedObject[this.oldKey]
       delete updatedObject[this.oldKey]
       this.object = updatedObject
+      this.$emit('update-object', this.object)
+    },
+    removeEntry: function(key) {
+      let updatedObject = Object.assign({}, this.object)
+      delete updatedObject[key]
+      this.object = updatedObject
+      this.$emit('update-object', this.object)
+    }
+  },
+  watch: {
+    existingObject: function(newValue) {
+      this.object = Object.assign({}, newValue)
+    },
+    editable: function(newValue) {
+      newValue
+        ? (this.headers = noEditHeaders.concat(deleteEntryHeader))
+        : (this.headers = noEditHeaders)
     }
   }
+}
+
+let noEditHeaders = [
+  { text: 'Key', value: 'key', align: 'left' },
+  { text: 'Value', value: 'value', align: 'left' }
+]
+let deleteEntryHeader = {
+  text: 'Delete',
+  value: 'delete',
+  align: 'right',
+  sortable: false
 }
 </script>
 
