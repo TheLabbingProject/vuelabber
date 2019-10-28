@@ -1,5 +1,5 @@
 <template>
-  <v-flex column xs3>
+  <v-col>
     <v-form @submit.prevent="submit">
       <v-text-field label="Username" v-model="user.username" disabled />
       <v-select
@@ -35,16 +35,16 @@
         v-model="user.bio"
       />
     </v-form>
-    <v-layout row>
+    <v-row>
       <v-spacer />
-      <v-btn color="success" @click="save">
+      <v-btn class="mr-3" color="success" width="90px" @click="save">
         Save
       </v-btn>
-      <v-btn @click="cancel">
+      <v-btn color="error" width="90px" @click="cancel">
         Cancel
       </v-btn>
-    </v-layout>
-  </v-flex>
+    </v-row>
+  </v-col>
 </template>
 
 <script>

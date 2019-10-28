@@ -25,7 +25,27 @@
             </template>
           </v-edit-dialog>
         </td>
-        <td class="text-xs-left">{{ props.item.value }}</td>
+        <td style="width: 140px;">
+          <v-select v-model="props.item.type" :items="dataTypes" />
+        </td>
+        <td class="text-xs-left">
+          <v-edit-dialog
+            lazy
+            :readonly="!editable"
+            :return-value.sync="props.item.value"
+            @save="updateValue(props.item)"
+          >
+            {{ props.item.value }}
+            <template v-slot:input>
+              <v-text-field
+                v-model="props.item.value"
+                label="Edit"
+                single-line
+                counter
+              ></v-text-field>
+            </template>
+          </v-edit-dialog>
+        </td>
         <td class="text-xs-right" v-if="editable">
           <v-icon @click="removeEntry(props.item.key)">
             delete
@@ -54,14 +74,16 @@ export default {
   },
   data: () => ({
     headers: [],
-    object: {}
+    object: {},
+    dataTypes: ['String', 'Number', 'Boolean', 'Array', 'Object']
   }),
   computed: {
     entries: function() {
       return this.object
         ? Object.entries(this.object).map(entry => ({
             key: entry[0],
-            value: entry[1]
+            value: entry[1],
+            type: this.inferType(entry[1])
           }))
         : []
     },
@@ -86,11 +108,28 @@ export default {
       this.object = updatedObject
       this.$emit('update-object', this.object)
     },
+    updateValue: function({ key, value }) {
+      this.object[key] = value
+      this.$emit('update-object', this.object)
+    },
     removeEntry: function(key) {
       let updatedObject = Object.assign({}, this.object)
       delete updatedObject[key]
       this.object = updatedObject
       this.$emit('update-object', this.object)
+    },
+    inferType: function(value) {
+      if (typeof value === 'string') {
+        return 'String'
+      } else if (typeof value === 'number') {
+        return 'Number'
+      } else if (typeof value === 'boolean') {
+        return 'Boolean'
+      } else if (Array.isArray(value)) {
+        return 'Array'
+      } else {
+        return 'Object'
+      }
     }
   },
   watch: {
@@ -107,6 +146,7 @@ export default {
 
 let noEditHeaders = [
   { text: 'Key', value: 'key', align: 'left' },
+  { text: 'Type', value: 'type', align: 'left' },
   { text: 'Value', value: 'value', align: 'left' }
 ]
 let deleteEntryHeader = {

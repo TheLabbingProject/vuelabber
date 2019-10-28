@@ -127,7 +127,7 @@
         />
       </v-flex>
       <v-btn
-        flat
+        text
         v-if="existingScan && editable"
         color="error"
         @click="deleteExistingScan"
@@ -136,7 +136,7 @@
       </v-btn>
       <v-spacer />
       <v-btn
-        flat
+        text
         v-if="editable && existingScan"
         color="warning"
         @click="updateExistingScan(scan)"
@@ -144,14 +144,14 @@
         Update
       </v-btn>
       <v-btn
-        flat
+        text
         v-if="!existingScan && radioGroup == 'new'"
         color="success"
         @click="createNewScan"
       >
         Create
       </v-btn>
-      <v-btn color="green darken-1" flat @click="closeDialog">
+      <v-btn color="green darken-1" text @click="closeDialog">
         Cancel
       </v-btn>
     </v-card-actions>

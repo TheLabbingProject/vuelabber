@@ -156,7 +156,7 @@
       <!-- Update -->
       <v-btn
         color="warning"
-        flat
+        text
         v-if="editable && existingSubject"
         :disabled="!currentUser.isStaff"
         @click="updateExistingSubject()"
@@ -167,7 +167,7 @@
       <!-- Create -->
       <v-btn
         color="success"
-        flat
+        text
         v-if="!existingSubject && currentUser.isStaff"
         @click="createNewSubject"
       >
@@ -175,7 +175,7 @@
       </v-btn>
 
       <!-- Cancel -->
-      <v-btn color="error" flat @click="closeDialog">
+      <v-btn color="error" text @click="closeDialog">
         Cancel
       </v-btn>
     </v-card-actions>

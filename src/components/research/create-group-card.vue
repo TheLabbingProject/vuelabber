@@ -35,13 +35,13 @@
       <v-spacer />
       <v-btn
         color="success"
-        flat
+        text
         @click="createGroupCaller"
         :disabled="$v.group.$error"
       >
         Submit
       </v-btn>
-      <v-btn color="error" flat @click="$emit('close-group-dialog')">
+      <v-btn color="error" text @click="$emit('close-group-dialog')">
         Cancel
       </v-btn>
     </v-card-actions>

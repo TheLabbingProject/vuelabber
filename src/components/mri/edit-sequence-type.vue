@@ -44,15 +44,15 @@
     <v-card-actions>
       <v-spacer />
       <div v-if="existingSequenceType">
-        <v-btn flat class="warning" @click="closeDialog">
+        <v-btn text class="warning" @click="closeDialog">
           Cancel
         </v-btn>
-        <v-btn flat class="success" @click="updateSequenceTypeCaller">
+        <v-btn text class="success" @click="updateSequenceTypeCaller">
           Update
         </v-btn>
       </div>
       <div v-else>
-        <v-btn flat class="success" @click="createSequenceTypeCaller">
+        <v-btn text class="success" @click="createSequenceTypeCaller">
           Create
         </v-btn>
       </div>

@@ -1,17 +1,19 @@
 <template>
-  <v-layout column>
+  <v-col>
     <!-- Create new study button -->
-    <v-layout mx-0 row v-if="currentUser.isStaff">
+    <v-row v-if="currentUser.isStaff">
       <v-spacer />
-      <v-dialog v-model="createStudyDialog" width="400px" lazy>
-        <template v-slot:activator="{ on }">
-          <v-btn v-on="on" class="info">
-            New Study
-          </v-btn>
-        </template>
-        <study-info-card @close-study-dialog="createStudyDialog = false" />
-      </v-dialog>
-    </v-layout>
+      <v-col cols="1">
+        <v-dialog v-model="createStudyDialog" width="400px" lazy>
+          <template v-slot:activator="{ on }">
+            <v-btn v-on="on" class="info">
+              New Study
+            </v-btn>
+          </template>
+          <study-info-card @close-study-dialog="createStudyDialog = false" />
+        </v-dialog>
+      </v-col>
+    </v-row>
 
     <!-- Existing study card -->
     <v-card class="mb-4 mx-2" v-for="study in studies" :key="study.id">
@@ -71,7 +73,7 @@
         </div>
       </v-card-actions>
     </v-card>
-  </v-layout>
+  </v-col>
 </template>
 
 <script>

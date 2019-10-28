@@ -1,12 +1,13 @@
 <template>
   <div>
-    <v-layout row pl-3 pb-3>
-      <div class="title text-left">Subjects</div>
+    <v-row class="px-3 pb-3">
+      <div class="title text-left">
+        Subjects
+      </div>
       <v-spacer />
       <v-dialog
         v-model="createSubjectDialog"
-        lazy
-        width="400px"
+        width="600px"
         v-if="currentUser.isStaff"
       >
         <template v-slot:activator="{ on }">
@@ -19,87 +20,64 @@
           @close-subject-dialog="createSubjectDialog = false"
         />
       </v-dialog>
-    </v-layout>
+    </v-row>
     <subject-table-controls
-      :pagination="pagination"
+      :pagination="options"
       @fetch-subjects-start="loading = true"
       @fetch-subjects-end="loading = false"
     />
     <v-flex>
       <v-data-table
         item-key="id"
-        :expand="expand"
         :headers="headers"
         :items="subjects"
         :loading="loading"
-        :pagination.sync="pagination"
-        :rows-per-page-items="rowsPerPageItems"
+        :options.sync="options"
+        :items-per-page-options="rowsPerPageItems"
       >
-        <template v-slot:items="props">
-          <tr
-            @click="selectSubject(props)"
-            :class="{ selected: props.item.id === selectedSubjectId }"
-          >
-            <td class="text-xs-left" style="width: 50px;">
-              {{ props.item.id }}
-            </td>
-
-            <td class="text-xs-left">
-              {{ props.item.firstName }}
-            </td>
-            <td class="text-xs-left">
-              {{ props.item.lastName }}
-            </td>
-            <td class="text-xs-left">
-              {{ props.item.dateOfBirth | formatDate }}
-            </td>
-            <td class="text-xs-left">
-              {{ getSubjectSexDisplay(props.item) }}
-            </td>
-            <td class="text-xs-left">
-              {{ getSubjectGenderDisplay(props.item) }}
-            </td>
-            <td class="text-xs-left">
-              {{ getSubjectDominantHandDisplay(props.item) }}
-            </td>
-            <td
-              v-if="currentUser.isStaff"
-              class="text-xs-left"
-              style="width: 50px;"
-            >
-              <v-dialog
-                v-model="editSubjectDialog[props.item.id]"
-                width="400px"
-                lazy
-              >
-                <template v-slot:activator="{ on }">
-                  <v-icon v-on="on">
-                    edit
-                  </v-icon>
-                </template>
-                <subject-info-card
-                  :existingSubject="props.item"
-                  @close-subject-dialog="
-                    editSubjectDialog[props.item.id] = false
-                  "
-                />
-              </v-dialog>
-            </td>
-          </tr>
+        <template v-slot:item.dateOfBirth="{ item }">
+          {{ item.dateOfBirth | formatDate }}
         </template>
-        <template v-slot:expand="props">
+        <template v-slot:item.sex="{ item }">
+          {{ sexOptions[item.sex] }}
+        </template>
+        <template v-slot:item.gender="{ item }">
+          {{ genderOptions[item.gender] }}
+        </template>
+        <template v-slot:item.dominantHand="{ item }">
+          {{ dominantHandOptions[item.dominantHand] }}
+        </template>
+        <!-- <td
+          v-if="currentUser.isStaff"
+          class="text-xs-left"
+          style="width: 50px;"
+        >
+          <v-dialog v-model="editSubjectDialog[props.item.id]" width="600px">
+            <template v-slot:activator="{ on }">
+              <v-icon v-on="on">
+                edit
+              </v-icon>
+            </template>
+            <subject-info-card
+              :existingSubject="props.item"
+              @close-subject-dialog="editSubjectDialog[props.item.id] = false"
+            />
+          </v-dialog>
+        </td> -->
+
+        <!-- <template v-slot:expand="props">
           <v-flex class="embeded-table" px-2 py-2>
             <subject-data />
             <hr />
           </v-flex>
-        </template>
+        </template> -->
       </v-data-table>
     </v-flex>
   </div>
 </template>
 
 <script>
-import SubjectData from '@/components/research/subject-data.vue'
+// import SubjectData from '@/components/research/subject-data.vue'
 import SubjectInfoCard from '@/components/research/subject-info-card.vue'
 import SubjectTableControls from '@/components/research/subject-table-controls.vue'
 import { sexOptions, genderOptions, dominantHandOptions } from './choices.js'
@@ -108,7 +86,7 @@ import { mapActions, mapMutations, mapState } from 'vuex'
 export default {
   name: 'SubjectTable',
   components: {
-    SubjectData,
+    // SubjectData,
     SubjectInfoCard,
     SubjectTableControls
   },
@@ -121,8 +99,8 @@ export default {
   data: () => ({
     headers: [
       { text: 'ID', value: 'id', align: 'left' },
-      { text: 'First Name', value: 'givenName' },
-      { text: 'Last Name', value: 'familyName' },
+      { text: 'First Name', value: 'firstName' },
+      { text: 'Last Name', value: 'lastName' },
       { text: 'Date of Birth', value: 'dateOfBirth' },
       { text: 'Sex', value: 'sex' },
       { text: 'Gender', value: 'gender' },
@@ -134,31 +112,24 @@ export default {
       50,
       { text: '$vuetify.dataIterator.rowsPerPageAll', value: 100000 }
     ],
-    pagination: {
+    options: {
       rowsPerPage: 100,
       page: 1,
-      sortBy: 'id',
+      sortBy: ['id'],
       descending: true
     },
-    expand: false,
     loading: false,
     createSubjectDialog: false,
-    editSubjectDialog: {}
+    editSubjectDialog: {},
+    sexOptions,
+    genderOptions,
+    dominantHandOptions
   }),
   computed: {
     ...mapState('research', ['subjects', 'selectedSubjectId']),
     ...mapState('auth', { currentUser: 'user' })
   },
   methods: {
-    getSubjectSexDisplay: function(subject) {
-      return sexOptions[subject.sex]
-    },
-    getSubjectGenderDisplay: function(subject) {
-      return genderOptions[subject.gender]
-    },
-    getSubjectDominantHandDisplay: function(subject) {
-      return dominantHandOptions[subject.dominantHand]
-    },
     appendEditColumn() {
       if (this.currentUser.isStaff) {
         this.headers.push({ text: 'Edit', value: 'editSubject' })

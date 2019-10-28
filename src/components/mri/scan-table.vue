@@ -55,9 +55,12 @@
       :headers="headers"
       :loading="loading"
       :items="scans"
-      :rows-per-page-items="pagination.rowsPerPageItems"
-      :pagination.sync="pagination"
+      :items-per-page="rowsPerPage"
+      :items-per-page-options="rowsPerPageItems"
+      :page.sync="page"
       :total-items="totalScanCount"
+      :sort-by.sync="sortBy"
+      :sort-desc.sync="descending"
     >
       <template v-slot:items="props">
         <tr>
@@ -188,18 +191,16 @@ export default {
       { text: 'Study Groups', value: 'studyGroups', sortable: false }
     ],
     selected: [],
-    pagination: {
-      rowsPerPage: 25,
-      page: 1,
-      sortBy: 'number',
-      descending: false,
-      rowsPerPageItems: [
-        10,
-        25,
-        50,
-        { text: '$vuetify.dataIterator.rowsPerPageAll', value: 100000 }
-      ]
-    },
+    page: 1,
+    sortBy: 'number',
+    descending: false,
+    rowsPerPage: 25,
+    rowsPerPageItems: [
+      10,
+      25,
+      50,
+      { text: '$vuetify.dataIterator.rowsPerPageAll', value: 100000 }
+    ],
     loading: false
   }),
   computed: {

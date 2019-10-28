@@ -1,81 +1,107 @@
 <template>
   <v-app id="app">
+    <!-- Navigation -->
     <v-navigation-drawer v-model="drawer" clipped absolute overflow app>
       <v-list dense>
-        <v-list-tile to="/home" class="drawer-link">
-          <v-list-tile-action>
+        <!-- Home -->
+        <v-list-item to="/home" class="drawer-link">
+          <v-list-item-action>
             <v-icon>
               home
             </v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>
               Home
-            </v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile to="/studies" class="drawer-link">
-          <v-list-tile-action>
+            </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <!-- Studies -->
+        <v-list-item to="/studies" class="drawer-link">
+          <v-list-item-action>
             <v-icon>
               star
             </v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>
               Studies
-            </v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile to="/subjects" class="drawer-link">
-          <v-list-tile-action>
+            </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <!-- Subjects -->
+        <v-list-item to="/subjects" class="drawer-link">
+          <v-list-item-action>
             <v-icon>
               people
             </v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>
               Subjects
-            </v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-group prepend-icon="storage" value="true" no-action>
+            </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <!-- Data -->
+        <v-list-group no-action prepend-icon="storage" :value="false">
           <template v-slot:activator>
-            <v-list-tile>
-              <v-list-tile-title>
-                Data
-              </v-list-tile-title>
-            </v-list-tile>
+            <v-list-item-title class="drawer-link">
+              Data
+            </v-list-item-title>
           </template>
-          <v-list-group prepend-icon="blur_on" value="true" sub-group no-action>
+
+          <!-- MRI -->
+          <v-list-group
+            no-action
+            sub-group
+            prepend-icon="blur_on"
+            :value="false"
+          >
             <template v-slot:activator>
-              <v-list-tile>
-                <v-list-tile-title>
+              <v-list-item class="drawer-link">
+                <v-list-item-title>
                   MRI
-                </v-list-tile-title>
-              </v-list-tile>
+                </v-list-item-title>
+              </v-list-item>
             </template>
-            <v-list-tile to="/mri-sequence-types" class="drawer-link">
-              <v-list-tile-title>
+
+            <!-- Sequence Types -->
+            <v-list-item to="/mri-sequence-types" class="drawer-link">
+              <v-list-item-title>
                 Sequence Types
-              </v-list-tile-title>
-            </v-list-tile>
-            <v-list-tile to="/dicom-browser" class="drawer-link">
-              <v-list-tile-title>
+              </v-list-item-title>
+            </v-list-item>
+
+            <!-- DICOM -->
+            <v-list-item to="/dicom-browser" class="drawer-link">
+              <v-list-item-title>
                 DICOM
-              </v-list-tile-title>
-            </v-list-tile>
+              </v-list-item-title>
+            </v-list-item>
           </v-list-group>
         </v-list-group>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar color="indigo" clipped-left dark absolute app>
-      <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-      <v-toolbar-title>pylabber</v-toolbar-title>
+
+    <!-- Toolbar -->
+    <v-app-bar color="indigo" clipped-left dark absolute app>
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+
+      <!-- Title -->
+      <v-toolbar-title>
+        pylabber
+      </v-toolbar-title>
+
       <v-spacer />
+
+      <!-- User Menu -->
       <div class="text-xs-center" v-if="isAuthenticated && user">
         <v-menu offset-y>
           <template v-slot:activator="{ on }">
-            <v-btn flat v-on="on">
+            <v-btn text v-on="on">
               <v-avatar size="36px" class="user-avatar">
                 <img :src="user.image" />
               </v-avatar>
@@ -84,19 +110,21 @@
           </template>
           <v-list>
             <router-link to="/logout" class="dropmenu-link">
-              <v-list-tile>Logout</v-list-tile>
+              <v-list-item>Logout</v-list-item>
             </router-link>
           </v-list>
         </v-menu>
       </div>
-    </v-toolbar>
+    </v-app-bar>
+
+    <!-- Content -->
     <v-content>
-      <v-container fluid p-4>
-        <v-layout justify-left align-top>
-          <router-view />
-        </v-layout>
+      <v-container fluid>
+        <router-view />
       </v-container>
     </v-content>
+
+    <!-- Footer -->
     <v-footer color="indigo" app>
       <span class="white--text"></span>
     </v-footer>
@@ -130,23 +158,13 @@ export default {
 }
 
 .drawer-link {
+  text-align: left;
   text-decoration: none;
   color: black;
-}
-
-a.router-link-exact-active {
-  color: #3366bb;
 }
 
 .dropmenu-link {
   text-decoration: none;
   color: black;
-}
-
-[v-cloak] > * {
-  display: none;
-}
-[v-cloak]::before {
-  content: 'loading…';
 }
 </style>
