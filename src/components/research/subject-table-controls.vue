@@ -1,103 +1,93 @@
 <template>
-  <v-layout row pl-4>
-    <v-text-field label="ID" style="width: 5px;" v-model="filters.id" />
-    <v-spacer />
-    <v-text-field
-      label="First Name"
-      style="width: 120px;"
-      v-model="filters.firstName"
-      :disabled="Boolean(filters.id)"
-    />
-    <v-spacer />
-    <v-text-field
-      label="Last Name"
-      style="width: 120px;"
-      v-model="filters.lastName"
-      :disabled="Boolean(filters.id)"
-    />
-    <v-spacer />
-    <v-flex>
-      <v-menu
-        v-model="bornAfterMenu"
-        :close-on-content-click="false"
-        :nudge-right="40"
-        transition="scale-transition"
-        offset-y
-        min-width="290px"
-      >
-        <template v-slot:activator="{ on }">
-          <v-text-field
-            clearable
-            readonly
-            label="Born After"
-            prepend-icon="event"
-            style="width: 160px;"
-            v-model="filters.bornAfter"
-            v-on="on"
-            :disabled="Boolean(filters.id)"
-          ></v-text-field>
-        </template>
-        <v-date-picker
-          v-model="filters.bornAfter"
-          @input="bornAfterMenu = false"
-        ></v-date-picker>
-      </v-menu>
-    </v-flex>
-    <v-spacer />
-    <v-flex>
-      <v-menu
-        v-model="bornBeforeMenu"
-        :close-on-content-click="false"
-        :nudge-right="40"
-        transition="scale-transition"
-        offset-y
-        min-width="290px"
-      >
-        <template v-slot:activator="{ on }">
-          <v-text-field
-            clearable
-            readonly
-            label="Born Before"
-            prepend-icon="event"
-            style="width: 160px;"
-            v-model="filters.bornBefore"
-            v-on="on"
-            :disabled="Boolean(filters.id)"
-          ></v-text-field>
-        </template>
-        <v-date-picker
-          v-model="filters.bornBefore"
-          @input="bornBeforeMenu = false"
-        ></v-date-picker>
-      </v-menu>
-    </v-flex>
-    <v-select
-      clearable
-      label="Sex"
-      style="width: 70px;"
-      v-model="filters.sex"
-      :disabled="Boolean(filters.id)"
-      :items="sexItems"
-    />
-    <v-spacer />
-    <v-select
-      clearable
-      label="Gender"
-      style="width: 120px;"
-      v-model="filters.gender"
-      :disabled="Boolean(filters.id)"
-      :items="genderItems"
-    />
-    <v-spacer />
-    <v-select
-      clearable
-      label="Dominant Hand"
-      style="width: 120px;"
-      v-model="filters.dominantHand"
-      :disabled="Boolean(filters.id)"
-      :items="dominantHandItems"
-    />
-  </v-layout>
+  <v-row class="px-4 justify-space-between align-center">
+    <v-col :cols="1">
+      <v-text-field label="ID" v-model="filters.id" />
+    </v-col>
+    <v-col :cols="1">
+      <v-text-field
+        label="First Name"
+        v-model="filters.firstName"
+        :disabled="Boolean(filters.id)"
+      />
+    </v-col>
+    <v-col :cols="1">
+      <v-text-field
+        label="Last Name"
+        v-model="filters.lastName"
+        :disabled="Boolean(filters.id)"
+      />
+    </v-col>
+    <v-col :cols="3">
+      <v-row class="align-center">
+        <v-col>
+          <v-menu v-model="bornAfterMenu" :close-on-content-click="false">
+            <template v-slot:activator="{ on }">
+              <v-text-field
+                clearable
+                readonly
+                label="Born After"
+                prepend-icon="event"
+                v-model="filters.bornAfter"
+                v-on="on"
+                :disabled="Boolean(filters.id)"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="filters.bornAfter"
+              @input="bornAfterMenu = false"
+            ></v-date-picker>
+          </v-menu>
+        </v-col>
+        -
+        <v-col>
+          <v-menu v-model="bornBeforeMenu" :close-on-content-click="false">
+            <template v-slot:activator="{ on }">
+              <v-text-field
+                clearable
+                readonly
+                label="Born Before"
+                v-model="filters.bornBefore"
+                v-on="on"
+                :disabled="Boolean(filters.id)"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="filters.bornBefore"
+              @input="bornBeforeMenu = false"
+            ></v-date-picker>
+          </v-menu>
+        </v-col>
+      </v-row>
+    </v-col>
+
+    <v-col :cols="1">
+      <v-select
+        clearable
+        label="Sex"
+        v-model="filters.sex"
+        :disabled="Boolean(filters.id)"
+        :items="sexItems"
+      />
+    </v-col>
+    <v-col :cols="1">
+      <v-select
+        clearable
+        label="Gender"
+        v-model="filters.gender"
+        :disabled="Boolean(filters.id)"
+        :items="genderItems"
+      />
+    </v-col>
+    <v-col :cols="1">
+      <v-select
+        clearable
+        label="Dominant Hand"
+        v-model="filters.dominantHand"
+        :disabled="Boolean(filters.id)"
+        :items="dominantHandItems"
+      />
+    </v-col>
+  </v-row>
 </template>
 
 <script>
@@ -107,9 +97,9 @@ import { createSelectItems } from '@/components/utils'
 
 export default {
   name: 'SubjectTableControls',
-  props: { pagination: Object },
+  props: { options: Object },
   created() {
-    this.fetchSubjects({ filters: this.filters, pagination: this.pagination })
+    this.fetchSubjects({ filters: this.filters, options: this.options })
   },
   data: () => ({
     bornAfterMenu: false,
@@ -131,7 +121,7 @@ export default {
   methods: {
     update() {
       this.$emit('fetch-subjects-start')
-      this.fetchSubjects({ filters: this.filters, pagination: this.pagination })
+      this.fetchSubjects({ filters: this.filters, options: this.options })
       this.$emit('fetch-subjects-end')
     },
     ...mapActions('research', ['fetchSubjects'])
@@ -143,7 +133,7 @@ export default {
       },
       deep: true
     },
-    pagination: {
+    options: {
       handler() {
         this.update()
       },

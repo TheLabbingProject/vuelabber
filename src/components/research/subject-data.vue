@@ -1,35 +1,31 @@
 <template>
-  <v-layout column>
+  <v-col>
     <v-tabs v-model="active">
       <v-tab>
         MRI
       </v-tab>
       <v-tab-item>
         <br />
-        <scan-table />
+        <scan-table :subject="subject" />
       </v-tab-item>
     </v-tabs>
-  </v-layout>
+  </v-col>
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
 import ScanTable from '@/components/mri/scan-table.vue'
 
 export default {
   name: 'SubjectData',
+  props: {
+    subject: Object
+  },
   components: {
     ScanTable
   },
   data: () => ({
     active: 0
-  }),
-  computed: {
-    ...mapGetters('research', { subject: 'getSelectedSubject' })
-  },
-  methods: {
-    ...mapMutations('research', ['setSelectedSubjectId'])
-  }
+  })
 }
 </script>
 

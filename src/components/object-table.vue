@@ -1,57 +1,50 @@
 <template>
   <v-data-table
-    hide-actions
+    hide-default-footer
     :headers="headers"
     :items="entries"
     :no-data-text="noDataText"
   >
-    <template v-slot:items="props">
-      <tr>
-        <td class="text-xs-left">
-          <v-edit-dialog
-            lazy
-            :readonly="!editable"
-            :return-value.sync="props.item.key"
-            @save="updateKeys"
-          >
-            {{ props.item.key }}
-            <template v-slot:input>
-              <v-text-field
-                v-model="props.item.key"
-                label="Edit"
-                single-line
-                counter
-              ></v-text-field>
-            </template>
-          </v-edit-dialog>
-        </td>
-        <td style="width: 140px;">
-          <v-select v-model="props.item.type" :items="dataTypes" />
-        </td>
-        <td class="text-xs-left">
-          <v-edit-dialog
-            lazy
-            :readonly="!editable"
-            :return-value.sync="props.item.value"
-            @save="updateValue(props.item)"
-          >
-            {{ props.item.value }}
-            <template v-slot:input>
-              <v-text-field
-                v-model="props.item.value"
-                label="Edit"
-                single-line
-                counter
-              ></v-text-field>
-            </template>
-          </v-edit-dialog>
-        </td>
-        <td class="text-xs-right" v-if="editable">
-          <v-icon @click="removeEntry(props.item.key)">
-            delete
-          </v-icon>
-        </td>
-      </tr>
+    <template v-if="editable" v-slot:item.key="{ item }">
+      <v-edit-dialog :return-value.sync="item.key" @save="updateKeys">
+        {{ item.key }}
+        <template v-slot:input>
+          <v-text-field
+            v-model="item.key"
+            label="Edit"
+            single-line
+            counter
+          ></v-text-field>
+        </template>
+      </v-edit-dialog>
+    </template>
+
+    <template v-slot:item.type="{ item }">
+      <v-select v-model="item.type" :items="dataTypes" />
+    </template>
+
+    <template v-slot:item.value="{ item }">
+      <v-edit-dialog
+        :readonly="!editable"
+        :return-value.sync="item.value"
+        @save="updateValue(item)"
+      >
+        {{ item.value }}
+        <template v-slot:input>
+          <v-text-field
+            v-model="item.value"
+            label="Edit"
+            single-line
+            counter
+          ></v-text-field>
+        </template>
+      </v-edit-dialog>
+    </template>
+
+    <template v-slot:item.delete="{ item }">
+      <v-icon @click="removeEntry(item.key)">
+        delete
+      </v-icon>
     </template>
   </v-data-table>
 </template>
@@ -68,14 +61,21 @@ export default {
     if (this.existingObject) {
       this.object = Object.assign({}, this.existingObject)
     }
-    this.editable
-      ? (this.headers = noEditHeaders.concat(deleteEntryHeader))
-      : (this.headers = noEditHeaders)
   },
   data: () => ({
-    headers: [],
     object: {},
-    dataTypes: ['String', 'Number', 'Boolean', 'Array', 'Object']
+    dataTypes: ['String', 'Number', 'Boolean', 'Array', 'Object'],
+    allHeaders: [
+      { text: 'Key', value: 'key', align: 'left' },
+      { text: 'Type', value: 'type', align: 'left' },
+      { text: 'Value', value: 'value', align: 'left' },
+      {
+        text: 'Delete',
+        value: 'delete',
+        align: 'right',
+        sortable: false
+      }
+    ]
   }),
   computed: {
     entries: function() {
@@ -83,9 +83,15 @@ export default {
         ? Object.entries(this.object).map(entry => ({
             key: entry[0],
             value: entry[1],
-            type: this.inferType(entry[1])
+            type: this.inferType(entry[1]),
+            delete: null
           }))
         : []
+    },
+    headers: function() {
+      return this.editable
+        ? this.allHeaders
+        : this.allHeaders.filter(header => header.value != 'delete')
     },
     oldKeys: function() {
       return Object.keys(this.object)
@@ -135,25 +141,8 @@ export default {
   watch: {
     existingObject: function(newValue) {
       this.object = Object.assign({}, newValue)
-    },
-    editable: function(newValue) {
-      newValue
-        ? (this.headers = noEditHeaders.concat(deleteEntryHeader))
-        : (this.headers = noEditHeaders)
     }
   }
-}
-
-let noEditHeaders = [
-  { text: 'Key', value: 'key', align: 'left' },
-  { text: 'Type', value: 'type', align: 'left' },
-  { text: 'Value', value: 'value', align: 'left' }
-]
-let deleteEntryHeader = {
-  text: 'Delete',
-  value: 'delete',
-  align: 'right',
-  sortable: false
 }
 </script>
 

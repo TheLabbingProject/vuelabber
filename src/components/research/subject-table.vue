@@ -21,63 +21,65 @@
         />
       </v-dialog>
     </v-row>
-    <subject-table-controls
-      :pagination="options"
-      @fetch-subjects-start="loading = true"
-      @fetch-subjects-end="loading = false"
-    />
-    <v-flex>
-      <v-data-table
-        item-key="id"
-        :headers="headers"
-        :items="subjects"
-        :loading="loading"
-        :options.sync="options"
-        :items-per-page-options="rowsPerPageItems"
-      >
-        <template v-slot:item.dateOfBirth="{ item }">
-          {{ item.dateOfBirth | formatDate }}
-        </template>
-        <template v-slot:item.sex="{ item }">
-          {{ sexOptions[item.sex] }}
-        </template>
-        <template v-slot:item.gender="{ item }">
-          {{ genderOptions[item.gender] }}
-        </template>
-        <template v-slot:item.dominantHand="{ item }">
-          {{ dominantHandOptions[item.dominantHand] }}
-        </template>
-        <!-- <td
-          v-if="currentUser.isStaff"
-          class="text-xs-left"
-          style="width: 50px;"
-        >
-          <v-dialog v-model="editSubjectDialog[props.item.id]" width="600px">
-            <template v-slot:activator="{ on }">
-              <v-icon v-on="on">
-                edit
-              </v-icon>
-            </template>
-            <subject-info-card
-              :existingSubject="props.item"
-              @close-subject-dialog="editSubjectDialog[props.item.id] = false"
-            />
-          </v-dialog>
-        </td> -->
+    <v-data-table
+      dense
+      item-key="id"
+      show-expand
+      single-expand
+      :expanded.sync="expanded"
+      :headers="headers"
+      :items="subjects"
+      :loading="loading"
+      :options.sync="options"
+      :footer-props="{
+        itemsPerPageOptions
+      }"
+    >
+      <template v-slot:top>
+        <subject-table-controls
+          :options="options"
+          @fetch-subjects-start="loading = true"
+          @fetch-subjects-end="loading = false"
+        />
+      </template>
+      <template v-slot:item.dateOfBirth="{ item }">
+        {{ item.dateOfBirth | formatDate }}
+      </template>
+      <template v-slot:item.sex="{ item }">
+        {{ sexOptions[item.sex] }}
+      </template>
+      <template v-slot:item.gender="{ item }">
+        {{ genderOptions[item.gender] }}
+      </template>
+      <template v-slot:item.dominantHand="{ item }">
+        {{ dominantHandOptions[item.dominantHand] }}
+      </template>
+      <template v-slot:item.edit="{ item }" v-if="currentUser.isStaff">
+        <v-dialog v-model="editSubjectDialog[item.id]" width="600px">
+          <template v-slot:activator="{ on }">
+            <v-icon v-on="on">
+              edit
+            </v-icon>
+          </template>
+          <subject-info-card
+            :existingSubject="item"
+            @close-subject-dialog="editSubjectDialog[item.id] = false"
+          />
+        </v-dialog>
+      </template>
 
-        <!-- <template v-slot:expand="props">
-          <v-flex class="embeded-table" px-2 py-2>
-            <subject-data />
-            <hr />
-          </v-flex>
-        </template> -->
-      </v-data-table>
-    </v-flex>
+      <template v-slot:expanded-item="{ item, headers }">
+        <td :colspan="headers.length">
+          <subject-data :subject="item" />
+          <hr />
+        </td>
+      </template>
+    </v-data-table>
   </div>
 </template>
 
 <script>
-// import SubjectData from '@/components/research/subject-data.vue'
+import SubjectData from '@/components/research/subject-data.vue'
 import SubjectInfoCard from '@/components/research/subject-info-card.vue'
 import SubjectTableControls from '@/components/research/subject-table-controls.vue'
 import { sexOptions, genderOptions, dominantHandOptions } from './choices.js'
@@ -86,7 +88,7 @@ import { mapActions, mapMutations, mapState } from 'vuex'
 export default {
   name: 'SubjectTable',
   components: {
-    // SubjectData,
+    SubjectData,
     SubjectInfoCard,
     SubjectTableControls
   },
@@ -106,14 +108,9 @@ export default {
       { text: 'Gender', value: 'gender' },
       { text: 'Dominant Hand', value: 'dominantHand' }
     ],
-    rowsPerPageItems: [
-      10,
-      25,
-      50,
-      { text: '$vuetify.dataIterator.rowsPerPageAll', value: 100000 }
-    ],
+    itemsPerPageOptions: [10, 25, 50, -1],
     options: {
-      rowsPerPage: 100,
+      itemsPerPage: 25,
       page: 1,
       sortBy: ['id'],
       descending: true
@@ -121,6 +118,7 @@ export default {
     loading: false,
     createSubjectDialog: false,
     editSubjectDialog: {},
+    expanded: [],
     sexOptions,
     genderOptions,
     dominantHandOptions
@@ -132,7 +130,7 @@ export default {
   methods: {
     appendEditColumn() {
       if (this.currentUser.isStaff) {
-        this.headers.push({ text: 'Edit', value: 'editSubject' })
+        this.headers.push({ text: 'Edit', value: 'edit' })
       }
     },
     selectSubject(props) {
