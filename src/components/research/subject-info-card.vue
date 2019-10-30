@@ -138,13 +138,13 @@
     <!-- Actions -->
     <v-card-actions>
       <!-- View/Edit mode switch -->
-      <v-flex v-if="currentUser.isStaff" px-3>
+      <div v-if="currentUser.isStaff" px-3>
         <v-switch
           v-if="existingSubject"
           v-model="editable"
           :label="editable ? 'Edit Mode' : 'View Mode'"
         />
-      </v-flex>
+      </div>
       <v-spacer />
       <!-- Update -->
       <v-btn

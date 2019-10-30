@@ -10,12 +10,7 @@
       <v-text-field label="First Name" v-model="user.firstName" />
       <v-text-field label="Last Name" v-model="user.lastName" />
       <v-text-field label="Email" v-model="user.email" />
-      <v-menu
-        v-model="dateOfBirthMenu"
-        lazy
-        min-width="290px"
-        :close-on-content-click="false"
-      >
+      <v-menu v-model="dateOfBirthMenu" :close-on-content-click="false">
         <template v-slot:activator="{ on }">
           <v-text-field
             label="Date of Birth"

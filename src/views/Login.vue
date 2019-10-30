@@ -4,23 +4,26 @@
       Invalid username or password!
     </v-alert>
     <form @submit.prevent="submit">
-      <v-text-field
-        v-model="inputs.username"
-        type="text"
-        id="username"
-        label="Username"
-        required
-      />
-      <v-text-field
-        v-model="inputs.password"
-        type="password"
-        id="password"
-        label="Password"
-        required
-      />
-      <v-btn @click="loginHandler(inputs)" color="success" id="login-button">
-        Login
-      </v-btn>
+      <v-col cols="2">
+        <v-text-field
+          v-model="inputs.username"
+          type="text"
+          id="username"
+          label="Username"
+          required
+        />
+        <v-text-field
+          v-model="inputs.password"
+          type="password"
+          id="password"
+          label="Password"
+          required
+        />
+
+        <v-btn @click="loginHandler(inputs)" color="success" id="login-button">
+          Login
+        </v-btn>
+      </v-col>
     </form>
   </div>
 </template>

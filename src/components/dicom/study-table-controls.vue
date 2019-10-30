@@ -7,7 +7,7 @@ import { mapActions } from 'vuex'
 export default {
   name: 'StudyTableControls',
   props: {
-    pagination: Object
+    options: Object
   },
   created() {
     this.update()
@@ -26,7 +26,7 @@ export default {
   methods: {
     update() {
       this.$emit('fetch-studies-start')
-      this.fetchStudies({ filters: this.filters, pagination: this.pagination })
+      this.fetchStudies({ filters: this.filters, options: this.options })
       this.$emit('fetch-studies-end')
     },
     ...mapActions('dicom', ['fetchStudies'])
@@ -38,7 +38,7 @@ export default {
       },
       deep: true
     },
-    pagination: {
+    options: {
       handler() {
         this.update()
       },

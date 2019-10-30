@@ -1,12 +1,8 @@
 <template>
-  <v-layout column>
+  <v-col>
     <!-- <bokeh-vue :plot="plot" /> -->
-    <v-flex grow p-2>
-      <v-layout column>
-        <subject-table />
-      </v-layout>
-    </v-flex>
-  </v-layout>
+    <subject-table />
+  </v-col>
 </template>
 
 <script>

@@ -96,7 +96,7 @@ export default {
       let dicomId = Number(splitUrl[splitUrl.length - 2])
       this.fetchSeries({
         filters: { id: dicomId },
-        pagination: {}
+        options: {}
       }).then(({ scanningSequence, sequenceVariant }) => {
         this.sequenceType.scanningSequence = scanningSequence
         this.sequenceType.sequenceVariant = sequenceVariant

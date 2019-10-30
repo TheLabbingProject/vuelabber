@@ -74,30 +74,30 @@
       </template>
 
       <template v-slot:item.sequenceType="{ item }">
-        <v-dialog
-          v-model="sequenceTypeDialog[item.id]"
-          v-if="item.sequenceType"
-          width="800px"
-        >
-          <template v-slot:activator="{ on }">
-            <v-btn small class="info" v-on="on">
-              {{ item.sequenceType.title }}
-            </v-btn>
-          </template>
-          <protocol-information :scan="item" />
-        </v-dialog>
-        <v-dialog v-model="sequenceTypeDialog[item.id]" v-else width="400px">
-          <template v-slot:activator="{ on }">
-            <v-btn small class="warning" v-on="on">
-              Create
-            </v-btn>
-          </template>
-          <edit-sequence-type
-            :fromScan="item"
-            @close-dialog="sequenceTypeDialog[item.id] = false"
-            @created-sequence-type="update"
-          />
-        </v-dialog>
+        <div v-if="item.sequenceType" class="py-1">
+          <v-dialog v-model="sequenceTypeDialog[item.id]" width="800px">
+            <template v-slot:activator="{ on }">
+              <v-btn small class="info" v-on="on">
+                {{ item.sequenceType.title }}
+              </v-btn>
+            </template>
+            <protocol-information :scan="item" />
+          </v-dialog>
+        </div>
+        <div v-else class="py-1">
+          <v-dialog v-model="sequenceTypeDialog[item.id]" width="400px">
+            <template v-slot:activator="{ on }">
+              <v-btn small class="warning" v-on="on">
+                Create
+              </v-btn>
+            </template>
+            <edit-sequence-type
+              :fromScan="item"
+              @close-dialog="sequenceTypeDialog[item.id] = false"
+              @created-sequence-type="update"
+            />
+          </v-dialog>
+        </div>
       </template>
 
       <!-- Spatial Resolution -->
@@ -107,11 +107,7 @@
 
       <!-- Study Groups -->
       <template v-slot:item.studyGroups="{ item }">
-        <div
-          v-for="groupUrl in item.studyGroups"
-          :key="groupUrl"
-          class="text-xs-left"
-        >
+        <div v-for="groupUrl in item.studyGroups" :key="groupUrl" class="py-1">
           <v-chip small close @input="disassociateFromGroup(item, groupUrl)">
             {{ stringifyGroup(getGroupByUrl(groupUrl)) }}
           </v-chip>
@@ -171,7 +167,7 @@ export default {
       10,
       25,
       50,
-      { text: '$vuetify.dataIterator.rowsPerPageAll', value: 100000 }
+      { text: '$vuetify.dataIterator.itemsPerPageAll', value: 100000 }
     ],
     loading: false
   }),

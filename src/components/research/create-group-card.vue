@@ -3,34 +3,30 @@
     <v-card-title class="headline cyan darken-3 white--text">
       Create New Group
     </v-card-title>
+
     <v-card-text>
-      <v-layout wrap column>
+      <v-col>
         <v-form @submit.prevent="submit">
-          <v-flex pb-4>
-            <v-text-field
-              v-model="group.title"
-              label="Title"
-              :class="{ hasError: $v.group.title.$error }"
-              :counter="255"
-              :error-messages="titleErrors"
-              @blur="$v.group.title.$touch()"
-            />
-          </v-flex>
-          <v-flex>
-            <v-textarea v-model="group.description" label="Description" />
-          </v-flex>
-          <v-flex pb-4>
-            <v-combobox
-              v-model="selectedStudyTitle"
-              label="Study"
-              :error-messages="studyErrors"
-              :items="studies.map(study => study.title)"
-              @blur="$v.selectedStudyTitle.$touch()"
-            />
-          </v-flex>
+          <v-text-field
+            v-model="group.title"
+            label="Title"
+            :class="{ hasError: $v.group.title.$error }"
+            :counter="255"
+            :error-messages="titleErrors"
+            @blur="$v.group.title.$touch()"
+          />
+          <v-textarea v-model="group.description" label="Description" />
+          <v-combobox
+            v-model="selectedStudyTitle"
+            label="Study"
+            :error-messages="studyErrors"
+            :items="studies.map(study => study.title)"
+            @blur="$v.selectedStudyTitle.$touch()"
+          />
         </v-form>
-      </v-layout>
+      </v-col>
     </v-card-text>
+
     <v-card-actions>
       <v-spacer />
       <v-btn

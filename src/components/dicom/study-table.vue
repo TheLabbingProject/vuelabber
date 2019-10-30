@@ -1,61 +1,42 @@
 <template>
-  <v-layout column>
+  <v-col>
     <study-table-controls
       ref="tableController"
-      :pagination="pagination"
+      :options="options"
       @fetch-studies-start="loading = true"
       @fetch-studies-end="loading = false"
     />
     <v-data-table
       item-key="id"
-      :expand="expand"
+      show-expand
+      single-expand
+      :expanded.sync="expanded"
       :headers="headers"
       :items="studies"
       :loading="loading"
-      :pagination.sync="pagination"
-      :rows-per-page-items="pagination.rowsPerPageItems"
-      :total-items="studyCount"
+      :options.sync="options"
+      :server-items-length="studyCount"
+      :footer-props="{
+        itemsPerPageOptions
+      }"
     >
-      <template v-slot:items="props">
-        <!-- Study Table Row -->
-        <tr
-          @click="selectStudy(props)"
-          :class="{ selected: props.item.id === selectedStudyId }"
-        >
-          <!-- ID -->
-          <td class="text-xs-left" style="width: 50px;">
-            {{ props.item.id }}
-          </td>
-
-          <!-- Description -->
-          <td class="text-xs-left">
-            {{ props.item.description }}
-          </td>
-
-          <!-- Date -->
-          <td class="text-xs-left">
-            {{ props.item.date | formatDate }}
-          </td>
-
-          <!-- Time -->
-          <td class="text-xs-left">
-            {{ props.item.time }}
-          </td>
-
-          <!-- UID -->
-          <td class="text-xs-left">
-            {{ props.item.uid }}
-          </td>
-        </tr>
+      <!-- Date -->
+      <template v-slot:item.date="{ item }">
+        {{ item.date | formatDate }}
       </template>
-      <template v-slot:expand="props">
-        <v-flex class="embeded-table" px-2 py-2>
-          <patient-table :studyId="selectedStudyId"></patient-table>
+
+      <template v-slot:item.time="{ item }">
+        {{ item.time.slice(0, 8) }}
+      </template>
+
+      <template v-slot:expanded-item="{ item, headers }">
+        <td :colspan="headers.length">
+          <patient-table :studyId="item.id"></patient-table>
           <hr />
-        </v-flex>
+        </td>
       </template>
     </v-data-table>
-  </v-layout>
+  </v-col>
 </template>
 
 <script>
@@ -67,7 +48,7 @@ export default {
   name: 'StudyTable',
   components: { PatientTable, StudyTableControls },
   data: () => ({
-    expand: false,
+    expanded: [],
     headers: [
       { text: 'ID', value: 'id', align: 'left' },
       { text: 'Description', value: 'description' },
@@ -75,22 +56,17 @@ export default {
       { text: 'Time', value: 'time' },
       { text: 'UID', value: 'uid' }
     ],
-    pagination: {
-      rowsPerPage: 25,
+    options: {
+      itemsPerPage: 25,
       page: 1,
-      sortBy: 'id',
-      descending: false,
-      rowsPerPageItems: [
-        10,
-        25,
-        50,
-        { text: '$vuetify.dataIterator.rowsPerPageAll', value: 100000 }
-      ]
+      sortBy: ['id'],
+      descending: true
     },
+    itemsPerPageOptions: [10, 25, 50, -1],
     loading: false
   }),
   computed: {
-    ...mapState('dicom', ['studies', 'studyCount', 'selectedStudyId'])
+    ...mapState('dicom', ['studies', 'studyCount'])
   },
   methods: {
     selectStudy(props) {

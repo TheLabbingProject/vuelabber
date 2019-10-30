@@ -17,7 +17,7 @@
 
     <!-- Body -->
     <v-card-text>
-      <v-layout wrap column>
+      <v-col>
         <v-form @submit.prevent="submit">
           <!-- Title -->
           <v-text-field
@@ -41,7 +41,7 @@
             :items="possibleCollaborators"
           />
         </v-form>
-      </v-layout>
+      </v-col>
     </v-card-text>
 
     <!-- Actions -->

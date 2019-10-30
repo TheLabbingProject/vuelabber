@@ -1,8 +1,8 @@
 <template>
-  <v-layout column>
-    <v-layout row pl-3>
+  <v-col>
+    <v-row class="align-center">
       <!-- Study selection with creation dialog -->
-      <v-flex pr-5>
+      <v-col>
         <v-combobox
           v-model="selectedStudyTitle"
           append-outer-icon="add_circle"
@@ -13,15 +13,14 @@
         <v-dialog
           v-model="createStudyDialog"
           width="600px"
-          lazy
           :key="createStudyDialog"
         >
           <study-info-card @close-study-dialog="createStudyDialog = false" />
         </v-dialog>
-      </v-flex>
+      </v-col>
 
       <!-- Group selection with creation dialog -->
-      <v-flex pr-5>
+      <v-col>
         <v-combobox
           v-model="selectedGroupTitle"
           append-outer-icon="add_circle"
@@ -33,28 +32,29 @@
         <v-dialog
           v-model="createGroupDialog"
           width="600px"
-          lazy
           :key="createGroupDialog"
         >
           <create-group-card
             @close-group-dialog="closeGroupDialog(arguments[0])"
           />
         </v-dialog>
-      </v-flex>
+      </v-col>
 
       <!-- Select button -->
-      <v-btn @click="addSelection" :disabled="!validStudyGroupSelection">
-        Select Group
-      </v-btn>
-    </v-layout>
+      <v-col cols="2">
+        <v-btn @click="addSelection" :disabled="!validStudyGroupSelection">
+          Select Group
+        </v-btn>
+      </v-col>
+    </v-row>
 
-    <v-layout row pl-3>
+    <v-row class="align-top">
       <!-- Show each selected group as a chip -->
-      <v-layout column>
-        <v-flex pb-1 class="text-xs-left">
+      <v-col>
+        <div class="text-left pb-1">
           Selected Groups:
-        </v-flex>
-        <v-flex class="text-xs-left">
+        </div>
+        <div class="text-left">
           <span v-for="selection in selectedGroups" :key="selection.id">
             <v-chip
               close
@@ -64,11 +64,11 @@
               {{ `${selection.study.title} | ${selection.title}` }}
             </v-chip>
           </span>
-        </v-flex>
-      </v-layout>
+        </div>
+      </v-col>
 
       <!-- Associate selected groups with selected data -->
-      <v-layout shrink>
+      <v-col cols="2">
         <v-btn
           @click="associateSelectedScansToStudyGroups"
           color="success"
@@ -76,9 +76,9 @@
         >
           Associate
         </v-btn>
-      </v-layout>
-    </v-layout>
-  </v-layout>
+      </v-col>
+    </v-row>
+  </v-col>
 </template>
 
 <script>

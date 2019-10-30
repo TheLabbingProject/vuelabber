@@ -4,7 +4,7 @@
     <v-row v-if="currentUser.isStaff">
       <v-spacer />
       <v-col cols="1">
-        <v-dialog v-model="createStudyDialog" width="400px" lazy>
+        <v-dialog v-model="createStudyDialog" width="400px">
           <template v-slot:activator="{ on }">
             <v-btn v-on="on" class="info">
               New Study
@@ -24,7 +24,7 @@
         </span>
         <v-spacer />
         <!-- Edit study dialog button -->
-        <v-dialog v-model="editStudyDialog[study.id]" width="400px" lazy>
+        <v-dialog v-model="editStudyDialog[study.id]" width="400px">
           <template v-slot:activator="{ on }">
             <v-icon v-if="currentUser.isStaff" v-on="on">
               edit
