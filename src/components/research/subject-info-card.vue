@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <!-- Title -->
-    <v-card-title class="green darken-3">
+    <v-card-title class="success darken-3">
       <div class="headline">
         <span class="white--text">
           Subject Information
@@ -24,7 +24,7 @@
 
     <!-- Body -->
     <v-card-text>
-      <v-layout column>
+      <v-col>
         <v-form @submit.prevent="submit">
           <!-- First Name -->
           <v-text-field
@@ -94,12 +94,7 @@
           />
 
           <!-- Date of Birth -->
-          <v-menu
-            v-model="dob_menu"
-            lazy
-            min-width="290px"
-            :close-on-content-click="false"
-          >
+          <v-menu v-model="dob_menu" :close-on-content-click="false">
             <template v-slot:activator="{ on }">
               <v-text-field
                 label="Date of Birth"
@@ -117,46 +112,44 @@
             ></v-date-picker>
           </v-menu>
           <br />
-          <v-flex pl-1>
-            <v-layout row align-center>
-              <span class="text-xs-left grey--text">
-                Custom attributes
-              </span>
-              <v-spacer />
-              <v-btn
-                small
-                color="success"
-                v-if="editable"
-                @click="createCustomAttribute"
-              >
-                Add
-              </v-btn>
-            </v-layout>
-            <object-table
-              :editable="editable"
-              :existingObject="subject.customAttributes"
-              @update-object="updateCustomAttributes"
-            />
-          </v-flex>
+          <v-row class="px-4 align-center">
+            <span class="text-xs-left grey--text">
+              Custom attributes
+            </span>
+            <v-spacer />
+            <v-btn
+              small
+              color="success"
+              v-if="editable"
+              @click="createCustomAttribute"
+            >
+              Add
+            </v-btn>
+          </v-row>
+          <object-table
+            :editable="editable"
+            :existingObject="subject.customAttributes"
+            @update-object="updateCustomAttributes"
+          />
         </v-form>
-      </v-layout>
+      </v-col>
     </v-card-text>
 
     <!-- Actions -->
     <v-card-actions>
       <!-- View/Edit mode switch -->
-      <v-flex v-if="currentUser.isStaff" px-3>
+      <div v-if="currentUser.isStaff" px-3>
         <v-switch
           v-if="existingSubject"
           v-model="editable"
           :label="editable ? 'Edit Mode' : 'View Mode'"
         />
-      </v-flex>
+      </div>
       <v-spacer />
       <!-- Update -->
       <v-btn
         color="warning"
-        flat
+        text
         v-if="editable && existingSubject"
         :disabled="!currentUser.isStaff"
         @click="updateExistingSubject()"
@@ -167,7 +160,7 @@
       <!-- Create -->
       <v-btn
         color="success"
-        flat
+        text
         v-if="!existingSubject && currentUser.isStaff"
         @click="createNewSubject"
       >
@@ -175,7 +168,7 @@
       </v-btn>
 
       <!-- Cancel -->
-      <v-btn color="error" flat @click="closeDialog">
+      <v-btn color="error" text @click="closeDialog">
         Cancel
       </v-btn>
     </v-card-actions>

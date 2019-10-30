@@ -1,7 +1,7 @@
 <template>
   <v-card>
-    <v-card-title class="green darken-3">
-      <div class="headline">
+    <v-card-title class="success darken-3">
+      <div class="title">
         <span class="white--text">
           Scan Information
         </span>
@@ -10,34 +10,35 @@
         </span>
       </div>
     </v-card-title>
+
     <v-card-text>
-      <v-layout column>
+      <v-col>
+        <!-- Institution Name -->
         <v-text-field
           v-model="scan.institutionName"
-          id="institution-name-input"
-          type="text"
           label="Institution Name"
           hint="Where was this scan acquired?"
           :readonly="!editable"
         />
+
+        <!-- Scan Number -->
         <v-text-field
           v-model="scan.number"
-          id="number-input"
           type="number"
           label="Acquisition Number"
           hint="A number identifying this scan within its acquisition session."
           :readonly="!editable"
         />
-        <v-spacer />
+
+        <!-- Description -->
         <v-text-field
           v-model="scan.description"
-          id="description-input"
-          type="text"
           label="Description"
           hint="A description of the type of scan acquired."
           :readonly="!editable"
         />
-        <v-spacer />
+
+        <!-- Sequence Type -->
         <v-select
           v-model="scan.sequenceType"
           label="Sequence Type"
@@ -46,69 +47,53 @@
           :items="sequenceTypeItems"
           :readonly="!editable"
         />
-        <v-flex>
-          <v-menu
-            v-model="dateMenu"
-            :close-on-content-click="false"
-            :nudge-right="40"
-            lazy
-            transition="scale-transition"
-            offset-y
-            full-width
-            min-width="290px"
-          >
-            <template v-slot:activator="{ on }">
-              <v-text-field
-                v-model="scanDate"
-                label="Acquisition Date"
-                prepend-icon="event"
-                readonly
-                v-on="on"
-              />
-            </template>
-            <v-date-picker
+
+        <!-- Date -->
+        <v-menu v-model="dateMenu" :close-on-content-click="false">
+          <template v-slot:activator="{ on }">
+            <v-text-field
               v-model="scanDate"
-              @input="dateMenu = false"
-              :max="new Date().toISOString().substr(0, 10)"
-              :readonly="!editable"
+              label="Acquisition Date"
+              prepend-icon="event"
+              readonly
+              v-on="on"
             />
-          </v-menu>
-        </v-flex>
-        <v-spacer />
-        <v-flex>
-          <v-menu
-            ref="timeMenuRef"
-            v-model="timeMenu"
-            :close-on-content-click="false"
-            :nudge-right="40"
-            :return-value.sync="scanTime"
-            lazy
-            transition="scale-transition"
-            offset-y
-            full-width
-            max-width="290px"
-            min-width="290px"
-          >
-            <template v-slot:activator="{ on }">
-              <v-text-field
-                v-model="scanTime"
-                label="Acquisition Time"
-                prepend-icon="access_time"
-                readonly
-                v-on="on"
-              />
-            </template>
-            <v-time-picker
-              v-if="timeMenu"
+          </template>
+          <v-date-picker
+            v-model="scanDate"
+            @input="dateMenu = false"
+            :max="new Date().toISOString().substr(0, 10)"
+            :readonly="!editable"
+          />
+        </v-menu>
+
+        <!-- Time -->
+        <v-menu
+          ref="timeMenuRef"
+          v-model="timeMenu"
+          :close-on-content-click="false"
+          :return-value.sync="scanTime"
+        >
+          <template v-slot:activator="{ on }">
+            <v-text-field
               v-model="scanTime"
-              format="24hr"
-              @click:minute="$refs.timeMenuRef.save(time)"
-              use-seconds
-              full-width
-              :readonly="!editable"
+              label="Acquisition Time"
+              prepend-icon="access_time"
+              readonly
+              v-on="on"
             />
-          </v-menu>
-        </v-flex>
+          </template>
+          <v-time-picker
+            v-if="timeMenu"
+            v-model="scanTime"
+            format="24hr"
+            @click:minute="$refs.timeMenuRef.save(time)"
+            use-seconds
+            :readonly="!editable"
+          />
+        </v-menu>
+
+        <!-- Comments -->
         <v-textarea
           name="comments-input"
           label="Comments"
@@ -116,44 +101,55 @@
           hint="Anything noteworty about this scan or its acquisition."
           :readonly="!editable"
         />
-      </v-layout>
+      </v-col>
     </v-card-text>
+
     <v-card-actions>
-      <v-flex shrink px-3>
+      <v-col>
+        <!-- View / Edit Mode switch -->
         <v-switch
           v-if="existingScan"
           v-model="editable"
           :label="editable ? 'Edit Mode' : 'View Mode'"
         />
-      </v-flex>
-      <v-btn
-        flat
-        v-if="existingScan && editable"
-        color="error"
-        @click="deleteExistingScan"
-      >
-        Delete
-      </v-btn>
-      <v-spacer />
-      <v-btn
-        flat
-        v-if="editable && existingScan"
-        color="warning"
-        @click="updateExistingScan(scan)"
-      >
-        Update
-      </v-btn>
-      <v-btn
-        flat
-        v-if="!existingScan && radioGroup == 'new'"
-        color="success"
-        @click="createNewScan"
-      >
-        Create
-      </v-btn>
-      <v-btn color="green darken-1" flat @click="closeDialog">
-        Cancel
-      </v-btn>
+
+        <v-row class="align-center">
+          <!-- Delete button -->
+          <v-btn
+            text
+            v-if="existingScan && editable"
+            color="error"
+            @click="deleteExistingScan"
+          >
+            Delete
+          </v-btn>
+
+          <v-spacer />
+
+          <!-- Update button -->
+          <v-btn
+            text
+            v-if="editable && existingScan"
+            color="warning"
+            @click="updateExistingScan(scan)"
+          >
+            Update
+          </v-btn>
+
+          <!-- Cancel button -->
+          <v-btn
+            text
+            v-if="!existingScan && radioGroup == 'new'"
+            color="success"
+            @click="createNewScan"
+          >
+            Create
+          </v-btn>
+          <v-btn color="green darken-1" text @click="closeDialog">
+            Cancel
+          </v-btn>
+        </v-row>
+      </v-col>
     </v-card-actions>
   </v-card>
 </template>

@@ -106,8 +106,8 @@ const actions = {
       .then(({ data }) => commit('setStudies', data.results))
       .catch(console.error)
   },
-  fetchSubjects({ commit }, { filters, pagination }) {
-    let queryString = getSubjectQueryString({ filters, pagination })
+  fetchSubjects({ commit }, { filters, options }) {
+    let queryString = getSubjectQueryString({ filters, options })
     return session
       .get(`${SUBJECTS}/${queryString}`)
       .then(({ data }) => {

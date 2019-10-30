@@ -54,8 +54,8 @@ const mutations = {
 }
 
 const actions = {
-  fetchPatients({ commit }, { filters, pagination }) {
-    let queryString = getPatientQueryString({ filters, pagination })
+  fetchPatients({ commit }, { filters, options }) {
+    let queryString = getPatientQueryString({ filters, options })
     return session
       .get(`${PATIENTS}/${queryString}`)
       .then(({ data }) => {
@@ -64,8 +64,8 @@ const actions = {
       })
       .catch(console.error)
   },
-  fetchSeries({ commit }, { filters, pagination }) {
-    let queryString = getSeriesQueryString({ filters, pagination })
+  fetchSeries({ commit }, { filters, options }) {
+    let queryString = getSeriesQueryString({ filters, options })
     return session
       .get(`${SERIES}/${queryString}`)
       .then(({ data }) => {
@@ -75,8 +75,8 @@ const actions = {
       })
       .catch(console.error)
   },
-  fetchStudies({ commit }, { filters, pagination }) {
-    let queryString = getStudyQueryString({ filters, pagination })
+  fetchStudies({ commit }, { filters, options }) {
+    let queryString = getStudyQueryString({ filters, options })
     return session
       .get(`${STUDIES}/${queryString}`)
       .then(({ data }) => {

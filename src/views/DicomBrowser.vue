@@ -1,5 +1,5 @@
 <template>
-  <v-layout column>
+  <v-col>
     <v-tabs v-model="active">
       <!-- Studies -->
       <v-tab ripple>
@@ -25,7 +25,7 @@
         <series-table />
       </v-tab-item>
     </v-tabs>
-  </v-layout>
+  </v-col>
 </template>
 
 <script>
@@ -54,12 +54,12 @@ export default {
     active: function(value) {
       if (value === 0) {
         this.setSelectedStudyId(null)
-        this.fetchStudies({ filters: {}, pagination: {} })
+        this.fetchStudies({ filters: {}, options: {} })
       } else if (value === 1) {
         this.setSelectedPatientId(null)
-        this.fetchPatients({ filters: {}, pagination: {} })
+        this.fetchPatients({ filters: {}, options: {} })
       } else if (value === 2) {
-        this.fetchSeries({ filters: {}, pagination: {} })
+        this.fetchSeries({ filters: {}, options: {} })
       }
     }
   }

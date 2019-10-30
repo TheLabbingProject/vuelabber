@@ -1,151 +1,117 @@
 <template>
   <div>
-    <v-layout column v-if="currentUser.isStaff">
+    <v-col v-if="currentUser.isStaff">
       <hr />
       <br />
-      <!-- Scan Upload -->
-      <v-expansion-panel popout>
-        <v-expansion-panel-content style="background: rgb(255, 210, 210);">
-          <template v-slot:header>
-            <div>
+      <v-expansion-panels>
+        <!-- Scan Upload -->
+        <v-expansion-panel>
+          <v-expansion-panel-header>
+            <div class="text-center">
               Upload
             </div>
-          </template>
-          <v-card>
-            <v-card-text>
-              <scan-upload
-                :subject="subject"
-                @file-upload-complete="update()"
-              />
-            </v-card-text>
-          </v-card>
-        </v-expansion-panel-content>
-      </v-expansion-panel>
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <v-card>
+              <v-card-text>
+                <scan-upload
+                  :subject="subject"
+                  @file-upload-complete="update()"
+                />
+              </v-card-text>
+            </v-card>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
 
-      <!-- Group Association -->
-      <v-expansion-panel popout>
-        <v-expansion-panel-content style="background: rgb(255, 240, 218);">
-          <template v-slot:header>
-            <div>
+        <!-- Study Group Association -->
+        <v-expansion-panel>
+          <v-expansion-panel-header>
+            <div class="text-center">
               Study Group Association
             </div>
-          </template>
-          <v-card>
-            <v-card-text>
-              <group-association :selectedScans="selected" />
-            </v-card-text>
-          </v-card>
-        </v-expansion-panel-content>
-      </v-expansion-panel>
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <v-card>
+              <v-card-text>
+                <group-association :selectedScans="selected" />
+              </v-card-text>
+            </v-card>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
+
       <br />
       <hr />
-    </v-layout>
+    </v-col>
 
     <!-- Scan Table -->
-    <scan-table-controls
-      ref="tableController"
-      :pagination="pagination"
-      @fetch-scans-start="loading = true"
-      @fetch-scans-end="loading = false"
-    />
     <v-data-table
       v-model="selected"
       item-key="id"
-      select-all
+      show-select
       :headers="headers"
       :loading="loading"
       :items="scans"
-      :rows-per-page-items="pagination.rowsPerPageItems"
-      :pagination.sync="pagination"
-      :total-items="totalScanCount"
+      :items-per-page-options="itemsPerPageOptions"
+      :options.sync="options"
+      :server-items-length="totalScanCount"
     >
-      <template v-slot:items="props">
-        <tr>
-          <!-- Selection Checkbox -->
-          <td>
-            <v-checkbox
-              v-model="props.selected"
-              primary
-              hide-details
-            ></v-checkbox>
-          </td>
+      <template v-slot:top>
+        <scan-table-controls
+          ref="tableController"
+          :options="options"
+          :subject="subject"
+          @fetch-scans-start="loading = true"
+          @fetch-scans-end="loading = false"
+        />
+      </template>
+      <template v-slot:item.date="{ item }">
+        {{ formatDate(item.time) }}
+      </template>
 
-          <!-- Scan Number -->
-          <td class="text-xs-center">
-            {{ props.item.number }}
-          </td>
+      <template v-slot:item.time="{ item }">
+        {{ formatTime(item.time) }}
+      </template>
 
-          <!-- Description -->
-          <td class="text-xs-left">
-            {{ props.item.description }}
-          </td>
+      <template v-slot:item.sequenceType="{ item }">
+        <div v-if="item.sequenceType" class="py-1">
+          <v-dialog v-model="sequenceTypeDialog[item.id]" width="800px">
+            <template v-slot:activator="{ on }">
+              <v-btn small class="info" v-on="on">
+                {{ item.sequenceType.title }}
+              </v-btn>
+            </template>
+            <protocol-information :scan="item" />
+          </v-dialog>
+        </div>
+        <div v-else class="py-1">
+          <v-dialog v-model="sequenceTypeDialog[item.id]" width="400px">
+            <template v-slot:activator="{ on }">
+              <v-btn small class="warning" v-on="on">
+                Create
+              </v-btn>
+            </template>
+            <edit-sequence-type
+              :fromScan="item"
+              @close-dialog="sequenceTypeDialog[item.id] = false"
+              @created-sequence-type="update"
+            />
+          </v-dialog>
+        </div>
+      </template>
 
-          <!-- Date -->
-          <td class="text-xs-left">
-            {{ formatDate(props.item.time) }}
-          </td>
+      <!-- Spatial Resolution -->
+      <template v-slot:item.spatialResolution="{ item }">
+        {{ formatSpatialResolution(item.spatialResolution) }}
+      </template>
 
-          <!-- Time -->
-          <td class="text-xs-left">
-            {{ formatTime(props.item.time) }}
-          </td>
-
-          <!-- Sequence Type -->
-          <td class="text-xs-left">
-            <v-dialog
-              v-model="sequenceTypeDialog[props.item.id]"
-              v-if="props.item.sequenceType"
-              lazy
-              width="800px"
-            >
-              <template v-slot:activator="{ on }">
-                <v-btn small class="info" v-on="on">
-                  {{ props.item.sequenceType.title }}
-                </v-btn>
-              </template>
-              <protocol-information :scan="props.item" />
-            </v-dialog>
-            <v-dialog
-              v-model="sequenceTypeDialog[props.item.id]"
-              v-else
-              lazy
-              width="400px"
-            >
-              <template v-slot:activator="{ on }">
-                <v-btn small class="warning" v-on="on">
-                  Create
-                </v-btn>
-              </template>
-              <edit-sequence-type
-                :fromScan="props.item"
-                @close-dialog="sequenceTypeDialog[props.item.id] = false"
-                @created-sequence-type="update"
-              />
-            </v-dialog>
-          </td>
-
-          <!-- Spatial Resolution -->
-          <td class="text-xs-left">
-            {{ formatSpatialResolution(props.item.spatialResolution) }}
-          </td>
-
-          <!-- Study Groups -->
-          <td>
-            <div
-              v-for="groupUrl in props.item.studyGroups"
-              :key="groupUrl"
-              class="text-xs-left"
-            >
-              <v-chip
-                small
-                close
-                @input="disassociateFromGroup(props.item, groupUrl)"
-              >
-                {{ stringifyGroup(getGroupByUrl(groupUrl)) }}
-              </v-chip>
-            </div>
-          </td>
-        </tr>
+      <!-- Study Groups -->
+      <template v-slot:item.studyGroups="{ item }">
+        <div v-for="groupUrl in item.studyGroups" :key="groupUrl" class="py-1">
+          <v-chip small close @input="disassociateFromGroup(item, groupUrl)">
+            {{ stringifyGroup(getGroupByUrl(groupUrl)) }}
+          </v-chip>
+        </div>
       </template>
     </v-data-table>
   </div>
@@ -161,6 +127,9 @@ import ScanTableControls from '@/components/mri/scan-table-controls.vue'
 
 export default {
   name: 'ScanTable',
+  props: {
+    subject: Object
+  },
   components: {
     EditSequenceType,
     GroupAssociation,
@@ -188,25 +157,25 @@ export default {
       { text: 'Study Groups', value: 'studyGroups', sortable: false }
     ],
     selected: [],
-    pagination: {
-      rowsPerPage: 25,
+    options: {
       page: 1,
-      sortBy: 'number',
+      sortBy: ['number'],
       descending: false,
-      rowsPerPageItems: [
-        10,
-        25,
-        50,
-        { text: '$vuetify.dataIterator.rowsPerPageAll', value: 100000 }
-      ]
+      itemsPerPage: 25
     },
+    itemsPerPageOptions: [
+      10,
+      25,
+      50,
+      { text: '$vuetify.dataIterator.itemsPerPageAll', value: 100000 }
+    ],
     loading: false
   }),
   computed: {
     ...mapState('auth', { currentUser: 'user' }),
     ...mapState('mri', ['scans', 'totalScanCount']),
     ...mapGetters('mri', ['getSequenceTypeByUrl']),
-    ...mapGetters('research', { subject: 'getSelectedSubject' }),
+    // ...mapGetters('research', { subject: 'getSelectedSubject' }),
     ...mapGetters('research', ['getGroupByUrl'])
   },
   methods: {

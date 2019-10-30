@@ -12,10 +12,10 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer />
-      <v-btn flat class="info" @click="closeDialog">
+      <v-btn text class="info" @click="closeDialog">
         Cancel
       </v-btn>
-      <v-btn flat class="error" @click="execute">
+      <v-btn text class="error" @click="execute">
         Delete
       </v-btn>
       <v-spacer />

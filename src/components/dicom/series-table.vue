@@ -1,89 +1,77 @@
 <template>
-  <v-layout column pb-5>
+  <v-col>
     <series-table-controls
       ref="tableController"
-      :pagination="pagination"
+      :options="options"
       :patient="patient"
       @fetch-series-start="loading = true"
       @fetch-series-end="loading = false"
     />
     <v-data-table
+      dense
       item-key="id"
       v-model="selectedSeries"
       :headers="headers"
       :items="seriesList"
       :loading="loading"
-      :pagination.sync="pagination"
-      :rows-per-page-items="pagination.rowsPerPageItems"
-      :total-items="seriesCount"
+      :options.sync="options"
+      :server-items-length="seriesCount"
+      :footer-props="{
+        itemsPerPageOptions
+      }"
     >
-      <template v-slot:items="props">
-        <tr>
-          <!-- Number -->
-          <td class="text-xs-left" style="width: 50px;">
-            {{ props.item.number }}
-          </td>
+      <!-- Date -->
+      <template v-slot:item.date="{ item }">
+        {{ item.date.slice(0, 10) | formatDate }}
+      </template>
 
-          <!-- Description -->
-          <td class="text-xs-left">
-            {{ props.item.description }}
-          </td>
+      <!-- Time -->
+      <template v-slot:item.time="{ item }">
+        {{ item.time.slice(0, 8) }}
+      </template>
 
-          <!-- Date -->
-          <td class="text-xs-left">
-            {{ props.item.date.slice(0, 10) | formatDate }}
-          </td>
+      <!-- Sequence Type -->
+      <template v-slot:item.sequenceType="{ item }">
+        <div class="py-1">
+          <v-dialog v-model="protocolInformationDialog[item.id]" width="800px">
+            <template v-slot:activator="{ on }">
+              <v-btn small class="info" v-on="on">
+                {{ getSequenceTypeTitle(item) }}
+              </v-btn>
+            </template>
+            <protocol-information :series="item" />
+          </v-dialog>
+        </div>
+      </template>
 
-          <!-- Time -->
-          <td class="text-xs-left">
-            {{ props.item.time.slice(0, 8) }}
-          </td>
+      <!-- Spatial Resolution -->
+      <template v-slot:item.spatialResolution="{ item }">
+        {{ getSpatialResolution(item) }}
+      </template>
 
-          <!-- Protocol Information -->
-          <td class="text-xs-center">
-            <v-dialog
-              v-model="protocolInformationDialog[props.item.id]"
-              lazy
-              width="800px"
-            >
-              <template v-slot:activator="{ on }">
-                <v-btn small class="info" v-on="on">
-                  {{ getSequenceTypeTitle(props.item) }}
-                </v-btn>
-              </template>
-              <protocol-information :series="props.item" />
-            </v-dialog>
-          </td>
-
-          <!-- Spatial Resolution -->
-          <td class="text-xs-center">
-            {{ getSpatialResolution(props.item) }}
-          </td>
-
-          <!-- Scan Instance Dialog -->
-          <td class="text-xs-left">
-            <v-dialog
-              lazy
-              v-if="getScanByDicomSeries(props.item)"
-              v-model="scanInfoDialog[props.item.id]"
-              width="500px"
-            >
-              <template v-slot:activator="{ on }">
-                <v-btn small color="success" v-on="on">
-                  {{ `Scan #${getScanByDicomSeries(props.item).id}` }}
-                </v-btn>
-              </template>
-              <scan-info
-                :existingScan="getScanByDicomSeries(props.item)"
-                :dicom="props.item"
-                @close-scan-dialog="scanInfoDialog[props.item.id] = false"
-              />
-            </v-dialog>
-          </td>
-        </tr>
+      <!-- Scan Instance Dialog -->
+      <template v-slot:item.scanInstance="{ item }">
+        <div class="py-1">
+          <v-dialog
+            v-if="getScanByDicomSeries(item)"
+            v-model="scanInfoDialog[item.id]"
+            width="500px"
+          >
+            <template v-slot:activator="{ on }">
+              <v-btn small color="success" v-on="on">
+                {{ `Scan #${getScanByDicomSeries(item).id}` }}
+              </v-btn>
+            </template>
+            <scan-info
+              :existingScan="getScanByDicomSeries(item)"
+              :dicom="item"
+              @close-scan-dialog="scanInfoDialog[item.id] = false"
+            />
+          </v-dialog>
+        </div>
       </template>
     </v-data-table>
-  </v-layout>
+  </v-col>
 </template>
 
 <script>
@@ -103,49 +91,53 @@ export default {
     studyGroups: {},
     selectedSeries: [],
     headers: [
-      { text: 'Number', value: 'number', width: '20px' },
+      { text: 'Number', value: 'number', width: '5%' },
       {
         text: 'Description',
         value: 'description',
-        width: '400px',
-        sortable: false
+        sortable: false,
+        width: '30%'
       },
-      { text: 'Date', value: 'date', width: '100px' },
-      { text: 'Time', value: 'time', width: '100px' },
+      {
+        text: 'Date',
+        value: 'date',
+        align: 'center',
+        width: '12%'
+      },
+      {
+        text: 'Time',
+        value: 'time',
+        align: 'center',
+        width: '12%'
+      },
       {
         text: 'Sequence Type',
         value: 'sequenceType',
-        width: '200px',
         sortable: false,
-        align: 'center'
+        align: 'center',
+        width: '15%'
       },
       {
         text: 'Spatial Resolution (mm)',
         value: 'spatialResolution',
         sortable: false,
         align: 'center',
-        width: '100px'
+        width: '16%'
       },
       {
         text: 'Scan Instance',
         value: 'scanInstance',
         sortable: false,
-        width: '50px'
+        width: '15%'
       }
     ],
-    pagination: {
-      rowsPerPage: 10,
+    options: {
+      itemsPerPage: 10,
       page: 1,
-      sortBy: 'number',
-      descending: false,
-      rowsPerPageItems: [
-        10,
-        25,
-        50,
-        { text: '$vuetify.dataIterator.rowsPerPageAll', value: 100000 }
-      ]
+      sortBy: ['number'],
+      descending: false
     },
-
+    itemsPerPageOptions: [10, 25, 50, -1],
     loading: false
   }),
   computed: {

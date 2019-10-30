@@ -1,77 +1,65 @@
 <template>
-  <v-layout column pb-5>
+  <v-col>
     <patient-table-controls
       ref="tableController"
-      :pagination="pagination"
+      :options="options"
       :studyId="studyId"
       @fetch-patients-start="loading = true"
       @fetch-patients-end="loading = false"
     />
     <v-data-table
+      dense
+      show-expand
+      single-expand
       item-key="id"
-      :expand="expand"
+      :expanded.sync="expanded"
       :headers="headers"
       :items="patients"
       :loading="loading"
-      :pagination.sync="pagination"
-      :rows-per-page-items="pagination.rowsPerPageItems"
-      :total-items="patientCount"
+      :options.sync="options"
+      :server-items-length="patientCount"
+      :footer-props="{
+        itemsPerPageOptions
+      }"
     >
-      <template v-slot:items="props">
-        <tr
-          @click="selectPatient(props)"
-          :class="{ selected: props.item.id === selectedPatientId }"
-        >
-          <td class="text-xs-left" style="width: 50px;">
-            {{ props.item.id }}
-          </td>
-          <td class="text-xs-left">
-            {{ props.item.uid }}
-          </td>
-          <td class="text-xs-left">
-            {{ props.item.givenName }}
-          </td>
-          <td class="text-xs-left">
-            {{ props.item.familyName }}
-          </td>
-          <td class="text-xs-left">
-            {{ getPatientSex(props.item) }}
-          </td>
-          <td class="text-xs-left">
-            {{ props.item.dateOfBirth | formatDate }}
-          </td>
-          <td class="text-xs-right">
-            <v-dialog v-model="subjectDialog[props.item.id]" lazy width="400px">
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  small
-                  color="success"
-                  v-on="on"
-                  v-if="patientToSubject[props.item.id]"
-                >
-                  Subject #{{ patientToSubject[props.item.id].id }}
-                </v-btn>
-                <v-btn v-else small color="warning" v-on="on" disabled>
-                  Create
-                </v-btn>
-              </template>
-              <subject-info-card
-                :existingSubject="patientToSubject[props.item.id]"
-                :key="subjectDialog[props.item.id]"
-                @close-subject-dialog="subjectDialog[props.item.id] = false"
-              />
-            </v-dialog>
-          </td>
-        </tr>
+      <template v-slot:item.sex="{ item }">
+        {{ getPatientSex(item) }}
       </template>
-      <template v-slot:expand="props">
-        <v-flex class="embeded-table" px-2 py-2>
-          <series-table :patient="props.item"></series-table>
+      <template v-slot:item.dateOfBirth="{ item }">
+        {{ item.dateOfBirth | formatDate }}
+      </template>
+      <template v-slot:item.subject="{ item }">
+        <div class="py-1">
+          <v-dialog v-model="subjectDialog[item.id]" width="400px">
+            <template v-slot:activator="{ on }">
+              <v-btn
+                small
+                color="success"
+                v-on="on"
+                v-if="patientToSubject[item.id]"
+              >
+                Subject #{{ patientToSubject[item.id].id }}
+              </v-btn>
+              <v-btn v-else small color="warning" v-on="on" disabled>
+                Create
+              </v-btn>
+            </template>
+            <subject-info-card
+              :existingSubject="patientToSubject[item.id]"
+              :key="subjectDialog[item.id]"
+              @close-subject-dialog="subjectDialog[item.id] = false"
+            />
+          </v-dialog>
+        </div>
+      </template>
+      <template v-slot:expanded-item="{ headers, item }">
+        <td :colspan="headers.length">
+          <series-table :patient="item"></series-table>
           <hr />
-        </v-flex>
+        </td>
       </template>
     </v-data-table>
-  </v-layout>
+  </v-col>
 </template>
 
 <script>
@@ -89,7 +77,7 @@ export default {
   data: () => ({
     subjectDialog: {},
     patientToSubject: {},
-    expand: false,
+    expanded: [],
     headers: [
       { text: 'ID', value: 'id', align: 'left' },
       { text: 'Patient UID', value: 'uid' },
@@ -104,18 +92,13 @@ export default {
         sortable: false
       }
     ],
-    pagination: {
-      rowsPerPage: 25,
+    options: {
+      itemsPerPage: 25,
       page: 1,
-      sortBy: 'number',
-      descending: false,
-      rowsPerPageItems: [
-        10,
-        25,
-        50,
-        { text: '$vuetify.dataIterator.rowsPerPageAll', value: 100000 }
-      ]
+      sortBy: ['number'],
+      descending: false
     },
+    itemsPerPageOptions: [10, 25, 50, -1],
     loading: false,
     sexOptions
   }),
@@ -126,12 +109,6 @@ export default {
     getPatientSex: function(patient) {
       return getKeyByValue(this.sexOptions, patient.sex)
     },
-    selectPatient(props) {
-      props.expanded = !props.expanded
-      props.expanded
-        ? this.setSelectedPatientId(props.item.id)
-        : this.setSelectedPatientId(null)
-    },
     ...mapMutations('dicom', ['setSelectedPatientId']),
     ...mapActions('research', ['fetchSubjects'])
   },
@@ -140,7 +117,7 @@ export default {
       value.forEach(patient => {
         this.fetchSubjects({
           filters: { dicomPatientId: patient.id },
-          pagination: {}
+          options: {}
         }).then(results =>
           this.$set(this.patientToSubject, patient.id, results[0])
         )

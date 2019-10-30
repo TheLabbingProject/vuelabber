@@ -73,8 +73,8 @@ const mutations = {
 }
 
 const actions = {
-  fetchScans({ commit }, { filters, pagination }) {
-    let queryString = getScanQueryString({ filters, pagination })
+  fetchScans({ commit }, { filters, options }) {
+    let queryString = getScanQueryString({ filters, options })
     return session
       .get(`${SCANS}/${queryString}`)
       .then(({ data }) => {

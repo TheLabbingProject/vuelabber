@@ -17,7 +17,7 @@
 
     <!-- Body -->
     <v-card-text>
-      <v-layout wrap column>
+      <v-col>
         <v-form @submit.prevent="submit">
           <!-- Title -->
           <v-text-field
@@ -41,7 +41,7 @@
             :items="possibleCollaborators"
           />
         </v-form>
-      </v-layout>
+      </v-col>
     </v-card-text>
 
     <!-- Actions -->
@@ -50,7 +50,7 @@
       <!-- Create new study -->
       <v-btn
         color="success"
-        flat
+        text
         v-if="!existingStudy"
         :disabled="$v.study.$error"
         @click="createNewStudy"
@@ -61,7 +61,7 @@
       <!-- Update existing study -->
       <v-btn
         color="warning"
-        flat
+        text
         v-else
         :disabled="$v.study.$error"
         @click="updateExistingStudy"
@@ -70,7 +70,7 @@
       </v-btn>
 
       <!-- Cancel study creation/update -->
-      <v-btn color="error" flat @click="$emit('close-study-dialog')">
+      <v-btn color="error" text @click="$emit('close-study-dialog')">
         Cancel
       </v-btn>
     </v-card-actions>

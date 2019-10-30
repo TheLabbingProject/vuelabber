@@ -1,102 +1,97 @@
 <template>
-  <v-layout column>
-    <v-layout pb-2 row>
-      <span class="headline">MRI Sequence Types</span>
-      <v-spacer />
-      <v-dialog v-model="createSequenceTypeDialog" width="400px" lazy>
-        <template v-slot:activator="{ on }">
-          <v-btn class="success" v-on="on">
-            Create
-          </v-btn>
-        </template>
-        <edit-sequence-type @close-dialog="createSequenceTypeDialog = false" />
-      </v-dialog>
-    </v-layout>
+  <v-col>
     <v-data-table
       item-key="id"
       :headers="headers"
       :items="sequenceTypes"
       :loading="loading"
     >
-      <template v-slot:items="props">
-        <tr>
-          <td class="text-xs-left">
-            {{ props.item.title }}
-          </td>
-          <td class="text-xs-left">
-            <v-flex class="py-4">
-              <div
-                class="text-xs-left"
-                v-for="(sequence, index) in props.item.scanningSequence"
-                :key="index"
-              >
-                <v-chip small>
-                  <v-avatar :color="getScanningSequenceColor(sequence)">
-                    {{ sequence }}
-                  </v-avatar>
-                  {{ getScanningSequenceName(sequence) }}
-                </v-chip>
-              </div>
-            </v-flex>
-          </td>
-          <td class="text-xs-left">
-            <v-flex class="py-4">
-              <div
-                class="text-xs-left"
-                v-for="(variant, index) in props.item.sequenceVariant"
-                :key="index"
-              >
-                <v-chip small>
-                  <v-avatar :color="getSequenceVariantColor(variant)">{{
-                    variant
-                  }}</v-avatar>
-                  {{ getSequenceVariantName(variant) }}
-                </v-chip>
-              </div>
-            </v-flex>
-          </td>
-          <td class="text-xs-left">
-            {{ props.item.description }}
-          </td>
-          <td class="text-xs-left" style="width: 50px;">
-            <v-dialog
-              v-model="editSequenceTypeDialog[props.item.id]"
-              width="400px"
-              lazy
-            >
-              <template v-slot:activator="{ on }">
-                <v-icon v-on="on">
-                  edit
-                </v-icon>
-              </template>
-              <edit-sequence-type
-                :existingSequenceType="props.item"
-                @close-dialog="editSequenceTypeDialog[props.item.id] = false"
-              />
-            </v-dialog>
-          </td>
-          <td class="text-xs-left" style="width: 50px;">
-            <v-dialog
-              v-model="deleteSequenceTypeDialog[props.item.id]"
-              width="400px"
-              lazy
-            >
-              <template v-slot:activator="{ on }">
-                <v-icon v-on="on">
-                  delete
-                </v-icon>
-              </template>
-              <delete-dialog
-                :action="deleteSequenceType"
-                :input="props.item"
-                @close-dialog="deleteSequenceTypeDialog[props.item.id] = false"
-              />
-            </v-dialog>
-          </td>
-        </tr>
+      <!-- Title and Create button -->
+      <template v-slot:top>
+        <v-row class="px-3 pb-3">
+          <span class="title">MRI Sequence Types</span>
+          <v-spacer />
+          <v-dialog v-model="createSequenceTypeDialog" width="400px">
+            <template v-slot:activator="{ on }">
+              <v-btn class="success" v-on="on">
+                Create
+              </v-btn>
+            </template>
+            <edit-sequence-type
+              @close-dialog="createSequenceTypeDialog = false"
+            />
+          </v-dialog>
+        </v-row>
+      </template>
+
+      <!-- Scanning Sequence -->
+      <template v-slot:item.scanningSequence="{ item }">
+        <v-col>
+          <div
+            class="py-1"
+            v-for="(sequence, index) in item.scanningSequence"
+            :key="index"
+          >
+            <v-chip small>
+              <v-avatar :color="scanningSequences[sequence].color">
+                {{ sequence }}
+              </v-avatar>
+              {{ scanningSequences[sequence].name }}
+            </v-chip>
+          </div>
+        </v-col>
+      </template>
+
+      <!-- Sequence Variant -->
+      <template v-slot:item.sequenceVariant="{ item }">
+        <v-col>
+          <div
+            class="py-1"
+            v-for="(variant, index) in item.sequenceVariant"
+            :key="index"
+          >
+            <v-chip small>
+              <v-avatar :color="sequenceVariants[variant].color">
+                {{ variant }}
+              </v-avatar>
+              {{ sequenceVariants[variant].name }}
+            </v-chip>
+          </div>
+        </v-col>
+      </template>
+
+      <!-- Edit -->
+      <template v-slot:item.edit="{ item }">
+        <v-dialog v-model="editSequenceTypeDialog[item.id]" width="400px">
+          <template v-slot:activator="{ on }">
+            <v-icon v-on="on">
+              edit
+            </v-icon>
+          </template>
+          <edit-sequence-type
+            :existingSequenceType="item"
+            @close-dialog="editSequenceTypeDialog[item.id] = false"
+          />
+        </v-dialog>
+      </template>
+
+      <!-- Delete -->
+      <template v-slot:item.delete="{ item }">
+        <v-dialog v-model="deleteSequenceTypeDialog[item.id]" width="400px">
+          <template v-slot:activator="{ on }">
+            <v-icon v-on="on">
+              delete
+            </v-icon>
+          </template>
+          <delete-dialog
+            :action="deleteSequenceType"
+            :input="item"
+            @close-dialog="deleteSequenceTypeDialog[item.id] = false"
+          />
+        </v-dialog>
       </template>
     </v-data-table>
-  </v-layout>
+  </v-col>
 </template>
 
 <script>
@@ -116,31 +111,21 @@ export default {
     headers: [
       { text: 'Title', value: 'title', align: 'left' },
       { text: 'Scanning Sequence', value: 'scanningSequence', align: 'left' },
-      { text: 'Variants', value: 'sequenceVariants', align: 'left' },
+      { text: 'Variants', value: 'sequenceVariant', align: 'left' },
       { text: 'Description', value: 'description', align: 'left' },
       { text: 'Edit', value: 'edit', align: 'left' },
       { text: 'Delete', value: 'delete', align: 'left' }
     ],
     createSequenceTypeDialog: false,
     deleteSequenceTypeDialog: {},
-    editSequenceTypeDialog: {}
+    editSequenceTypeDialog: {},
+    scanningSequences,
+    sequenceVariants
   }),
   computed: {
     ...mapState('mri', ['sequenceTypes'])
   },
   methods: {
-    getScanningSequenceName(abbreviation) {
-      return scanningSequences[abbreviation].name
-    },
-    getScanningSequenceColor(abbreviation) {
-      return scanningSequences[abbreviation].color
-    },
-    getSequenceVariantName(abbreviation) {
-      return sequenceVariants[abbreviation].name
-    },
-    getSequenceVariantColor(abbreviation) {
-      return sequenceVariants[abbreviation].color
-    },
     ...mapActions('mri', ['fetchSequenceTypes', 'deleteSequenceType'])
   }
 }
