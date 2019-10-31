@@ -249,11 +249,10 @@ export default {
       if (this.subject.customAttributes === null) {
         this.subject.customAttributes = {}
       }
-      let newKey = { Key: 'Value' }
-      this.subject.customAttributes = Object.assign(
-        newKey,
-        this.subject.customAttributes
-      )
+      this.subject.customAttributes = {
+        ...this.subject.customAttributes,
+        Key: 'Value'
+      }
     },
     updateCustomAttributes(updatedAttributes) {
       this.subject.customAttributes = updatedAttributes
