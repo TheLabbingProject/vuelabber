@@ -33,3 +33,11 @@ export function createSelectItems(from, textKey, valueKey) {
     return createSelectItemFromArray(from, textKey, valueKey)
   }
 }
+
+export function isInteger(n) {
+  return Number(n) === n && n % 1 === 0
+}
+
+export function isFloat(n) {
+  return Number(n) === n && n % 1 !== 0
+}

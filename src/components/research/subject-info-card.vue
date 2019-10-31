@@ -107,21 +107,8 @@
             ></v-date-picker>
           </v-menu>
           <br />
-          <v-row class="px-4 align-center">
-            <span class="text-xs-left grey--text">
-              Custom attributes
-            </span>
-            <v-spacer />
-            <v-btn
-              small
-              color="success"
-              v-if="editable"
-              @click="createCustomAttribute"
-            >
-              Add
-            </v-btn>
-          </v-row>
           <object-table
+            title="Custom attributes"
             :editable="editable"
             :existingObject="subject.customAttributes"
             @update-object="updateCustomAttributes"
@@ -141,6 +128,7 @@
         />
       </div>
       <v-spacer />
+
       <!-- Update -->
       <v-btn
         color="warning"
@@ -245,15 +233,6 @@ export default {
     generateLastName() {
       this.subject.lastName = faker.name.lastName()
     },
-    createCustomAttribute() {
-      if (this.subject.customAttributes === null) {
-        this.subject.customAttributes = {}
-      }
-      this.subject.customAttributes = {
-        ...this.subject.customAttributes,
-        Key: 'Value'
-      }
-    },
     updateCustomAttributes(updatedAttributes) {
       this.subject.customAttributes = updatedAttributes
     },
@@ -279,7 +258,8 @@ const cleanSubject = {
   dateOfBirth: null,
   dominantHand: null,
   sex: null,
-  gender: null
+  gender: null,
+  customAttributes: {}
 }
 
 function formatDate(date) {
