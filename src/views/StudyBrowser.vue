@@ -1,7 +1,7 @@
 <template>
   <v-col>
     <!-- Create new study button -->
-    <v-row v-if="currentUser.isStaff">
+    <v-row v-if="currentUser.isStaff" class="px-2">
       <v-spacer />
       <v-col cols="1">
         <v-dialog v-model="createStudyDialog" width="400px">
@@ -41,7 +41,7 @@
       <!-- Body -->
       <v-card-text class="text-xs-left">
         <!-- Study Description -->
-        <div v-if="study.description">
+        <div v-if="study.description" class="text-left pt-3">
           {{ study.description }}
         </div>
         <div v-else class="grey--text text--lighten-0 font-italic">

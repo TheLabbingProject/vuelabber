@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <!-- Title -->
-    <v-card-title class="headline green darken-3 white--text">
+    <v-card-title class="success darken-3 white--text">
       <span>
         {{ cardTitle }}
       </span>

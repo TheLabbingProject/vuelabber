@@ -2,7 +2,7 @@
   <v-card>
     <!-- Title -->
     <v-card-title class="success darken-3">
-      <div class="headline">
+      <div>
         <span class="white--text">
           Subject Information
         </span>
@@ -32,7 +32,6 @@
             v-if="existingSubject && !editable"
             v-model="subject.firstName"
             :counter="64"
-            :disabled="!(editable || subject.firstName)"
             :readonly="!editable"
           />
           <v-text-field
@@ -41,7 +40,6 @@
             v-else
             v-model="subject.firstName"
             :counter="64"
-            :disabled="!(editable || subject.firstName)"
             :readonly="!editable"
             @click:append-outer="generateFirstName"
           />
@@ -52,7 +50,6 @@
             v-if="existingSubject && !editable"
             v-model="subject.lastName"
             :counter="64"
-            :disabled="!(editable || subject.lastName)"
             :readonly="!editable"
           />
           <v-text-field
@@ -61,7 +58,6 @@
             v-else
             v-model="subject.lastName"
             :counter="64"
-            :disabled="!(editable || subject.lastName)"
             :readonly="!editable"
             @click:append-outer="generateLastName"
           />
@@ -102,7 +98,6 @@
                 v-model="formattedDate"
                 v-on="on"
                 :clearable="editable"
-                :disabled="!(editable || formattedDate)"
                 :readonly="!editable"
               ></v-text-field>
             </template>
@@ -234,6 +229,7 @@ export default {
     createNewSubject() {
       this.createSubject(this.subject)
         .then(() => (this.editable = false))
+        .then(() => (this.subject = Object.assign({}, cleanSubject)))
         .then(this.closeDialog())
     },
     getSubjectRepresentation(subject) {

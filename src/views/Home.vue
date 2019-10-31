@@ -39,12 +39,14 @@
             </v-col>
             <v-col>
               <v-card-title class="text-left pl-0">
-                <div class="subtitle-1">
-                  {{ user | formatResearcherName }}
-                </div>
-                <div class="subtitle-2 grey--text font-italic">
-                  {{ user.institute }}
-                </div>
+                <v-col>
+                  <div class="subtitle-1">
+                    {{ user | formatResearcherName }}
+                  </div>
+                  <div class="subtitle-2 grey--text font-italic">
+                    {{ user.institute }}
+                  </div>
+                </v-col>
               </v-card-title>
             </v-col>
           </v-row>
