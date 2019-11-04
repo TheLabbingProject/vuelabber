@@ -80,7 +80,7 @@
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, maxLength } from 'vuelidate/lib/validators'
-import { mapGetters, mapState, mapActions, mapMutations } from 'vuex'
+import { mapGetters, mapState, mapActions } from 'vuex'
 
 export default {
   name: 'StudyInfoCard',
@@ -160,8 +160,7 @@ export default {
       this.updateStudy(this.study).then(this.closeDialog())
     },
     ...mapActions('accounts', ['fetchUsers']),
-    ...mapActions('research', ['createStudy', 'updateStudy', 'deleteStudy']),
-    ...mapMutations('research', ['setSelectedStudyByTitle'])
+    ...mapActions('research', ['createStudy', 'updateStudy', 'deleteStudy'])
   }
 }
 

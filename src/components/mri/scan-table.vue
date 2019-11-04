@@ -179,7 +179,6 @@ export default {
     ...mapState('auth', { currentUser: 'user' }),
     ...mapState('mri', ['scans', 'totalScanCount']),
     ...mapGetters('mri', ['getSequenceTypeByUrl']),
-    // ...mapGetters('research', { subject: 'getSelectedSubject' }),
     ...mapGetters('research', ['getGroupByUrl'])
   },
   methods: {

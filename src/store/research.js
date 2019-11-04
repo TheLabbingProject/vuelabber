@@ -9,10 +9,7 @@ import { camelToSnakeCase } from '@/utils'
 const state = {
   studies: [],
   groups: [],
-  selectedStudy: null,
-  selectedStudyGroups: [],
-  subjects: [],
-  selectedSubjectId: null
+  subjects: []
 }
 
 const getters = {
@@ -21,9 +18,6 @@ const getters = {
   },
   getSubjectById(state) {
     return id => state.subjects.find(subject => subject.id === id)
-  },
-  getSelectedSubject(state, getters) {
-    return getters['getSubjectById'](state.selectedSubjectId)
   },
   getSubjectByUrl(state) {
     return url => state.subjects.find(subject => subject.url === url)
@@ -40,14 +34,8 @@ const mutations = {
   addSubject(state, subject) {
     state.subjects.push(subject)
   },
-  setSelectedSubjectId(state, selectedSubjectId) {
-    state.selectedSubjectId = selectedSubjectId
-  },
   setGroups(state, groups) {
     state.groups = groups
-  },
-  setSelectedStudyGroups(state, selectedStudyGroups) {
-    state.selectedStudyGroups = selectedStudyGroups
   },
   addStudy(state, study) {
     state.studies.push(study)
@@ -82,9 +70,6 @@ const mutations = {
     state.studies = state.studies.filter(
       existingStudy => existingStudy.id != study.id
     )
-  },
-  setSelectedStudyByTitle(state, title) {
-    state.selectedStudy = state.studies.find(study => study.title === title)
   }
 }
 
@@ -119,14 +104,6 @@ const actions = {
       .then(group => {
         commit('addGroup', group)
         return group
-      })
-      .catch(console.error)
-  },
-  fetchSelectedStudyGroups({ commit, state }) {
-    return session
-      .get(`${GROUPS}/?study__id=${state.selectedStudy.id}`)
-      .then(({ data }) => {
-        commit('setSelectedStudyGroups', data.results)
       })
       .catch(console.error)
   },
