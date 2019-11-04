@@ -1,6 +1,9 @@
 import session from '@/api/session'
 import { GROUPS, STUDIES, SUBJECTS } from '@/api/research/endpoints'
-import { getSubjectQueryString } from '@/api/research/query'
+import {
+  getGroupQueryString,
+  getSubjectQueryString
+} from '@/api/research/query'
 import { camelToSnakeCase } from '@/utils'
 
 const state = {
@@ -13,19 +16,8 @@ const state = {
 }
 
 const getters = {
-  getStudyByTitle(state) {
-    return studyTitle => state.studies.find(study => study.title === studyTitle)
-  },
-  getSelectedStudyGroupByTitle(state) {
-    return title =>
-      state.selectedStudyGroups.find(group => group.title === title)
-  },
   getGroupByUrl(state) {
     return url => state.groups.find(group => group.url === url)
-  },
-  getStudyGroups(state) {
-    return study =>
-      study ? state.groups.filter(group => group.study.id === study.id) : []
   },
   getSubjectById(state) {
     return id => state.subjects.find(subject => subject.id === id)
@@ -35,9 +27,6 @@ const getters = {
   },
   getSubjectByUrl(state) {
     return url => state.subjects.find(subject => subject.url === url)
-  },
-  getSelectedStudyTitle(state) {
-    return state.selectedStudy ? state.selectedStudy.title : null
   }
 }
 
@@ -116,10 +105,21 @@ const actions = {
       })
       .catch(console.error)
   },
-  fetchGroups({ commit }) {
+  fetchGroups({ commit }, { filters, options }) {
+    let queryString = getGroupQueryString({ filters, options })
     return session
-      .get(GROUPS)
+      .get(`${GROUPS}/${queryString}`)
       .then(({ data }) => commit('setGroups', data.results))
+      .catch(console.error)
+  },
+  fetchGroupById({ commit }, groupId) {
+    return session
+      .get(`${GROUPS}/?id=${groupId}`)
+      .then(({ data }) => data.results[0])
+      .then(group => {
+        commit('addGroup', group)
+        return group
+      })
       .catch(console.error)
   },
   fetchSelectedStudyGroups({ commit, state }) {
@@ -133,7 +133,10 @@ const actions = {
   createStudy({ commit }, study) {
     return session
       .post(STUDIES, study)
-      .then(({ data }) => commit('addStudy', data))
+      .then(({ data }) => {
+        commit('addStudy', data)
+        return data
+      })
       .catch(console.error)
   },
   updateStudy({ commit }, study) {
@@ -158,9 +161,7 @@ const actions = {
         // Can't just add the returned value because GET
         // and POST return different JSONs (the POST result)
         // doesn't contain Study as an object but as a url
-        // TODO: Make more efficient by getting just the
-        // new created Group instance (by ID) and committing it.
-        .then(() => dispatch('fetchGroups'))
+        .then(({ data }) => dispatch('fetchGroupById', data.id))
         .catch(console.error)
     )
   },

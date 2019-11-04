@@ -7,21 +7,14 @@
     <v-card-text>
       <v-col>
         <v-form @submit.prevent="submit">
-          <v-text-field
-            v-model="group.title"
-            label="Title"
-            :class="{ hasError: $v.group.title.$error }"
-            :counter="255"
-            :error-messages="titleErrors"
-            @blur="$v.group.title.$touch()"
-          />
+          <v-text-field v-model="group.title" label="Title" :counter="255" />
           <v-textarea v-model="group.description" label="Description" />
           <v-combobox
-            v-model="selectedStudyTitle"
+            v-model="selectedStudy"
             label="Study"
-            :error-messages="studyErrors"
-            :items="studies.map(study => study.title)"
-            @blur="$v.selectedStudyTitle.$touch()"
+            item-text="title"
+            item-value="id"
+            :items="studies"
           />
         </v-form>
       </v-col>
@@ -29,12 +22,7 @@
 
     <v-card-actions>
       <v-spacer />
-      <v-btn
-        color="success"
-        text
-        @click="createGroupCaller"
-        :disabled="$v.group.$error"
-      >
+      <v-btn color="success" text @click="createNewGroup">
         Submit
       </v-btn>
       <v-btn color="error" text @click="$emit('close-group-dialog')">
@@ -45,74 +33,43 @@
 </template>
 
 <script>
-import { validationMixin } from 'vuelidate'
-import { required, maxLength } from 'vuelidate/lib/validators'
-import { mapState, mapActions, mapMutations } from 'vuex'
+import { mapState, mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'CreateGroupCard',
+  props: { study: Object },
   created() {
     this.fetchStudies()
-    this.group.study = this.selectedStudy.url
-  },
-  mixins: [validationMixin],
-  validations: {
-    group: {
-      title: { required, maxLength: maxLength(255) }
-    },
-    selectedStudyTitle: { required }
+    if (this.study) {
+      this.selectedStudy = this.study
+    }
   },
   data: () => ({
+    selectedStudy: undefined,
     group: Object.assign({}, cleanGroup)
   }),
   computed: {
-    selectedStudyTitle: {
-      get: function() {
-        return this.selectedStudy.title
-      },
-      set: function(title) {
-        this.setSelectedStudyByTitle(title)
-        this.group.study = this.selectedStudy.url
-      }
-    },
-    titleErrors: function() {
-      const errors = []
-      if (!this.$v.group.title.$dirty) return errors
-      !this.$v.group.title.maxLength &&
-        errors.push('Title must be at most 255 characters long!')
-      !this.$v.group.title.required && errors.push('Title is required.')
-      return errors
-    },
-    studyErrors: function() {
-      const errors = []
-      if (!this.$v.selectedStudyTitle.$dirty) return errors
-      !this.$v.selectedStudyTitle.required &&
-        errors.push('Study selection is required.')
-      return errors
-    },
-    ...mapState('research', ['studies', 'selectedStudy'])
+    ...mapState('research', ['studies', 'groups']),
+    ...mapGetters('research', ['getGroupByUrl'])
   },
   methods: {
-    resetDialogState: function() {
-      this.group = Object.assign({}, cleanGroup)
-      this.$v.$reset()
-    },
     closeDialog: function() {
-      let title = this.group.title
-      this.resetDialogState()
-      this.$emit('close-group-dialog', title)
+      this.group = Object.assign({}, cleanGroup)
+      this.$emit('close-group-dialog')
     },
-    createGroupCaller: function() {
-      this.$v.group.$touch()
-      if (this.$v.group.$error) return
-      this.createGroup(this.group).then(() => this.closeDialog())
+    createNewGroup: function() {
+      this.group.study = this.selectedStudy.url
+      this.createGroup(this.group)
+        .then(({ url }) => this.getGroupByUrl(url))
+        .then(group => this.$emit('created-group', group))
+        .then(() => this.closeDialog())
     },
-    ...mapActions('research', [
-      'createGroup',
-      'fetchStudies',
-      'fetchSelectedStudyGroups'
-    ]),
-    ...mapMutations('research', ['setSelectedStudyByTitle'])
+    ...mapActions('research', ['createGroup', 'fetchStudies', 'fetchGroups'])
+  },
+  watch: {
+    selectedStudy: function(newValue) {
+      this.$emit('selected-study', newValue)
+    }
   }
 }
 

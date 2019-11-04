@@ -150,7 +150,7 @@ export default {
       if (this.$v.study.$error) return
       this.fixCollaboratorsProperty()
       this.createStudy(this.study)
-        .then(() => this.setSelectedStudyByTitle(this.study.title))
+        .then(newStudy => this.$emit('created-study', newStudy))
         .then(() => this.closeDialog())
     },
     updateExistingStudy() {

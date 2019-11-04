@@ -10,4 +10,11 @@ const getSubjectQueryString = ({ filters, options }) => {
     1}&ordering=${options.descending ? '-' + options.sortBy : options.sortBy}`
 }
 
-export { getSubjectQueryString }
+const getGroupQueryString = ({ filters, options }) => {
+  return `?id=${filters.id || ''}&description=${filters.description ||
+    ''}&description_lookup=icontains&study=${filters.studyId ||
+    ''}&page_size=${options.itemsPerPage || 100}&page=${options.page ||
+    1}&ordering=${options.descending ? '-' + options.sortBy : options.sortBy}`
+}
+
+export { getGroupQueryString, getSubjectQueryString }

@@ -4,10 +4,13 @@
       <!-- Study selection with creation dialog -->
       <v-col>
         <v-combobox
-          v-model="selectedStudyTitle"
+          clearable
+          v-model="selectedStudy"
           append-outer-icon="add_circle"
           label="Select study"
-          :items="studies.map(item => item.title)"
+          item-text="title"
+          item-value="id"
+          :items="studies"
           @click:append-outer.stop="createStudyDialog = true"
         />
         <v-dialog
@@ -15,18 +18,24 @@
           width="600px"
           :key="createStudyDialog"
         >
-          <study-info-card @close-study-dialog="createStudyDialog = false" />
+          <study-info-card
+            @close-study-dialog="createStudyDialog = false"
+            @created-study="selectedStudy = arguments[0]"
+          />
         </v-dialog>
       </v-col>
 
       <!-- Group selection with creation dialog -->
       <v-col>
         <v-combobox
-          v-model="selectedGroupTitle"
+          clearable
+          v-model="selectedGroup"
           append-outer-icon="add_circle"
           label="Select group"
+          item-text="title"
+          item-value="id"
           :disabled="!selectedStudy"
-          :items="selectedStudyGroups.map(group => group.title)"
+          :items="studyGroups"
           @click:append-outer.stop="createGroupDialog = true"
         />
         <v-dialog
@@ -35,7 +44,10 @@
           :key="createGroupDialog"
         >
           <create-group-card
-            @close-group-dialog="closeGroupDialog(arguments[0])"
+            :study="selectedStudy"
+            @close-group-dialog="createGroupDialog = false"
+            @created-group="selectedGroup = arguments[0]"
+            @selected-study="selectedStudy = arguments[0]"
           />
         </v-dialog>
       </v-col>
@@ -54,17 +66,17 @@
         <div class="text-left pb-1">
           Selected Groups:
         </div>
-        <div class="text-left">
-          <span v-for="selection in selectedGroups" :key="selection.id">
+        <v-row>
+          <div v-for="group in selectedGroups" :key="group.id" class="pa-1">
             <v-chip
               close
-              v-model="selectionChips[selection.id]"
-              @input="removeSelection(selection)"
+              v-model="selectionChips[group.id]"
+              @click:close="removeSelection(group)"
             >
-              {{ `${selection.study.title} | ${selection.title}` }}
+              {{ `${group.study.title} | ${group.title}` }}
             </v-chip>
-          </span>
-        </div>
+          </div>
+        </v-row>
       </v-col>
 
       <!-- Associate selected groups with selected data -->
@@ -84,7 +96,7 @@
 <script>
 import StudyInfoCard from '@/components/research/study-info-card.vue'
 import CreateGroupCard from '@/components/research/create-group-card.vue'
-import { mapGetters, mapState, mapActions, mapMutations } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 
 export default {
   name: 'GroupAssociation',
@@ -94,27 +106,17 @@ export default {
   components: { StudyInfoCard, CreateGroupCard },
   created() {
     this.fetchStudies()
+    this.fetchGroups({ filters: {}, options: {} })
   },
   data: () => ({
-    selectedGroupTitle: '',
-    selectedGroups: [],
-    selectionChips: {},
     createStudyDialog: false,
-    createGroupDialog: false
+    createGroupDialog: false,
+    selectedStudy: undefined,
+    selectedGroup: undefined,
+    selectedGroups: [],
+    selectionChips: {}
   }),
   computed: {
-    selectedStudyTitle: {
-      get: function() {
-        return this.getSelectedStudyTitle
-      },
-      set: function(title) {
-        this.setSelectedStudyByTitle(title)
-        this.fetchSelectedStudyGroups()
-      }
-    },
-    selectedGroup: function() {
-      return this.getSelectedStudyGroupByTitle(this.selectedGroupTitle)
-    },
     validStudyGroupSelection: function() {
       let notAlreadySelected =
         this.selectedGroups.indexOf(this.selectedGroup) == -1
@@ -123,25 +125,22 @@ export default {
     readyToAssociate: function() {
       return this.selectedGroups.length && this.selectedScans.length
     },
-    ...mapState('research', [
-      'studies',
-      'selectedStudy',
-      'selectedStudyGroups'
-    ]),
-    ...mapGetters('research', [
-      'getStudyByTitle',
-      'getStudyGroups',
-      'getSelectedStudyGroupByTitle',
-      'getSelectedStudyTitle'
-    ])
+    studyGroups: function() {
+      return this.getStudyGroups(this.selectedStudy)
+    },
+    ...mapState('research', ['studies', 'groups'])
   },
   watch: {
     selectedStudy: function() {
-      // Clear group selection when changing study selection
-      this.selectedGroupTitle = ''
+      this.selectedGroup = undefined
     }
   },
   methods: {
+    getStudyGroups: function(study) {
+      return study
+        ? this.groups.filter(group => group.study.id === study.id)
+        : []
+    },
     getSelectionString: function() {
       return `${this.selectedStudy.title} | ${this.selectedGroup.title}`
     },
@@ -155,6 +154,9 @@ export default {
         group => group.id != removedGroup.id
       )
     },
+    getStudyTitle: function(studyUrl) {
+      return this.studies.find(study => study.url === studyUrl).title
+    },
     associateSelectedScansToStudyGroups() {
       this.selectedScans.forEach(scan => {
         this.selectedGroups
@@ -167,17 +169,8 @@ export default {
         this.updateScan(scan)
       })
     },
-    closeGroupDialog: function(newGroupTitle) {
-      if (newGroupTitle) {
-        this.fetchSelectedStudyGroups().then(
-          () => (this.selectedGroupTitle = newGroupTitle)
-        )
-      }
-      this.createGroupDialog = false
-    },
     ...mapActions('mri', ['updateScan']),
-    ...mapActions('research', ['fetchStudies', 'fetchSelectedStudyGroups']),
-    ...mapMutations('research', ['setSelectedStudyByTitle'])
+    ...mapActions('research', ['fetchStudies', 'fetchGroups'])
   }
 }
 

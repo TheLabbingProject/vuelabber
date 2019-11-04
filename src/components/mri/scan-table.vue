@@ -108,7 +108,11 @@
       <!-- Study Groups -->
       <template v-slot:item.studyGroups="{ item }">
         <div v-for="groupUrl in item.studyGroups" :key="groupUrl" class="py-1">
-          <v-chip small close @input="disassociateFromGroup(item, groupUrl)">
+          <v-chip
+            small
+            close
+            @click:close="disassociateFromGroup(item, groupUrl)"
+          >
             {{ stringifyGroup(getGroupByUrl(groupUrl)) }}
           </v-chip>
         </div>
@@ -139,7 +143,7 @@ export default {
   },
   created() {
     this.fetchSequenceTypes()
-    this.fetchGroups()
+    this.fetchGroups({ filters: {}, options: {} })
   },
   data: () => ({
     sequenceTypeDialog: {},
