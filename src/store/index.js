@@ -1,4 +1,5 @@
 import accounts from './accounts'
+import analysis from './analysis'
 import auth from './auth'
 import dicom from './dicom'
 import mri from './mri'
@@ -12,6 +13,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   modules: {
     accounts,
+    analysis,
     auth,
     dicom,
     mri,

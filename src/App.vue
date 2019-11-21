@@ -83,6 +83,20 @@
             </v-list-item>
           </v-list-group>
         </v-list-group>
+
+        <!-- Analyses -->
+        <v-list-item to="/analysis-browser" class="drawer-link">
+          <v-list-item-action>
+            <v-icon>
+              equalizer
+            </v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>
+              Analyses
+            </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
@@ -110,7 +124,9 @@
           </template>
           <v-list>
             <router-link to="/logout" class="dropmenu-link">
-              <v-list-item>Logout</v-list-item>
+              <v-list-item>
+                Logout
+              </v-list-item>
             </router-link>
           </v-list>
         </v-menu>
@@ -132,18 +148,22 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 
 export default {
   data: () => ({
     drawer: {}
   }),
-  props: {
-    source: String
+  created() {
+    this.fetchCategories()
   },
   computed: {
     ...mapGetters('auth', ['isAuthenticated']),
+    ...mapGetters('analysis', ['rootCategories']),
     ...mapState('auth', ['user'])
+  },
+  methods: {
+    ...mapActions('analysis', ['fetchCategories'])
   }
 }
 </script>

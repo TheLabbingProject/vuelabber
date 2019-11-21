@@ -83,7 +83,7 @@ import SubjectData from '@/components/research/subject-data.vue'
 import SubjectInfoCard from '@/components/research/subject-info-card.vue'
 import SubjectTableControls from '@/components/research/subject-table-controls.vue'
 import { sexOptions, genderOptions, dominantHandOptions } from './choices.js'
-import { mapActions, mapMutations, mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   name: 'SubjectTable',
@@ -133,14 +133,7 @@ export default {
         this.headers.push({ text: 'Edit', value: 'edit' })
       }
     },
-    selectSubject(props) {
-      props.expanded = !props.expanded
-      props.expanded
-        ? this.setSelectedSubjectId(props.item.id)
-        : this.setSelectedSubjectId(null)
-    },
-    ...mapActions('accounts', ['fetchUsers']),
-    ...mapMutations('research', ['setSelectedSubjectId'])
+    ...mapActions('accounts', ['fetchUsers'])
   }
 }
 </script>

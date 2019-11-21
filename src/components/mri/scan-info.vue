@@ -155,7 +155,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 import { createSelectItems } from '@/components/utils'
 
 export default {
@@ -185,8 +185,7 @@ export default {
     sequenceTypeItems: function() {
       return createSelectItems(this.sequenceTypes, 'title')
     },
-    ...mapState('mri', ['sequenceTypes']),
-    ...mapGetters('mri', ['getSequenceTypeByUrl'])
+    ...mapState('mri', ['sequenceTypes'])
   },
   methods: {
     closeDialog() {

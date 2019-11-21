@@ -5,6 +5,7 @@ import Lost from '../views/Lost.vue'
 import Home from '../views/Home.vue'
 import User from '../views/User.vue'
 import DicomBrowser from '../views/DicomBrowser.vue'
+import AnalysisBrowser from '../views/AnalysisBrowser.vue'
 import SequenceTypes from '../views/SequenceTypes.vue'
 import StudyBrowser from '../views/StudyBrowser.vue'
 import SubjectBrowser from '../views/SubjectBrowser.vue'
@@ -100,6 +101,12 @@ export default new Router({
       path: '/studies',
       name: 'studyBrowser',
       component: StudyBrowser,
+      beforeEnter: requireAuthenticated
+    },
+    {
+      path: '/analysis-browser',
+      name: 'analysisBrowser',
+      component: AnalysisBrowser,
       beforeEnter: requireAuthenticated
     }
   ]

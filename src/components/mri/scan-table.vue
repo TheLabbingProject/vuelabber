@@ -178,7 +178,6 @@ export default {
   computed: {
     ...mapState('auth', { currentUser: 'user' }),
     ...mapState('mri', ['scans', 'totalScanCount']),
-    ...mapGetters('mri', ['getSequenceTypeByUrl']),
     ...mapGetters('research', ['getGroupByUrl'])
   },
   methods: {

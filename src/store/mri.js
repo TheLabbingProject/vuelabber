@@ -10,9 +10,6 @@ const state = {
 }
 
 const getters = {
-  getSequenceTypeByUrl(state) {
-    return url => state.sequenceTypes.find(sequence => sequence.url === url)
-  },
   getScanByDicomSeries(state) {
     return series => state.scans.find(scan => scan.dicom === series.url)
   },
