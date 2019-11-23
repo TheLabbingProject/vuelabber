@@ -9,27 +9,23 @@
     :loading="loading"
   >
     <template v-slot:expanded-item="{ item, headers }">
-      <td :colspan="headers.length">
-        <category-table :parentCategory="item" />
+      <td class="pr-0 pl-4" :colspan="headers.length">
+        <category-table v-if="hasSubcategories(item)" :parentCategory="item" />
+        <analysis-table v-else :category="item" />
       </td>
     </template>
   </v-data-table>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import AnalysisTable from '@/components/analysis/analysis-table.vue'
+import { mapGetters, mapActions } from 'vuex'
+
 export default {
-  name: 'categoryTable',
+  name: 'CategoryTable',
+  components: { AnalysisTable },
   props: { parentCategory: { type: Object, default: () => ({}) } },
-  created() {
-    if (this.isRoot) {
-      this.categories = this.rootCategories.slice()
-    } else {
-      this.categories = this.childCategories(this.parentCategory)
-    }
-  },
   data: () => ({
-    categories: [],
     expanded: [],
     headers: [
       { text: 'Title', value: 'title', align: 'left', width: '5%' },
@@ -38,14 +34,28 @@ export default {
     loading: false
   }),
   computed: {
+    categories: function() {
+      if (this.isRoot) {
+        return this.rootCategories.slice()
+      } else {
+        return this.childCategories(this.parentCategory)
+      }
+    },
     isRoot: function() {
-      return (
-        Object.entries(this.parentCategory).length === 0 &&
-        this.parentCategory.constructor === Object
-      )
+      return isEmptyObject(this.parentCategory)
     },
     ...mapGetters('analysis', ['childCategories', 'rootCategories'])
+  },
+  methods: {
+    hasSubcategories: function(category) {
+      return category.subcategories.length
+    },
+    ...mapActions('analysis', ['fetchCategories'])
   }
+}
+
+const isEmptyObject = obj => {
+  return Object.entries(obj).length === 0 && obj.constructor === Object
 }
 </script>
 

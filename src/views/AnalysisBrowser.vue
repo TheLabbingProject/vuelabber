@@ -17,9 +17,15 @@ export default {
   components: { categoryTable },
   created() {
     this.fetchCategories()
+    this.fetchAnalyses()
+    this.fetchAnalysisVersions()
   },
   methods: {
-    ...mapActions('analysis', ['fetchCategories'])
+    ...mapActions('analysis', [
+      'fetchAnalyses',
+      'fetchAnalysisVersions',
+      'fetchCategories'
+    ])
   }
 }
 </script>
