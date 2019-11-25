@@ -2,8 +2,10 @@ import {
   ANALYSES,
   ANALYSIS_VERSIONS,
   CATEGORIES,
+  INPUT_DEFINITIONS,
   INPUT_SPECIFICATIONS
 } from '@/api/analysis/endpoints'
+import { getInputDefinitionQueryString } from '@/api/analysis/query'
 import session from '@/api/session'
 
 const state = {
@@ -11,6 +13,7 @@ const state = {
   analysisVersions: [],
   categories: [],
   inputSpecifications: [],
+  inputDefinitions: [],
   outputSpecfications: [],
   runs: []
 }
@@ -44,6 +47,12 @@ const getters = {
       state.inputSpecifications.filter(
         inputSpecification => inputSpecification.analysis === analysis.url
       )
+  },
+  getInputSpecificationByUrl(state) {
+    return url =>
+      state.inputSpecifications.find(
+        inputSpecification => inputSpecification.url === url
+      )
   }
 }
 
@@ -59,6 +68,9 @@ const mutations = {
   },
   setInputSpecifications(state, inputSpecifications) {
     state.inputSpecifications = inputSpecifications
+  },
+  setInputDefinitions(state, inputDefinitions) {
+    state.inputDefinitions = inputDefinitions
   }
 }
 
@@ -85,6 +97,13 @@ const actions = {
     return session
       .get(INPUT_SPECIFICATIONS)
       .then(({ data }) => commit('setInputSpecifications', data.results))
+      .catch(console.error)
+  },
+  fetchInputDefinitions({ commit }, options) {
+    let queryString = getInputDefinitionQueryString(options)
+    return session
+      .get(`${INPUT_DEFINITIONS}/${queryString}`)
+      .then(({ data }) => commit('setInputDefinitions', data.results))
       .catch(console.error)
   }
 }

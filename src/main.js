@@ -1,4 +1,5 @@
 import './filters/date-formatting'
+import './filters/datetime-formatting'
 import './filters/reseacher-name-formatting'
 import App from './App.vue'
 import router from './router/index'

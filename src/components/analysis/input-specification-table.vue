@@ -1,6 +1,8 @@
 <template>
   <v-data-table
     item-key="id"
+    show-expand
+    :expanded.sync="expanded"
     :headers="headers"
     :hide-default-footer="true"
     :items="inputSpecifications"
@@ -9,16 +11,31 @@
     <template v-slot:item.inputDefinitionsNumber="{ item }">
       {{ item.inputDefinitions.length }}
     </template>
+    <template v-slot:item.created="{ item }">
+      {{ item.created | formatDateTime }}
+    </template>
+    <template v-slot:item.modified="{ item }">
+      {{ item.modified | formatDateTime }}
+    </template>
+
+    <template v-slot:expanded-item="{ item, headers }">
+      <td class="pa-2 purple lighten-5" :colspan="headers.length">
+        <input-definition-table :inputSpecification="item" />
+      </td>
+    </template>
   </v-data-table>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
+import InputDefinitionTable from '@/components/analysis/input-definition-table.vue'
 
 export default {
   name: 'InputSpecificationTable',
+  components: { InputDefinitionTable },
   props: { analysis: Object },
   data: () => ({
+    expanded: [],
     headers: [
       { text: 'ID', value: 'id', align: 'left', width: '5%' },
       {
@@ -34,7 +51,8 @@ export default {
       {
         text: 'Number of Input Definitions',
         value: 'inputDefinitionsNumber',
-        align: 'left'
+        align: 'center',
+        width: '15%'
       }
     ],
     loading: false

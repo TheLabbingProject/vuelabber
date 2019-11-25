@@ -14,6 +14,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+
 export default {
   name: 'AnalysisTable',
   props: { category: Object },

@@ -5,7 +5,11 @@
     :hide-default-footer="true"
     :items="analysisVersions"
     :loading="loading"
-  />
+  >
+    <template v-slot:item.inputSpecification="{ item }">
+      {{ getInputSpecificationId(item) }}
+    </template>
+  </v-data-table>
 </template>
 
 <script>
@@ -17,7 +21,13 @@ export default {
   data: () => ({
     headers: [
       { text: 'Title', value: 'title', align: 'left', width: '5%' },
-      { text: 'Description', value: 'description', align: 'left' }
+      { text: 'Description', value: 'description', align: 'left' },
+      {
+        text: 'Input Specification',
+        value: 'inputSpecification',
+        align: 'center',
+        width: '15%'
+      }
     ],
     loading: false
   }),
@@ -25,7 +35,18 @@ export default {
     analysisVersions: function() {
       return this.getAnalysisVersions(this.analysis)
     },
-    ...mapGetters('analysis', ['getAnalysisVersions'])
+    ...mapGetters('analysis', [
+      'getAnalysisVersions',
+      'getInputSpecificationByUrl'
+    ])
+  },
+  methods: {
+    getInputSpecificationId: function(analysisVersion) {
+      let inputSpecification = this.getInputSpecificationByUrl(
+        analysisVersion.inputSpecification
+      )
+      return inputSpecification ? inputSpecification.id : undefined
+    }
   }
 }
 </script>
