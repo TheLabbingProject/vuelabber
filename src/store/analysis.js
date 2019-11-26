@@ -3,9 +3,14 @@ import {
   ANALYSIS_VERSIONS,
   CATEGORIES,
   INPUT_DEFINITIONS,
-  INPUT_SPECIFICATIONS
+  INPUT_SPECIFICATIONS,
+  OUTPUT_DEFINITIONS,
+  OUTPUT_SPECIFICATIONS
 } from '@/api/analysis/endpoints'
-import { getInputDefinitionQueryString } from '@/api/analysis/query'
+import {
+  getInputDefinitionQueryString,
+  getOutputDefinitionQueryString
+} from '@/api/analysis/query'
 import session from '@/api/session'
 
 const state = {
@@ -14,7 +19,8 @@ const state = {
   categories: [],
   inputSpecifications: [],
   inputDefinitions: [],
-  outputSpecfications: [],
+  outputSpecifications: [],
+  outputDefinitions: [],
   runs: []
 }
 
@@ -53,6 +59,18 @@ const getters = {
       state.inputSpecifications.find(
         inputSpecification => inputSpecification.url === url
       )
+  },
+  getAnalysisOutputSpecifications(state) {
+    return analysis =>
+      state.outputSpecifications.filter(
+        outputSpecification => outputSpecification.analysis === analysis.url
+      )
+  },
+  getOutputSpecificationByUrl(state) {
+    return url =>
+      state.outputSpecifications.find(
+        outputSpecification => outputSpecification.url === url
+      )
   }
 }
 
@@ -71,6 +89,12 @@ const mutations = {
   },
   setInputDefinitions(state, inputDefinitions) {
     state.inputDefinitions = inputDefinitions
+  },
+  setOutputSpecifications(state, outputSpecifications) {
+    state.outputSpecifications = outputSpecifications
+  },
+  setOutputDefinitions(state, outputDefinitions) {
+    state.outputDefinitions = outputDefinitions
   }
 }
 
@@ -104,6 +128,19 @@ const actions = {
     return session
       .get(`${INPUT_DEFINITIONS}/${queryString}`)
       .then(({ data }) => commit('setInputDefinitions', data.results))
+      .catch(console.error)
+  },
+  fetchOutputSpecifications({ commit }) {
+    return session
+      .get(OUTPUT_SPECIFICATIONS)
+      .then(({ data }) => commit('setOutputSpecifications', data.results))
+      .catch(console.error)
+  },
+  fetchOutputDefinitions({ commit }, options) {
+    let queryString = getOutputDefinitionQueryString(options)
+    return session
+      .get(`${OUTPUT_DEFINITIONS}/${queryString}`)
+      .then(({ data }) => commit('setOutputDefinitions', data.results))
       .catch(console.error)
   }
 }

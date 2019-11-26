@@ -32,19 +32,29 @@
             Versions
           </v-tab>
           <v-tab-item key="versions">
-            <analysis-version-table :analysis="analysis" />
+            <analysis-version-table
+              :analysis="analysis"
+              @goToInputSpecification="goToInputSpecification"
+              @goToOutputSpecification="goToOutputSpecification"
+            />
           </v-tab-item>
           <v-tab key="inputSpecifications">
             Input Specifications
           </v-tab>
           <v-tab-item key="inputSpecifications">
-            <input-specification-table :analysis="analysis" />
+            <input-specification-table
+              :analysis="analysis"
+              :expandedInputSpecificationUrl="chosenInputSpecificationUrl"
+            />
           </v-tab-item>
           <v-tab key="outputSpecifications">
             Output Specifications
           </v-tab>
           <v-tab-item key="outputSpecifications">
-            Three
+            <output-specification-table
+              :analysis="analysis"
+              :expandedOutputSpecificationUrl="chosenOutputSpecificationUrl"
+            />
           </v-tab-item>
         </v-tabs>
       </div>
@@ -58,23 +68,30 @@
 <script>
 import AnalysisVersionTable from '@/components/analysis/analysis-version-table.vue'
 import InputSpecificationTable from '@/components/analysis/input-specification-table.vue'
+import OutputSpecificationTable from '@/components/analysis/output-specification-table.vue'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'AnalysisInformation',
-  components: { AnalysisVersionTable, InputSpecificationTable },
+  components: {
+    AnalysisVersionTable,
+    InputSpecificationTable,
+    OutputSpecificationTable
+  },
   props: { analysisId: String },
   created() {
-    console.log(this.analysis)
     this.fetchCategories()
     this.fetchAnalyses().then(() => (this.fetchedAnalyses = true))
     this.fetchAnalysisVersions()
     this.fetchInputSpecifications()
+    this.fetchOutputSpecifications()
   },
 
   data: () => ({
     tab: null,
-    fetchedAnalyses: false
+    fetchedAnalyses: false,
+    chosenInputSpecificationUrl: null,
+    chosenOutputSpecificationUrl: null
   }),
   computed: {
     analysis: function() {
@@ -83,12 +100,31 @@ export default {
     ...mapGetters('analysis', ['getAnalysisById'])
   },
   methods: {
+    goToInputSpecification: function(inputSpecificationUrl) {
+      this.tab = 1
+      this.chosenInputSpecificationUrl = inputSpecificationUrl
+    },
+    goToOutputSpecification: function(outputSpecificationUrl) {
+      this.tab = 2
+      this.chosenOutputSpecificationUrl = outputSpecificationUrl
+    },
     ...mapActions('analysis', [
       'fetchAnalyses',
       'fetchAnalysisVersions',
       'fetchCategories',
-      'fetchInputSpecifications'
+      'fetchInputSpecifications',
+      'fetchOutputSpecifications'
     ])
+  },
+  watch: {
+    tab: function(selectedTab) {
+      if (selectedTab != 1) {
+        this.chosenInputSpecificationUrl = null
+      }
+      if (selectedTab != 2) {
+        this.chosenOutputSpecificationUrl = null
+      }
+    }
   }
 }
 </script>

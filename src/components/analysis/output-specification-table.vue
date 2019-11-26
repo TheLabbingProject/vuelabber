@@ -5,11 +5,11 @@
     :expanded.sync="expanded"
     :headers="headers"
     :hide-default-footer="true"
-    :items="inputSpecifications"
+    :items="outputSpecifications"
     :loading="loading"
   >
-    <template v-slot:item.inputDefinitionsNumber="{ item }">
-      {{ item.inputDefinitions.length }}
+    <template v-slot:item.outputDefinitionsNumber="{ item }">
+      {{ item.outputDefinitions.length }}
     </template>
     <template v-slot:item.created="{ item }">
       {{ item.created | formatDateTime }}
@@ -20,7 +20,7 @@
 
     <template v-slot:expanded-item="{ item, headers }">
       <td class="pa-2 purple lighten-5" :colspan="headers.length">
-        <input-definition-table :inputSpecification="item" />
+        <output-definition-table :outputSpecification="item" />
       </td>
     </template>
   </v-data-table>
@@ -28,15 +28,15 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import InputDefinitionTable from '@/components/analysis/input-definition-table.vue'
+import OutputDefinitionTable from '@/components/analysis/output-definition-table.vue'
 
 export default {
-  name: 'InputSpecificationTable',
-  components: { InputDefinitionTable },
-  props: { analysis: Object, expandedInputSpecificationUrl: String },
+  name: 'OutputSpecificationTable',
+  components: { OutputDefinitionTable },
+  props: { analysis: Object, expandedOutputSpecificationUrl: String },
   created() {
-    if (this.expandedInputSpecificationUrl) {
-      this.expandByChosenUrl(this.expandedInputSpecificationUrl)
+    if (this.expandedOutputSpecificationUrl) {
+      this.expandByChosenUrl(this.expandedOutputSpecificationUrl)
     }
   },
   data: () => ({
@@ -54,8 +54,8 @@ export default {
         align: 'center'
       },
       {
-        text: 'Number of Input Definitions',
-        value: 'inputDefinitionsNumber',
+        text: 'Number of Output Definitions',
+        value: 'outputDefinitionsNumber',
         align: 'center',
         width: '15%'
       }
@@ -63,20 +63,20 @@ export default {
     loading: false
   }),
   computed: {
-    inputSpecifications: function() {
-      return this.getAnalysisInputSpecifications(this.analysis)
+    outputSpecifications: function() {
+      return this.getAnalysisOutputSpecifications(this.analysis)
     },
-    ...mapGetters('analysis', ['getAnalysisInputSpecifications'])
+    ...mapGetters('analysis', ['getAnalysisOutputSpecifications'])
   },
   methods: {
     expandByChosenUrl: function(chosenUrl) {
-      this.expanded = this.inputSpecifications.filter(
-        inputSpecification => inputSpecification.url === chosenUrl
+      this.expanded = this.outputSpecifications.filter(
+        outputSpecification => outputSpecification.url === chosenUrl
       )
     }
   },
   watch: {
-    expandedInputSpecificationUrl: function(chosenUrl) {
+    expandedOutputSpecificationUrl: function(chosenUrl) {
       this.expandByChosenUrl(chosenUrl)
     }
   }

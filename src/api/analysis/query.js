@@ -12,4 +12,17 @@ const getInputDefinitionQueryString = ({ filters, pagination }) => {
   }`
 }
 
-export { getInputDefinitionQueryString }
+const getOutputDefinitionQueryString = ({ filters, pagination }) => {
+  return `?key=${filters.key ||
+    ''}&output_specification=${filters.outputSpecification ||
+    ''}&page_size=${pagination.itemsPerPage || 100}&page=${pagination.page ||
+    1}&ordering=${
+    pagination.sortBy
+      ? pagination.descending
+        ? '-' + pagination.sortBy
+        : pagination.sortBy
+      : ''
+  }`
+}
+
+export { getInputDefinitionQueryString, getOutputDefinitionQueryString }

@@ -7,7 +7,15 @@
     :loading="loading"
   >
     <template v-slot:item.inputSpecification="{ item }">
-      {{ getInputSpecificationId(item) }}
+      <a @click="goToInputSpecification(item.inputSpecification)">
+        {{ getInputSpecificationId(item) }}
+      </a>
+    </template>
+
+    <template v-slot:item.outputSpecification="{ item }">
+      <a @click="goToOutputSpecification(item.outputSpecification)">
+        {{ getOutputSpecificationId(item) }}
+      </a>
     </template>
   </v-data-table>
 </template>
@@ -27,6 +35,12 @@ export default {
         value: 'inputSpecification',
         align: 'center',
         width: '15%'
+      },
+      {
+        text: 'Output Specification',
+        value: 'outputSpecification',
+        align: 'center',
+        width: '15%'
       }
     ],
     loading: false
@@ -37,7 +51,8 @@ export default {
     },
     ...mapGetters('analysis', [
       'getAnalysisVersions',
-      'getInputSpecificationByUrl'
+      'getInputSpecificationByUrl',
+      'getOutputSpecificationByUrl'
     ])
   },
   methods: {
@@ -46,6 +61,18 @@ export default {
         analysisVersion.inputSpecification
       )
       return inputSpecification ? inputSpecification.id : undefined
+    },
+    getOutputSpecificationId: function(analysisVersion) {
+      let outputSpecification = this.getOutputSpecificationByUrl(
+        analysisVersion.outputSpecification
+      )
+      return outputSpecification ? outputSpecification.id : undefined
+    },
+    goToInputSpecification: function(inputSpecificationUrl) {
+      this.$emit('goToInputSpecification', inputSpecificationUrl)
+    },
+    goToOutputSpecification: function(outputSpecificationUrl) {
+      this.$emit('goToOutputSpecification', outputSpecificationUrl)
     }
   }
 }
