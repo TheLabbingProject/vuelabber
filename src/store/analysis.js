@@ -8,7 +8,10 @@ import {
   OUTPUT_DEFINITIONS,
   OUTPUT_SPECIFICATIONS,
   OUTPUTS,
-  RUNS
+  RUNS,
+  PIPELINES,
+  PIPES,
+  NODES
 } from '@/api/analysis/endpoints'
 import {
   getInputDefinitionQueryString,
@@ -28,7 +31,10 @@ const state = {
   outputDefinitions: [],
   runs: [],
   inputs: [],
-  outputs: []
+  outputs: [],
+  pipelines: [],
+  pipes: [],
+  nodes: []
 }
 
 const getters = {
@@ -125,6 +131,15 @@ const mutations = {
   },
   setOutputs(state, outputs) {
     state.outputs = outputs
+  },
+  setPipelines(state, pipelines) {
+    state.pipelines = pipelines
+  },
+  setPipes(state, pipes) {
+    state.pipes = pipes
+  },
+  setNodes(state, nodes) {
+    state.nodes = nodes
   }
 }
 
@@ -191,6 +206,24 @@ const actions = {
     return session
       .get(`${OUTPUTS}/${queryString}`)
       .then(({ data }) => commit('setOutputs', data.results))
+      .catch(console.error)
+  },
+  fetchPipelines({ commit }) {
+    return session
+      .get(PIPELINES)
+      .then(({ data }) => commit('setPipelines', data.results))
+      .catch(console.error)
+  },
+  fetchPipes({ commit }) {
+    return session
+      .get(PIPES)
+      .then(({ data }) => commit('setPipes', data.results))
+      .catch(console.error)
+  },
+  fetchNodes({ commit }) {
+    return session
+      .get(NODES)
+      .then(({ data }) => commit('setNodes', data.results))
       .catch(console.error)
   }
 }

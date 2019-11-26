@@ -7,6 +7,7 @@ import User from '../views/User.vue'
 import DicomBrowser from '../views/DicomBrowser.vue'
 import AnalysisBrowser from '../views/AnalysisBrowser.vue'
 import AnalysisInformation from '../components/analysis/analysis-information.vue'
+import PipelineBrowser from '../views/PipelineBrowser.vue'
 import RunBrowser from '../views/RunBrowser.vue'
 import SequenceTypes from '../views/SequenceTypes.vue'
 import StudyBrowser from '../views/StudyBrowser.vue'
@@ -122,6 +123,12 @@ export default new Router({
       path: '/run-browser',
       name: 'runBrowser',
       component: RunBrowser,
+      beforeEnter: requireAuthenticated
+    },
+    {
+      path: '/pipeline-browser',
+      name: 'pipelineBrowser',
+      component: PipelineBrowser,
       beforeEnter: requireAuthenticated
     }
   ]

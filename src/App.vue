@@ -104,7 +104,7 @@
             </v-list-item-icon>
           </v-list-item>
 
-          <!-- Browse -->
+          <!-- Runs -->
           <v-list-item to="/run-browser" class="drawer-link">
             <v-list-item-title>
               Runs
@@ -112,6 +112,18 @@
             <v-list-item-icon>
               <v-icon>
                 format_list_bulleted
+              </v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+
+          <!-- Pipelines -->
+          <v-list-item to="/pipeline-browser" class="drawer-link">
+            <v-list-item-title>
+              Pipelines
+            </v-list-item-title>
+            <v-list-item-icon>
+              <v-icon>
+                timeline
               </v-icon>
             </v-list-item-icon>
           </v-list-item>
