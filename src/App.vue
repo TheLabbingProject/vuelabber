@@ -5,11 +5,11 @@
       <v-list dense>
         <!-- Home -->
         <v-list-item to="/home" class="drawer-link">
-          <v-list-item-action>
+          <v-list-item-icon>
             <v-icon>
               home
             </v-icon>
-          </v-list-item-action>
+          </v-list-item-icon>
           <v-list-item-content>
             <v-list-item-title>
               Home
@@ -19,11 +19,11 @@
 
         <!-- Studies -->
         <v-list-item to="/studies" class="drawer-link">
-          <v-list-item-action>
+          <v-list-item-icon>
             <v-icon>
               star
             </v-icon>
-          </v-list-item-action>
+          </v-list-item-icon>
           <v-list-item-content>
             <v-list-item-title>
               Studies
@@ -33,11 +33,11 @@
 
         <!-- Subjects -->
         <v-list-item to="/subjects" class="drawer-link">
-          <v-list-item-action>
+          <v-list-item-icon>
             <v-icon>
               people
             </v-icon>
-          </v-list-item-action>
+          </v-list-item-icon>
           <v-list-item-content>
             <v-list-item-title>
               Subjects
@@ -54,17 +54,17 @@
           </template>
 
           <!-- MRI -->
-          <v-list-group
-            no-action
-            sub-group
-            prepend-icon="blur_on"
-            :value="false"
-          >
+          <v-list-group no-action sub-group :value="false">
             <template v-slot:activator>
-              <v-list-item class="drawer-link">
+              <v-list-item class="drawer-link pr-0">
                 <v-list-item-title>
                   MRI
                 </v-list-item-title>
+                <v-list-item-icon>
+                  <v-icon>
+                    blur_on
+                  </v-icon>
+                </v-list-item-icon>
               </v-list-item>
             </template>
 
@@ -85,18 +85,37 @@
         </v-list-group>
 
         <!-- Analyses -->
-        <v-list-item to="/analysis-browser" class="drawer-link">
-          <v-list-item-action>
-            <v-icon>
-              equalizer
-            </v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>
+        <v-list-group no-action prepend-icon="equalizer" :value="false">
+          <template v-slot:activator>
+            <v-list-item-title class="drawer-link">
               Analyses
             </v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+          </template>
+
+          <!-- Browse -->
+          <v-list-item to="/analysis-browser" class="drawer-link">
+            <v-list-item-title>
+              Browse
+            </v-list-item-title>
+            <v-list-item-icon>
+              <v-icon>
+                search
+              </v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+
+          <!-- Browse -->
+          <v-list-item to="/run-browser" class="drawer-link">
+            <v-list-item-title>
+              Runs
+            </v-list-item-title>
+            <v-list-item-icon>
+              <v-icon>
+                format_list_bulleted
+              </v-icon>
+            </v-list-item-icon>
+          </v-list-item>
+        </v-list-group>
       </v-list>
     </v-navigation-drawer>
 

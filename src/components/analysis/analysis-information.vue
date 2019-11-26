@@ -78,7 +78,7 @@ export default {
     InputSpecificationTable,
     OutputSpecificationTable
   },
-  props: { analysisId: String },
+  props: { analysisId: [String, Number] },
   created() {
     this.fetchCategories()
     this.fetchAnalyses().then(() => (this.fetchedAnalyses = true))

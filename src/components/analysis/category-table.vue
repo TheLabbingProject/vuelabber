@@ -9,7 +9,7 @@
     :loading="loading"
   >
     <template v-slot:expanded-item="{ item, headers }">
-      <td class="pr-0 pl-4" :colspan="headers.length">
+      <td class="pr-0 pl-4 blue lighten-5" :colspan="headers.length">
         <category-table v-if="hasSubcategories(item)" :parentCategory="item" />
         <analysis-table v-else :category="item" />
       </td>

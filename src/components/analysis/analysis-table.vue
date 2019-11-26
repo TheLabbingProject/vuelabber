@@ -6,6 +6,15 @@
     :items="analyses"
     :loading="loading"
   >
+    <template v-slot:item.title="{ item }">
+      <router-link
+        :to="{ name: 'analysisInformation', params: { analysisId: item.id } }"
+        class="nav-link"
+      >
+        {{ item.title }}
+      </router-link>
+    </template>
+
     <template v-slot:item.versions="{ item }">
       {{ getAnalysisVersions(item).length }}
     </template>
@@ -35,4 +44,8 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.nav-link {
+  text-decoration: none;
+}
+</style>
