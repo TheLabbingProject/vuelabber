@@ -1,7 +1,7 @@
 <template>
   <v-scale-transition hide-on-leave>
     <v-skeleton-loader v-if="!fetchedRuns" type="table" />
-    <v-col>
+    <v-col v-else>
       <div class="title text-left pb-1">
         Runs
       </div>

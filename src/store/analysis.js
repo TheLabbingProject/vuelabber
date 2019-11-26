@@ -55,10 +55,19 @@ const getters = {
     return analysisId =>
       state.analyses.find(analysis => analysis.id === analysisId)
   },
+  getAnalysisByUrl(state) {
+    return url => state.analyses.find(analysis => analysis.url === url)
+  },
   getAnalysisVersions(state) {
     return analysis =>
       state.analysisVersions.filter(
         analysisVersion => analysisVersion.analysis === analysis.url
+      )
+  },
+  getAnalysisVersionByUrl(state) {
+    return url =>
+      state.analysisVersions.find(
+        analysisVersion => analysisVersion.url === url
       )
   },
   getAnalysisInputSpecifications(state) {
@@ -98,6 +107,21 @@ const getters = {
         analysis => analysis.url === analysisVersion.analysis
       )
     }
+  },
+  getNodeByUrl(state) {
+    return url => state.nodes.find(node => node.url === url)
+  },
+  getInputDefinitionById(state) {
+    return definitionId =>
+      state.inputDefinitions.find(
+        inputDefinition => inputDefinition.id === definitionId
+      )
+  },
+  getOutputDefinitionById(state) {
+    return definitionId =>
+      state.outputDefinitions.find(
+        outputDefinition => outputDefinition.id === definitionId
+      )
   }
 }
 

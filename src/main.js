@@ -5,11 +5,13 @@ import App from './App.vue'
 import router from './router/index'
 import store from './store/index'
 import Vue from 'vue'
-import vuetify from './plugins/vuetify'
 import Vuelidate from 'vuelidate'
+import VueMermaid from 'vue-mermaid'
+import vuetify from './plugins/vuetify'
 
 Vue.config.productionTip = false
 Vue.use(Vuelidate)
+Vue.use(VueMermaid)
 
 new Vue({
   router,
