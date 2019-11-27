@@ -25,7 +25,7 @@
 
         <template v-slot:expanded-item="{ item, headers }">
           <td class="pa-2 blue lighten-5" :colspan="headers.length">
-            <vue-mermaid :nodes="flowChart(item)" type="graph LR" />
+            <vue-mermaid :nodes="flowChart(item)" type="graph TD" />
           </td>
         </template>
       </v-data-table>
@@ -35,6 +35,7 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex'
+import { urlToId } from '@/api/utils'
 
 export default {
   name: 'PipelineBrowser',
@@ -42,16 +43,10 @@ export default {
     this.fetchAnalyses()
     this.fetchAnalysisVersions()
     this.fetchInputDefinitions({ filters: {}, pagination: {} })
-      .then(() =>
-        this.fetchOutputDefinitions({
-          filters: {},
-          pagination: { itemsPerPage: 100 }
-        })
-      )
-      .then(() => this.fetchNodes())
-      .then(() =>
-        this.fetchPipelines().then(() => (this.fetchedPipelines = true))
-      )
+    this.fetchOutputDefinitions({ filters: {}, pagination: {} })
+    this.fetchNodes()
+    this.fetchPipelines()
+    this.fetchedPipelines = true
   },
   data: () => ({
     expanded: [],
@@ -75,65 +70,69 @@ export default {
     ...mapState('analysis', ['pipelines', 'outputDefinitions'])
   },
   methods: {
-    getSourceText: function(pipe) {
-      let sourcePortId = pipe.sourcePort.split('/')
-      sourcePortId = Number(sourcePortId[sourcePortId.length - 2])
-      let sourcePort = this.getOutputDefinitionById(sourcePortId)
-      return sourcePort.key
+    getNodeRepresentation(node) {
+      let analysisVersion = this.getAnalysisVersionByUrl(node.analysisVersion)
+      let analysis = this.getAnalysisByUrl(analysisVersion.analysis)
+      return `${analysis.title} v${analysisVersion.title}`
     },
-    getDestinationText: function(pipe) {
-      let destinationPortId = pipe.destinationPort.split('/')
-      destinationPortId = Number(
-        destinationPortId[destinationPortId.length - 2]
-      )
-      let destinationPort = this.getInputDefinitionById(destinationPortId)
-      return destinationPort.key
-    },
-    getSourceNodeRepresentation: function(pipe) {
+    getPipeComponents(pipe) {
       let sourceNode = this.getNodeByUrl(pipe.source)
-      let analysisVersion = this.getAnalysisVersionByUrl(
-        sourceNode.analysisVersion
-      )
-      let analysis = this.getAnalysisByUrl(analysisVersion.analysis)
-      return `${analysis.title} v${analysisVersion.title}`
-    },
-    getDestinationNodeRepresentation: function(pipe) {
       let destinationNode = this.getNodeByUrl(pipe.destination)
-      let analysisVersion = this.getAnalysisVersionByUrl(
-        destinationNode.analysisVersion
-      )
-      let analysis = this.getAnalysisByUrl(analysisVersion.analysis)
-      return `${analysis.title} v${analysisVersion.title}`
+      let sourcePortId = urlToId(pipe.sourcePort)
+      let sourcePort = this.getOutputDefinitionById(sourcePortId)
+      let destinationPortId = urlToId(pipe.destinationPort)
+      let destinationPort = this.getInputDefinitionById(destinationPortId)
+      return [sourceNode, sourcePort, destinationNode, destinationPort]
     },
-    // getText: function(node) {
-    //   let analysisVersion = this.getAnalysisVersionByUrl(node.analysisVersion)
-    //   let analysis = this.getAnalysisByUrl(analysisVersion.analysis)
-    //   let configuration = ''
-    //   Object.keys(node.configuration).forEach(
-    //     key => (configuration += `<br/>${key}: ${node.configuration[key]}`)
-    //   )
-    //   return `${analysis.title} v${analysisVersion.title} ${configuration}`
-    // },
-    // getNext: function(pipeline, node) {
-    //   return pipeline.pipeSet
-    //     .filter(pipe => pipe.source === node.url)
-    //     .map(pipe => this.getNodeByUrl(pipe.destination).id)
-    // },
+    composePipeId(node, port) {
+      return `${node.id}-${port.key}`
+    },
+    composeConfigurationId(node) {
+      return `${node.id}-config`
+    },
+    textifyConfiguration(configuration) {
+      let text = ''
+      for (let [key, value] of Object.entries(configuration)) {
+        text += `${key}: ${value}<br>`
+      }
+      return text
+    },
     flowChart: function(pipeline) {
       let configurations = []
+      pipeline.nodeSet.forEach(node =>
+        configurations.push({
+          id: this.composeConfigurationId(node),
+          text: this.textifyConfiguration(node.configuration),
+          group: this.getNodeRepresentation(node),
+          style: 'fill:#f9f,stroke:#333,stroke-width:1px,text-align:left',
+          edgeType: 'round'
+        })
+      )
       pipeline.pipeSet.forEach(pipe => {
-        let source = {
-          id: `${pipe.id}0`,
-          text: this.getSourceText(pipe),
-          group: this.getSourceNodeRepresentation(pipe),
-          next: [`${pipe.id}1`]
-        }
-        let destination = {
-          id: `${pipe.id}1`,
-          text: this.getDestinationText(pipe),
-          group: this.getDestinationNodeRepresentation(pipe)
-        }
-        configurations = [...configurations, source, destination]
+        let [
+          sourceNode,
+          sourcePort,
+          destinationNode,
+          destinationPort
+        ] = this.getPipeComponents(pipe)
+        let sourceBlockId = this.composePipeId(sourceNode, sourcePort)
+        let destinationBlockId = this.composePipeId(
+          destinationNode,
+          destinationPort
+        )
+        configurations.push(
+          {
+            id: sourceBlockId,
+            text: sourcePort.key,
+            group: this.getNodeRepresentation(sourceNode),
+            next: [destinationBlockId]
+          },
+          {
+            id: destinationBlockId,
+            text: destinationPort.key,
+            group: this.getNodeRepresentation(destinationNode)
+          }
+        )
       })
       return configurations
     },
