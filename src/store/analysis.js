@@ -14,6 +14,7 @@ import {
   NODES
 } from '@/api/analysis/endpoints'
 import {
+  getCategoryQueryString,
   getInputDefinitionQueryString,
   getInputsQueryString,
   getOutputDefinitionQueryString,
@@ -55,19 +56,10 @@ const getters = {
     return analysisId =>
       state.analyses.find(analysis => analysis.id === analysisId)
   },
-  getAnalysisByUrl(state) {
-    return url => state.analyses.find(analysis => analysis.url === url)
-  },
   getAnalysisVersions(state) {
     return analysis =>
       state.analysisVersions.filter(
-        analysisVersion => analysisVersion.analysis === analysis.url
-      )
-  },
-  getAnalysisVersionByUrl(state) {
-    return url =>
-      state.analysisVersions.find(
-        analysisVersion => analysisVersion.url === url
+        analysisVersion => analysisVersion.analysis.id === analysis.id
       )
   },
   getAnalysisInputSpecifications(state) {
@@ -76,22 +68,10 @@ const getters = {
         inputSpecification => inputSpecification.analysis === analysis.url
       )
   },
-  getInputSpecificationByUrl(state) {
-    return url =>
-      state.inputSpecifications.find(
-        inputSpecification => inputSpecification.url === url
-      )
-  },
   getAnalysisOutputSpecifications(state) {
     return analysis =>
       state.outputSpecifications.filter(
         outputSpecification => outputSpecification.analysis === analysis.url
-      )
-  },
-  getOutputSpecificationByUrl(state) {
-    return url =>
-      state.outputSpecifications.find(
-        outputSpecification => outputSpecification.url === url
       )
   },
   getRunAnalysisVersion(state) {
@@ -107,21 +87,6 @@ const getters = {
         analysis => analysis.url === analysisVersion.analysis
       )
     }
-  },
-  getNodeByUrl(state) {
-    return url => state.nodes.find(node => node.url === url)
-  },
-  getInputDefinitionById(state) {
-    return definitionId =>
-      state.inputDefinitions.find(
-        inputDefinition => inputDefinition.id === definitionId
-      )
-  },
-  getOutputDefinitionById(state) {
-    return definitionId =>
-      state.outputDefinitions.find(
-        outputDefinition => outputDefinition.id === definitionId
-      )
   }
 }
 
@@ -134,6 +99,9 @@ const mutations = {
   },
   setCategories(state, categories) {
     state.categories = categories
+  },
+  addCategories(state, categories) {
+    state.categories = [...state.categories, ...categories]
   },
   setInputSpecifications(state, inputSpecifications) {
     state.inputSpecifications = inputSpecifications
@@ -180,10 +148,12 @@ const actions = {
       .then(({ data }) => commit('setAnalysisVersions', data.results))
       .catch(console.error)
   },
-  fetchCategories({ commit }) {
+  fetchCategories({ commit }, options) {
+    let queryString = getCategoryQueryString(options)
+    let commitMethod = options.append ? 'addCategories' : 'setCategories'
     return session
-      .get(CATEGORIES)
-      .then(({ data }) => commit('setCategories', data.results))
+      .get(`${CATEGORIES}/${queryString}`)
+      .then(({ data }) => commit(commitMethod, data.results))
       .catch(console.error)
   },
   fetchInputSpecifications({ commit }) {

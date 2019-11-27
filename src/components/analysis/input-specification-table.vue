@@ -33,10 +33,10 @@ import InputDefinitionTable from '@/components/analysis/input-definition-table.v
 export default {
   name: 'InputSpecificationTable',
   components: { InputDefinitionTable },
-  props: { analysis: Object, expandedInputSpecificationUrl: String },
+  props: { analysis: Object, expandedInputSpecificationId: String },
   created() {
-    if (this.expandedInputSpecificationUrl) {
-      this.expandByChosenUrl(this.expandedInputSpecificationUrl)
+    if (this.expandedInputSpecificationId) {
+      this.expandByChosenId(this.expandedInputSpecificationId)
     }
   },
   data: () => ({
@@ -69,15 +69,15 @@ export default {
     ...mapGetters('analysis', ['getAnalysisInputSpecifications'])
   },
   methods: {
-    expandByChosenUrl: function(chosenUrl) {
+    expandByChosenId: function(chosenId) {
       this.expanded = this.inputSpecifications.filter(
-        inputSpecification => inputSpecification.url === chosenUrl
+        inputSpecification => inputSpecification.url === chosenId
       )
     }
   },
   watch: {
-    expandedInputSpecificationUrl: function(chosenUrl) {
-      this.expandByChosenUrl(chosenUrl)
+    expandedInputSpecificationId: function(chosenId) {
+      this.expandByChosenId(chosenId)
     }
   }
 }

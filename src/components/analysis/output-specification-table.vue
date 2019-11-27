@@ -33,10 +33,10 @@ import OutputDefinitionTable from '@/components/analysis/output-definition-table
 export default {
   name: 'OutputSpecificationTable',
   components: { OutputDefinitionTable },
-  props: { analysis: Object, expandedOutputSpecificationUrl: String },
+  props: { analysis: Object, expandedOutputSpecificationId: String },
   created() {
-    if (this.expandedOutputSpecificationUrl) {
-      this.expandByChosenUrl(this.expandedOutputSpecificationUrl)
+    if (this.expandedOutputSpecificationId) {
+      this.expandByChosenId(this.expandedOutputSpecificationId)
     }
   },
   data: () => ({
@@ -69,15 +69,15 @@ export default {
     ...mapGetters('analysis', ['getAnalysisOutputSpecifications'])
   },
   methods: {
-    expandByChosenUrl: function(chosenUrl) {
+    expandByChosenId: function(chosenId) {
       this.expanded = this.outputSpecifications.filter(
-        outputSpecification => outputSpecification.url === chosenUrl
+        outputSpecification => outputSpecification.url === chosenId
       )
     }
   },
   watch: {
-    expandedOutputSpecificationUrl: function(chosenUrl) {
-      this.expandByChosenUrl(chosenUrl)
+    expandedOutputSpecificationId: function(chosenId) {
+      this.expandByChosenId(chosenId)
     }
   }
 }

@@ -7,14 +7,14 @@
     :loading="loading"
   >
     <template v-slot:item.inputSpecification="{ item }">
-      <a @click="goToInputSpecification(item.inputSpecification)">
-        {{ getInputSpecificationId(item) }}
+      <a @click="goToInputSpecification(item.inputSpecification.url)">
+        {{ item.inputSpecification.id }}
       </a>
     </template>
 
     <template v-slot:item.outputSpecification="{ item }">
-      <a @click="goToOutputSpecification(item.outputSpecification)">
-        {{ getOutputSpecificationId(item) }}
+      <a @click="goToOutputSpecification(item.outputSpecification.url)">
+        {{ item.outputSpecification.id }}
       </a>
     </template>
   </v-data-table>
@@ -49,30 +49,14 @@ export default {
     analysisVersions: function() {
       return this.getAnalysisVersions(this.analysis)
     },
-    ...mapGetters('analysis', [
-      'getAnalysisVersions',
-      'getInputSpecificationByUrl',
-      'getOutputSpecificationByUrl'
-    ])
+    ...mapGetters('analysis', ['getAnalysisVersions'])
   },
   methods: {
-    getInputSpecificationId: function(analysisVersion) {
-      let inputSpecification = this.getInputSpecificationByUrl(
-        analysisVersion.inputSpecification
-      )
-      return inputSpecification ? inputSpecification.id : undefined
+    goToInputSpecification: function(inputSpecificationId) {
+      this.$emit('goToInputSpecification', inputSpecificationId)
     },
-    getOutputSpecificationId: function(analysisVersion) {
-      let outputSpecification = this.getOutputSpecificationByUrl(
-        analysisVersion.outputSpecification
-      )
-      return outputSpecification ? outputSpecification.id : undefined
-    },
-    goToInputSpecification: function(inputSpecificationUrl) {
-      this.$emit('goToInputSpecification', inputSpecificationUrl)
-    },
-    goToOutputSpecification: function(outputSpecificationUrl) {
-      this.$emit('goToOutputSpecification', outputSpecificationUrl)
+    goToOutputSpecification: function(outputSpecificationId) {
+      this.$emit('goToOutputSpecification', outputSpecificationId)
     }
   }
 }

@@ -1,3 +1,18 @@
+const getCategoryQueryString = ({ filters, pagination }) => {
+  return `?id=${filters.id || ''}&title=${filters.title ||
+    ''}&title_lookup=icontains&description=${filters.description ||
+    ''}&description_lookup=icontains&parent=${filters.parent || ''}&is_root=${
+    'isRoot' in filters ? filters.isRoot : ''
+  }&page_size=${pagination.itemsPerPage || 100}&page=${pagination.page ||
+    1}&ordering=${
+    pagination.sortBy
+      ? pagination.descending
+        ? '-' + pagination.sortBy
+        : pagination.sortBy
+      : ''
+  }`
+}
+
 const getInputDefinitionQueryString = ({ filters, pagination }) => {
   return `?key=${filters.key || ''}&required=${filters.required ||
     ''}&is_configuration=${filters.isConfiguration ||
@@ -48,6 +63,7 @@ const getOutputsQueryString = ({ filters, pagination }) => {
 }
 
 export {
+  getCategoryQueryString,
   getInputDefinitionQueryString,
   getInputsQueryString,
   getOutputDefinitionQueryString,

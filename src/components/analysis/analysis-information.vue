@@ -44,7 +44,7 @@
           <v-tab-item key="inputSpecifications">
             <input-specification-table
               :analysis="analysis"
-              :expandedInputSpecificationUrl="chosenInputSpecificationUrl"
+              :expandedInputSpecificationId="chosenInputSpecificationId"
             />
           </v-tab-item>
           <v-tab key="outputSpecifications">
@@ -53,7 +53,7 @@
           <v-tab-item key="outputSpecifications">
             <output-specification-table
               :analysis="analysis"
-              :expandedOutputSpecificationUrl="chosenOutputSpecificationUrl"
+              :expandedOutputSpecificationId="chosenOutputSpecificationId"
             />
           </v-tab-item>
         </v-tabs>
@@ -80,7 +80,6 @@ export default {
   },
   props: { analysisId: [String, Number] },
   created() {
-    this.fetchCategories()
     this.fetchAnalyses().then(() => (this.fetchedAnalyses = true))
     this.fetchAnalysisVersions()
     this.fetchInputSpecifications()
@@ -90,8 +89,8 @@ export default {
   data: () => ({
     tab: null,
     fetchedAnalyses: false,
-    chosenInputSpecificationUrl: null,
-    chosenOutputSpecificationUrl: null
+    chosenInputSpecificationId: null,
+    chosenOutputSpecificationId: null
   }),
   computed: {
     analysis: function() {
@@ -100,18 +99,17 @@ export default {
     ...mapGetters('analysis', ['getAnalysisById'])
   },
   methods: {
-    goToInputSpecification: function(inputSpecificationUrl) {
+    goToInputSpecification: function(inputSpecificationId) {
       this.tab = 1
-      this.chosenInputSpecificationUrl = inputSpecificationUrl
+      this.chosenInputSpecificationId = inputSpecificationId
     },
-    goToOutputSpecification: function(outputSpecificationUrl) {
+    goToOutputSpecification: function(outputSpecificationId) {
       this.tab = 2
-      this.chosenOutputSpecificationUrl = outputSpecificationUrl
+      this.chosenOutputSpecificationId = outputSpecificationId
     },
     ...mapActions('analysis', [
       'fetchAnalyses',
       'fetchAnalysisVersions',
-      'fetchCategories',
       'fetchInputSpecifications',
       'fetchOutputSpecifications'
     ])
@@ -119,10 +117,10 @@ export default {
   watch: {
     tab: function(selectedTab) {
       if (selectedTab != 1) {
-        this.chosenInputSpecificationUrl = null
+        this.chosenInputSpecificationId = null
       }
       if (selectedTab != 2) {
-        this.chosenOutputSpecificationUrl = null
+        this.chosenOutputSpecificationId = null
       }
     }
   }

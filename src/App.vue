@@ -179,22 +179,16 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 export default {
   data: () => ({
     drawer: {}
   }),
-  created() {
-    this.fetchCategories()
-  },
   computed: {
     ...mapGetters('auth', ['isAuthenticated']),
     ...mapGetters('analysis', ['rootCategories']),
     ...mapState('auth', ['user'])
-  },
-  methods: {
-    ...mapActions('analysis', ['fetchCategories'])
   }
 }
 </script>

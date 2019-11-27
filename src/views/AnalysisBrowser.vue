@@ -19,7 +19,7 @@ export default {
   name: 'AnalysisBrowser',
   components: { categoryTable },
   created() {
-    this.fetchCategories()
+    this.fetchCategories({ filters: {}, pagination: {} })
     this.fetchAnalyses()
     this.fetchAnalysisVersions().then(() => (this.fetchedData = true))
   },

@@ -28,6 +28,14 @@ export function getKeyByValue(object, value) {
   return Object.keys(object).find(key => object[key] === value)
 }
 
+export function isEmptyArray(array) {
+  return array === undefined || array.length == 0
+}
+
+export function isEmptyObject(obj) {
+  return Object.entries(obj).length === 0 && obj.constructor === Object
+}
+
 export const titlesDictionary = {
   BSC: 'B.Sc.',
   MSC: 'M.Sc.',
