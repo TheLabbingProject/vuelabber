@@ -75,16 +75,32 @@ export default {
     ...mapState('analysis', ['pipelines', 'outputDefinitions'])
   },
   methods: {
-    getText: function(pipe) {
+    getSourceText: function(pipe) {
       let sourcePortId = pipe.sourcePort.split('/')
       sourcePortId = Number(sourcePortId[sourcePortId.length - 2])
       let sourcePort = this.getOutputDefinitionById(sourcePortId)
       return sourcePort.key
     },
-    getSourceNode: function(pipe) {
+    getDestinationText: function(pipe) {
+      let destinationPortId = pipe.destinationPort.split('/')
+      destinationPortId = Number(
+        destinationPortId[destinationPortId.length - 2]
+      )
+      let destinationPort = this.getInputDefinitionById(destinationPortId)
+      return destinationPort.key
+    },
+    getSourceNodeRepresentation: function(pipe) {
       let sourceNode = this.getNodeByUrl(pipe.source)
       let analysisVersion = this.getAnalysisVersionByUrl(
         sourceNode.analysisVersion
+      )
+      let analysis = this.getAnalysisByUrl(analysisVersion.analysis)
+      return `${analysis.title} v${analysisVersion.title}`
+    },
+    getDestinationNodeRepresentation: function(pipe) {
+      let destinationNode = this.getNodeByUrl(pipe.destination)
+      let analysisVersion = this.getAnalysisVersionByUrl(
+        destinationNode.analysisVersion
       )
       let analysis = this.getAnalysisByUrl(analysisVersion.analysis)
       return `${analysis.title} v${analysisVersion.title}`
@@ -104,12 +120,22 @@ export default {
     //     .map(pipe => this.getNodeByUrl(pipe.destination).id)
     // },
     flowChart: function(pipeline) {
-      return pipeline.pipeSet.map(pipe => ({
-        id: pipe.id,
-        text: this.getText(pipe),
-        group: this.getSourceNode(pipe)
-        // next: this.getNext(pipeline, node)
-      }))
+      let configurations = []
+      pipeline.pipeSet.forEach(pipe => {
+        let source = {
+          id: `${pipe.id}0`,
+          text: this.getSourceText(pipe),
+          group: this.getSourceNodeRepresentation(pipe),
+          next: [`${pipe.id}1`]
+        }
+        let destination = {
+          id: `${pipe.id}1`,
+          text: this.getDestinationText(pipe),
+          group: this.getDestinationNodeRepresentation(pipe)
+        }
+        configurations = [...configurations, source, destination]
+      })
+      return configurations
     },
     ...mapActions('analysis', [
       'fetchAnalyses',
