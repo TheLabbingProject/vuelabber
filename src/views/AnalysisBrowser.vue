@@ -19,7 +19,6 @@ export default {
   name: 'AnalysisBrowser',
   components: { categoryTable },
   created() {
-    this.fetchCategories({ filters: {}, pagination: {} })
     this.fetchAnalyses()
     this.fetchAnalysisVersions().then(() => (this.fetchedData = true))
   },
@@ -27,11 +26,7 @@ export default {
     fetchedData: false
   }),
   methods: {
-    ...mapActions('analysis', [
-      'fetchAnalyses',
-      'fetchAnalysisVersions',
-      'fetchCategories'
-    ])
+    ...mapActions('analysis', ['fetchAnalyses', 'fetchAnalysisVersions'])
   }
 }
 </script>

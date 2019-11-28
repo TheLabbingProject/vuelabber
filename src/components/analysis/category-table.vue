@@ -60,11 +60,14 @@ export default {
         : this.childCategories(this.parentCategory).slice()
     },
     fetchFilteredCategories: function() {
+      this.loading = true
       this.fetchCategories({
         filters: this.getFilters(),
         pagination: {},
         append: !this.isRoot
-      }).then(() => (this.filteredCategories = this.getFilteredCategories()))
+      })
+        .then(() => (this.filteredCategories = this.getFilteredCategories()))
+        .then(() => (this.loading = false))
     },
     isEmptyArray,
     ...mapActions('analysis', ['fetchCategories'])
