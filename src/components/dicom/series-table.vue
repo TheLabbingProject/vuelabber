@@ -132,7 +132,7 @@ export default {
       }
     ],
     options: {
-      itemsPerPage: 10,
+      itemsPerPage: 25,
       page: 1,
       sortBy: ['number'],
       descending: false

@@ -154,7 +154,12 @@ export default {
       { text: 'Description', value: 'description' },
       { text: 'Date', value: 'date', sortable: false },
       { text: 'Time', value: 'time', sortable: false },
-      { text: 'Sequence Type', value: 'sequenceType', sortable: false },
+      {
+        text: 'Sequence Type',
+        value: 'sequenceType',
+        sortable: false,
+        align: 'center'
+      },
       {
         text: 'Spatial Resolution (mm)',
         value: 'spatialResolution',
