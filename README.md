@@ -1,5 +1,6 @@
 # vuelabber
 
+
 A [Vue.js](https://vuejs.org/) frontend application for [The Labbing Project](https://github.com/TheLabbingProject).
 
 ## Project setup

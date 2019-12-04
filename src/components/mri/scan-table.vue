@@ -49,10 +49,12 @@
       v-model="selected"
       item-key="id"
       show-select
+      :footer-props="{
+        'items-per-page-options': itemsPerPageOptions
+      }"
       :headers="headers"
       :loading="loading"
       :items="scans"
-      :items-per-page-options="itemsPerPageOptions"
       :options.sync="options"
       :server-items-length="totalScanCount"
     >
@@ -167,12 +169,7 @@ export default {
       descending: false,
       itemsPerPage: 25
     },
-    itemsPerPageOptions: [
-      10,
-      25,
-      50,
-      { text: '$vuetify.dataIterator.itemsPerPageAll', value: 100000 }
-    ],
+    itemsPerPageOptions: [10, 25, 50, -1],
     loading: false
   }),
   computed: {
