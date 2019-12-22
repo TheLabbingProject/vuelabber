@@ -83,9 +83,7 @@ const getters = {
   getRunAnalysis(state, getters) {
     return run => {
       let analysisVersion = getters['getRunAnalysisVersion'](run)
-      return state.analyses.find(
-        analysis => analysis.url === analysisVersion.analysis
-      )
+      return analysisVersion.analysis
     }
   }
 }

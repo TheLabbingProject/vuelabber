@@ -29,7 +29,7 @@ export default {
       for (let [key, value] of Object.entries(configuration)) {
         text += `${key}: ${value}<br>`
       }
-      return text
+      return text || 'Default Configuration'
     },
     flowChart: function(pipeline) {
       let configurations = []
@@ -42,6 +42,7 @@ export default {
           edgeType: 'round'
         })
       )
+
       pipeline.pipeSet.forEach(pipe => {
         let source = this.getNodeByUrl(pipe.source)
         let destination = this.getNodeByUrl(pipe.destination)
