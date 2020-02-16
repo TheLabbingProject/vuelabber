@@ -1,78 +1,66 @@
 <template>
   <v-col>
     <!-- Create new study button -->
-    <v-row v-if="currentUser.isStaff" class="px-2">
-      <v-spacer />
-      <v-col cols="1">
-        <v-dialog v-model="createStudyDialog" width="400px">
-          <template v-slot:activator="{ on }">
-            <v-btn v-on="on" class="info">
-              New Study
-            </v-btn>
-          </template>
-          <study-info-card @close-study-dialog="createStudyDialog = false" />
-        </v-dialog>
-      </v-col>
-    </v-row>
+    <div v-if="currentUser">
+      <v-row v-if="currentUser.isStaff" class="px-2">
+        <v-spacer />
+        <v-col cols="1">
+          <v-dialog v-model="createStudyDialog" width="400px">
+            <template v-slot:activator="{ on }">
+              <v-btn v-on="on" class="info">New Study</v-btn>
+            </template>
+            <study-info-card @close-study-dialog="createStudyDialog = false" />
+          </v-dialog>
+        </v-col>
+      </v-row>
+    </div>
 
     <!-- Existing study card -->
-    <v-card class="mb-4 mx-2" v-for="study in studies" :key="study.id">
-      <!-- Title -->
-      <v-card-title class="title purple darken-2 white--text">
-        <span>
-          {{ study.title }}
-        </span>
-        <v-spacer />
-        <!-- Edit study dialog button -->
-        <v-dialog v-model="editStudyDialog[study.id]" width="400px">
-          <template v-slot:activator="{ on }">
-            <v-icon v-if="currentUser.isStaff" v-on="on">
-              edit
-            </v-icon>
-          </template>
-          <study-info-card
-            :key="editStudyDialog[study.id]"
-            :existingStudy="study"
-            @close-study-dialog="editStudyDialog[study.id] = false"
-          />
-        </v-dialog>
-      </v-card-title>
-
-      <!-- Body -->
-      <v-card-text class="text-xs-left">
-        <!-- Study Description -->
-        <div v-if="study.description" class="text-left pt-3">
-          {{ study.description }}
-        </div>
-        <div v-else class="grey--text text--lighten-0 font-italic">
-          No description available
-        </div>
-      </v-card-text>
-
-      <!-- Actions -->
-      <v-card-actions>
-        <!-- Collaborator avatars -->
-        <div
-          class="px-1"
-          v-for="collaborator in study.collaborators"
-          :key="collaborator"
-        >
-          <v-avatar
-            v-if="getUserByUrl(collaborator)"
-            class="m-1 white--text"
-            :color="randomColor()"
-          >
-            <img
-              v-if="getUserByUrl(collaborator).image"
-              :src="getUserByUrl(collaborator).image"
+    <div v-if="currentUser">
+      <v-card class="mb-4 mx-2" v-for="study in studies" :key="study.id">
+        <!-- Title -->
+        <v-card-title class="title purple darken-2 white--text">
+          <span>{{ study.title }}</span>
+          <v-spacer />
+          <!-- Edit study dialog button -->
+          <v-dialog v-model="editStudyDialog[study.id]" width="400px">
+            <template v-slot:activator="{ on }">
+              <v-icon v-if="currentUser.isStaff" v-on="on">edit</v-icon>
+            </template>
+            <study-info-card
+              :key="editStudyDialog[study.id]"
+              :existingStudy="study"
+              @close-study-dialog="editStudyDialog[study.id] = false"
             />
-            <div v-else>
-              {{ getUserInitialsFromUrl(collaborator) }}
-            </div>
-          </v-avatar>
-        </div>
-      </v-card-actions>
-    </v-card>
+          </v-dialog>
+        </v-card-title>
+
+        <!-- Body -->
+        <v-card-text class="text-xs-left">
+          <!-- Study Description -->
+          <div v-if="study.description" class="text-left pt-3">{{ study.description }}</div>
+          <div v-else class="grey--text text--lighten-0 font-italic">No description available</div>
+        </v-card-text>
+
+        <!-- Actions -->
+        <v-card-actions>
+          <!-- Collaborator avatars -->
+          <div class="px-1" v-for="collaborator in study.collaborators" :key="collaborator">
+            <v-avatar
+              v-if="getUserByUrl(collaborator)"
+              class="m-1 white--text"
+              :color="randomColor()"
+            >
+              <img
+                v-if="getUserByUrl(collaborator).profile['image']"
+                :src="getUserByUrl(collaborator).profile['image']"
+              />
+              <div v-else>{{ getUserInitialsFromUrl(collaborator) }}</div>
+            </v-avatar>
+          </div>
+        </v-card-actions>
+      </v-card>
+    </div>
   </v-col>
 </template>
 
