@@ -1,5 +1,5 @@
 <template>
-  <div id="login-view">
+  <div id="login-view" @keyup.enter="loginHandler(inputs)">
     <v-alert :value="error" type="error">Invalid username or password!</v-alert>
     <form @submit.prevent="submit">
       <v-col cols="2">
@@ -16,7 +16,6 @@
           id="password"
           label="Password"
           required
-          @keyup.enter="loginHandler(inputs)"
         />
 
         <v-btn @click="loginHandler(inputs)" color="success" id="login-button">Login</v-btn>

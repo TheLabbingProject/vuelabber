@@ -7,17 +7,12 @@
         <!-- Scan Upload -->
         <v-expansion-panel>
           <v-expansion-panel-header>
-            <div class="text-center">
-              Upload
-            </div>
+            <div class="text-center">Upload</div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-card>
               <v-card-text>
-                <scan-upload
-                  :subject="subject"
-                  @file-upload-complete="update()"
-                />
+                <scan-upload :subject="subject" @file-upload-complete="update()" />
               </v-card-text>
             </v-card>
           </v-expansion-panel-content>
@@ -26,9 +21,7 @@
         <!-- Study Group Association -->
         <v-expansion-panel>
           <v-expansion-panel-header>
-            <div class="text-center">
-              Study Group Association
-            </div>
+            <div class="text-center">Study Group Association</div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-card>
@@ -67,21 +60,15 @@
           @fetch-scans-end="loading = false"
         />
       </template>
-      <template v-slot:item.date="{ item }">
-        {{ formatDate(item.time) }}
-      </template>
+      <template v-slot:item.date="{ item }">{{ formatDate(item.time) }}</template>
 
-      <template v-slot:item.time="{ item }">
-        {{ formatTime(item.time) }}
-      </template>
+      <template v-slot:item.time="{ item }">{{ formatTime(item.time) }}</template>
 
       <template v-slot:item.sequenceType="{ item }">
         <div v-if="item.sequenceType" class="py-1">
           <v-dialog v-model="sequenceTypeDialog[item.id]" width="800px">
             <template v-slot:activator="{ on }">
-              <v-btn small class="info" v-on="on">
-                {{ item.sequenceType.title }}
-              </v-btn>
+              <v-btn small class="info" v-on="on">{{ item.sequenceType.title }}</v-btn>
             </template>
             <protocol-information :scan="item" />
           </v-dialog>
@@ -89,9 +76,7 @@
         <div v-else class="py-1">
           <v-dialog v-model="sequenceTypeDialog[item.id]" width="400px">
             <template v-slot:activator="{ on }">
-              <v-btn small class="warning" v-on="on">
-                Create
-              </v-btn>
+              <v-btn small class="warning" v-on="on">Create</v-btn>
             </template>
             <edit-sequence-type
               :fromScan="item"
@@ -103,9 +88,9 @@
       </template>
 
       <!-- Spatial Resolution -->
-      <template v-slot:item.spatialResolution="{ item }">
-        {{ formatSpatialResolution(item.spatialResolution) }}
-      </template>
+      <template
+        v-slot:item.spatialResolution="{ item }"
+      >{{ formatSpatialResolution(item.spatialResolution) }}</template>
 
       <!-- Study Groups -->
       <template v-slot:item.studyGroups="{ item }">
@@ -114,9 +99,7 @@
             small
             close
             @click:close="disassociateFromGroup(item, groupUrl)"
-          >
-            {{ stringifyGroup(getGroupByUrl(groupUrl)) }}
-          </v-chip>
+          >{{ stringifyGroup(getGroupByUrl(groupUrl)) }}</v-chip>
         </div>
       </template>
     </v-data-table>

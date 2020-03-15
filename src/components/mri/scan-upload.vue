@@ -11,17 +11,11 @@
           @change="handleFileUploads()"
         />
       </label>
-      <div class="text-left caption">
-        {{ fileProgressLabel }}
-      </div>
+      <div class="text-left caption">{{ fileProgressLabel }}</div>
       <v-progress-linear v-model="fileUploadPercentage" />
-      <div class="text-left caption">
-        {{ totalProgressLabel }}
-      </div>
+      <div class="text-left caption">{{ totalProgressLabel }}</div>
       <v-progress-linear v-model="totalUploadPercentage" />
-      <v-btn small :disabled="!files" @click="submitFiles()">
-        Upload
-      </v-btn>
+      <v-btn small :disabled="!files" @click="submitFiles()">Upload</v-btn>
     </div>
   </div>
 </template>

@@ -12,6 +12,7 @@ import RunBrowser from '../views/RunBrowser.vue'
 import SequenceTypes from '../views/SequenceTypes.vue'
 import StudyBrowser from '../views/StudyBrowser.vue'
 import SubjectBrowser from '../views/SubjectBrowser.vue'
+import BrainBrowserView from '../views/BrainBrowser.vue'
 import store from '../store'
 
 const requireAuthenticated = (to, from, next) => {
@@ -129,6 +130,12 @@ export default new Router({
       path: '/pipeline-browser',
       name: 'pipelineBrowser',
       component: PipelineBrowser,
+      beforeEnter: requireAuthenticated
+    },
+    {
+      path: "/brain-browser",
+      name: "brainBrowser",
+      component: BrainBrowserView,
       beforeEnter: requireAuthenticated
     }
   ]

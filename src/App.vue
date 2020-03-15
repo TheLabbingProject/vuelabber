@@ -53,11 +53,25 @@
             <!-- Sequence Types -->
             <v-list-item to="/mri-sequence-types" class="drawer-link">
               <v-list-item-title>Sequence Types</v-list-item-title>
+              <v-list-item-icon>
+                <v-icon>list</v-icon>
+              </v-list-item-icon>
             </v-list-item>
 
             <!-- DICOM -->
             <v-list-item to="/dicom-browser" class="drawer-link">
               <v-list-item-title>DICOM</v-list-item-title>
+              <v-list-item-icon>
+                <v-icon>mdi-remote-desktop</v-icon>
+              </v-list-item-icon>
+            </v-list-item>
+
+            <!-- BrainBrowser -->
+            <v-list-item to="/brain-browser" class="drawer-link">
+              <v-list-item-title>Brain Browser</v-list-item-title>
+              <v-list-item-icon>
+                <v-icon>mdi-brain</v-icon>
+              </v-list-item-icon>
             </v-list-item>
           </v-list-group>
         </v-list-group>
@@ -110,7 +124,7 @@
           <template v-slot:activator="{ on }">
             <v-btn text v-on="on">
               <v-avatar size="36px" class="user-avatar">
-                <img v-if="user.profile" :src="user.profile.image" />
+                <img v-if="user.profile && user.profile['image']" :src="user.profile['image']" />
                 <img v-else src="/user.png" />
               </v-avatar>
               &nbsp; {{ user.username }}

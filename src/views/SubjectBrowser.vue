@@ -21,7 +21,7 @@ export default {
     plot: { div: [], script: [] }
   }),
   computed: {
-    ...mapState('research', ['selectedSubjectId'])
+    // ...mapState('research', ['selectedSubjectId'])
   },
   methods: {
     ...mapActions('mri', ['fetchPlot'])

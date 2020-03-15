@@ -9,7 +9,7 @@
             <template v-slot:activator="{ on }">
               <v-btn v-on="on" class="info">New Study</v-btn>
             </template>
-            <study-info-card @close-study-dialog="createStudyDialog = false" />
+            <study-info-card @close-study-dialog="closeStudyDialog(false)" :key="studyDialog" />
           </v-dialog>
         </v-col>
       </v-row>
@@ -17,7 +17,7 @@
 
     <!-- Existing study card -->
     <div v-if="currentUser">
-      <v-card class="mb-4 mx-2" v-for="study in studies" :key="study.id">
+      <v-card class="mb-4 mx-2" v-for="study in filteredStudies" :key="study.id">
         <!-- Title -->
         <v-card-title class="title purple darken-2 white--text">
           <span>{{ study.title }}</span>
@@ -28,9 +28,9 @@
               <v-icon v-if="currentUser.isStaff" v-on="on">edit</v-icon>
             </template>
             <study-info-card
-              :key="editStudyDialog[study.id]"
               :existingStudy="study"
-              @close-study-dialog="editStudyDialog[study.id] = false"
+              :key="studyDialog"
+              @close-study-dialog="closeStudyDialog(true, study)"
             />
           </v-dialog>
         </v-card-title>
@@ -55,7 +55,7 @@
                 v-if="getUserByUrl(collaborator).profile['image']"
                 :src="getUserByUrl(collaborator).profile['image']"
               />
-              <div v-else>{{ getUserInitialsFromUrl(collaborator) }}</div>
+              <div v-else>{{ getUserInitialsFromUrl(collaborator) | CapitalizeInitials}}</div>
             </v-avatar>
           </div>
         </v-card-actions>
@@ -88,15 +88,28 @@ export default {
       'teal',
       'orange'
     ],
-    createStudyDialog: false
+    createStudyDialog: false,
+    studyDialog: true
   }),
   computed: {
     ...mapState('accounts', ['users']),
     ...mapState('auth', { currentUser: 'user' }),
     ...mapState('research', ['studies']),
-    ...mapGetters('accounts', ['getUserByUrl', 'getUserInitialsFromUrl'])
+    ...mapGetters('accounts', ['getUserByUrl', 'getUserInitialsFromUrl']),
+    filteredStudies() {
+      return this.currentUser.isStaff
+        ? this.studies
+        : this.studies.filter(study =>
+            study.collaborators.includes(this.currentUser.url)
+          )
+    }
   },
   methods: {
+    closeStudyDialog(updating, study) {
+      if (updating) this.editStudyDialog[study.id] = false
+      else this.createStudyDialog = false
+      this.studyDialog = !this.studyDialog
+    },
     randomColor() {
       return randomize(this.colors)
     },

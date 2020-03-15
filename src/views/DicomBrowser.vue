@@ -2,25 +2,19 @@
   <v-col>
     <v-tabs v-model="active">
       <!-- Studies -->
-      <v-tab ripple>
-        Studies
-      </v-tab>
+      <v-tab ripple>Studies</v-tab>
       <v-tab-item>
         <study-table />
       </v-tab-item>
 
       <!-- Patients -->
-      <v-tab ripple>
-        Patients
-      </v-tab>
+      <v-tab ripple>Patients</v-tab>
       <v-tab-item>
         <patient-table />
       </v-tab-item>
 
       <!-- Series -->
-      <v-tab ripple>
-        Series
-      </v-tab>
+      <v-tab ripple>Series</v-tab>
       <v-tab-item>
         <series-table />
       </v-tab-item>

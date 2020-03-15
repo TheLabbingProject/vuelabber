@@ -5,7 +5,6 @@
       <span>{{ cardTitle }}</span>
       <v-spacer />
       <v-icon v-if="existingStudy" @click="verifyStudyDelete()" style="cursor: pointer;">delete</v-icon>
-      <!-- <v-icon v-if="existingStudy" @dblclick="deleteStudy(study)" style="cursor: pointer;">delete</v-icon> -->
     </v-card-title>
 
     <!-- Body -->
@@ -19,7 +18,7 @@
             :class="{ hasError: $v.study.title.$error }"
             :counter="255"
             :error-messages="titleErrors"
-            @blur="$v.study.$touch()"
+            @blur="checkIfValid()"
           />
 
           <!-- Description -->
@@ -62,24 +61,19 @@
       <v-btn color="error" text @click="$emit('close-study-dialog')">Cancel</v-btn>
     </v-card-actions>
   </v-card>
-  <deleteDialog v-else :action="deleteStudy" :input="study" @close-dialog="deleteWanted = False" />
+  <deleteDialog v-else :action="deleteStudy" :input="study" @close-dialog="deleteWanted = false" />
 </template>
 
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, maxLength } from 'vuelidate/lib/validators'
 import { mapGetters, mapState, mapActions } from 'vuex'
-import deleteDialog from '../deleteDialog'
+import deleteDialog from '@/components/deleteDialog.vue'
 
 export default {
   name: 'StudyInfoCard',
   components: {
     deleteDialog
-  },
-  data: function() {
-    return {
-      deleteWanted: false
-    }
   },
   props: {
     existingStudy: { type: Object }
@@ -93,6 +87,11 @@ export default {
     )
   },
   mixins: [validationMixin],
+  data: function() {
+    return {
+      deleteWanted: false
+    }
+  },
   computed: {
     data: () => ({
       selectedCollaborators: []
@@ -160,9 +159,11 @@ export default {
     ...mapActions('research', ['createStudy', 'updateStudy', 'deleteStudy']),
     verifyStudyDelete() {
       this.deleteWanted = true
-      // const res = confirm('Are you sure you want to delete this study?')
-      // if (res) this.methods.deleteStudy(study)
-      // else return
+    },
+    checkIfValid() {
+      this.$v.study.$dirty
+        ? this.$v.study.$reset() && this.$v.study.$touch()
+        : this.$v.study.$touch()
     }
   }
 }

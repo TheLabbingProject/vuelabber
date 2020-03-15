@@ -29,7 +29,7 @@
           <v-row>
             <v-col cols="4">
               <v-avatar size="100px">
-                <v-img v-if="user.profile.image" :src="user.profile.image" />
+                <v-img v-if="user.profile && user.profile['image']" :src="user.profile['image']" />
                 <v-img v-else src="/user.png" />
               </v-avatar>
             </v-col>

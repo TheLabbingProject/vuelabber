@@ -8,8 +8,8 @@
     <v-card-text>Are you completely sure you would like to remove this item?</v-card-text>
     <v-card-actions>
       <v-spacer />
-      <v-btn text class="info" @click="closeDialog">Cancel</v-btn>
-      <v-btn text class="error" @click="execute">Delete</v-btn>
+      <v-btn text color="info" @click="closeDialog">Cancel</v-btn>
+      <v-btn text color="error" @click="execute">Delete</v-btn>
       <v-spacer />
     </v-card-actions>
   </v-card>
