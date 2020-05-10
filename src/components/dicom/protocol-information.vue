@@ -1,57 +1,46 @@
 <template>
   <v-card>
-    <v-card-title class="headline grey lighten-2" primary-title>
-      {{ sequenceType.title }} Protocol Information
-    </v-card-title>
+    <v-card-title
+      class="headline grey lighten-2"
+      primary-title
+    >{{ sequenceType.title }} Protocol Information</v-card-title>
     <v-card-text>
       <v-col>
         <div v-if="sequenceType.description">
           <br />
-          <div class="grey--text text--darken-2 font-italic">
-            {{ sequenceType.description }}
-          </div>
+          <div class="grey--text text--darken-2 font-italic">{{ sequenceType.description }}</div>
           <br />
           <v-divider />
         </div>
         <v-row>
           <v-col class="text-center">
-            <v-subheader class="justify-center">
-              Scanning Sequence
-            </v-subheader>
+            <v-subheader class="justify-center">Scanning Sequence</v-subheader>
             <div
               class="py-1"
               v-for="(sequence, index) in sequenceType.scanningSequence"
               :key="index"
             >
               <v-chip small>
-                <v-avatar :color="getScanningSequenceColor(sequence)">
-                  {{ sequence }}
-                </v-avatar>
+                <v-avatar :color="getScanningSequenceColor(sequence)">{{ sequence }}</v-avatar>
                 {{ getScanningSequenceName(sequence) }}
               </v-chip>
             </div>
           </v-col>
           <v-col class="text-center">
-            <v-subheader class="justify-center">
-              Sequence Variant
-            </v-subheader>
-            <div
-              class="py-1"
-              v-for="(variant, index) in sequenceType.sequenceVariant"
-              :key="index"
-            >
+            <v-subheader class="justify-center">Sequence Variant</v-subheader>
+            <div class="py-1" v-for="(variant, index) in sequenceType.sequenceVariant" :key="index">
               <v-chip small>
-                <v-avatar :color="getSequenceVariantColor(variant)">{{
+                <v-avatar :color="getSequenceVariantColor(variant)">
+                  {{
                   variant
-                }}</v-avatar>
+                  }}
+                </v-avatar>
                 {{ getSequenceVariantName(variant) }}
               </v-chip>
             </div>
           </v-col>
           <v-col class="text-center">
-            <v-subheader class="justify-center">
-              Acquisition Parameters
-            </v-subheader>
+            <v-subheader class="justify-center">Acquisition Parameters</v-subheader>
             <div
               class="py-1"
               v-for="(value, parameter) in getSeriesParameters(series || scan)"
@@ -62,12 +51,8 @@
                   <span
                     v-if="parameter == 'repetitionTime'"
                     class="white--text"
-                  >
-                    {{ getSeriesParameterName(parameter) }}</span
-                  >
-                  <span v-else class="black--text">
-                    {{ getSeriesParameterName(parameter) }}</span
-                  >
+                  >{{ getSeriesParameterName(parameter) }}</span>
+                  <span v-else class="black--text">{{ getSeriesParameterName(parameter) }}</span>
                 </v-avatar>
                 {{ value.toLocaleString() }}
               </v-chip>

@@ -9,12 +9,10 @@ import Vue from 'vue'
 import Vuelidate from 'vuelidate'
 import VueMermaid from 'vue-mermaid'
 import vuetify from './plugins/vuetify'
-// import LoadScript from 'vue-plugin-load-script'
 
 Vue.config.productionTip = false
 Vue.use(Vuelidate)
 Vue.use(VueMermaid)
-// Vue.use(LoadScript)
 
 new Vue({
   router,

@@ -25,13 +25,9 @@
                 v-on="on"
               ></v-text-field>
             </template>
-            <v-date-picker
-              v-model="filters.afterDate"
-              @input="afterDateMenu = false"
-            ></v-date-picker>
+            <v-date-picker v-model="filters.afterDate" @input="afterDateMenu = false"></v-date-picker>
           </v-menu>
-        </v-col>
-        -
+        </v-col>-
         <v-col>
           <v-menu v-model="beforeDateMenu" :close-on-content-click="false">
             <template v-slot:activator="{ on }">
@@ -44,10 +40,7 @@
                 v-on="on"
               ></v-text-field>
             </template>
-            <v-date-picker
-              v-model="filters.beforeDate"
-              @input="beforeDateMenu = false"
-            ></v-date-picker>
+            <v-date-picker v-model="filters.beforeDate" @input="beforeDateMenu = false"></v-date-picker>
           </v-menu>
         </v-col>
       </v-row>
@@ -74,8 +67,7 @@
               @input="afterTimeMenu = false"
             />
           </v-menu>
-        </v-col>
-        -
+        </v-col>-
         <v-col>
           <v-menu v-model="beforeTimeMenu" :close-on-content-click="false">
             <template v-slot:activator="{ on }">
