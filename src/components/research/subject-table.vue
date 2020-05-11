@@ -1,5 +1,19 @@
 <template>
   <div>
+    <v-row class="px-3 pb-3">
+      <div class="title text-left">Subjects</div>
+      <v-spacer />
+      <v-dialog v-model="createSubjectDialog" width="600px" v-if="currentUser.isStaff">
+        <template v-slot:activator="{ on }">
+          <v-btn color="success" v-on="on">New Subject</v-btn>
+        </template>
+        <subject-info-card
+          :createMode="true"
+          @close-subject-dialog="closeSubjectDialog(false)"
+          :key="subjectDialog"
+        />
+      </v-dialog>
+    </v-row>
     <v-data-table
       dense
       item-key="id"
@@ -21,28 +35,22 @@
           @fetch-subjects-end="loading = false"
         />
       </template>
-      <template v-slot:item.dateOfBirth="{ item }">
-        {{ item.dateOfBirth | formatDate }}
-      </template>
-      <template v-slot:item.sex="{ item }">
-        {{ sexOptions[item.sex] }}
-      </template>
-      <template v-slot:item.gender="{ item }">
-        {{ genderOptions[item.gender] }}
-      </template>
-      <template v-slot:item.dominantHand="{ item }">
-        {{ dominantHandOptions[item.dominantHand] }}
-      </template>
+      <template v-slot:item.dateOfBirth="{ item }">{{ item.dateOfBirth | formatDate }}</template>
+      <template v-slot:item.sex="{ item }">{{ sexOptions[item.sex] }}</template>
+      <template v-slot:item.gender="{ item }">{{ genderOptions[item.gender] }}</template>
+      <template v-slot:item.dominantHand="{ item }">{{ dominantHandOptions[item.dominantHand] }}</template>
       <template v-slot:item.edit="{ item }" v-if="currentUser.isStaff">
         <v-dialog v-model="editSubjectDialog[item.id]" width="600px">
           <template v-slot:activator="{ on }">
-            <v-icon v-on="on">
-              edit
-            </v-icon>
+            <v-icon v-on="on">edit</v-icon>
           </template>
           <subject-info-card
             :existingSubject="item"
-            @close-subject-dialog="editSubjectDialog[item.id] = false"
+            @close-subject-dialog="
+            
+            
+            
+            (true, item)"
           />
         </v-dialog>
       </template>
@@ -99,13 +107,20 @@ export default {
     expanded: [],
     sexOptions,
     genderOptions,
-    dominantHandOptions
+    dominantHandOptions,
+    subjectDialog: false
   }),
   computed: {
-    ...mapState('research', ['subjects', 'selectedSubjectId']),
+    // ...mapState('research', ['subjects', 'selectedSubjectId']),
+    ...mapState('research', ['subjects']),
     ...mapState('auth', { currentUser: 'user' })
   },
   methods: {
+    closeSubjectDialog(updating, item) {
+      if (updating) this.editSubjectDialog[item.id] = false
+      else this.createSubjectDialog = false
+      this.subjectDialog = !this.subjectDialog
+    },
     appendEditColumn() {
       if (this.currentUser.isStaff) {
         this.headers.push({ text: 'Edit', value: 'edit' })
@@ -117,7 +132,7 @@ export default {
 </script>
 
 <style scoped>
->>> tr.selected {
+tr.selected {
   background-color: #e4f3ff;
 }
 td.subject-data {

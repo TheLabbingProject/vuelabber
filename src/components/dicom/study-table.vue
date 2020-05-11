@@ -21,13 +21,9 @@
       }"
     >
       <!-- Date -->
-      <template v-slot:item.date="{ item }">
-        {{ item.date | formatDate }}
-      </template>
+      <template v-slot:item.date="{ item }">{{ item.date | formatDate }}</template>
 
-      <template v-slot:item.time="{ item }">
-        {{ item.time.slice(0, 8) }}
-      </template>
+      <template v-slot:item.time="{ item }">{{ item.time.slice(0, 8) }}</template>
 
       <template v-slot:expanded-item="{ item, headers }">
         <td :colspan="headers.length">

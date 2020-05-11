@@ -36,7 +36,7 @@ export default {
     createSubjectDialog: false
   }),
   computed: {
-    ...mapState('research', ['selectedSubjectId', 'plots']),
+    ...mapState('research', ['selectedSubjectId']),
     ...mapState('auth', { currentUser: 'user' })
   }
 }

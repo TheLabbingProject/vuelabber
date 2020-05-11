@@ -10,12 +10,14 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "@webcomponents/webcomponentsjs": "^2.4.1",
     "@bokeh/bokehjs": "^2.0.1",
     "axios": "^0.19.0",
     "bokeh-vue": "0.0.5",
     "bootstrap": "^4.4.1",
     "bootstrap-vue": "^2.1.0",
     "braces": "^3.0.2",
+    "brainbrowser": "^2.3.0",
     "core-js": "^2.6.11",
     "dns": "^0.2.2",
     "document-ready": "^2.0.2",
@@ -55,6 +57,7 @@
     "stylus": "^0.54.7",
     "stylus-loader": "^3.0.1",
     "vue-cli-plugin-vuetify": "^0.5.0",
+    "vue-plugin-load-script": "^1.2.0",
     "vue-template-compiler": "^2.6.11",
     "vuetify": "^2.1.15",
     "vuetify-loader": "^1.4.3"

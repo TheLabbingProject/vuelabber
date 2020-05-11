@@ -12,11 +12,11 @@ const getters = {
     return username => state.users.find(user => user.username === username)
   },
   getUserByUrl(state) {
-    return url => state.users.find(user => user.url == url)
+    return url => state.users.find(user => user.url === url)
   },
   getUserInitialsFromUrl(state, getters) {
     return url => {
-      let user = getters.getUserByUrl(url).user
+      let user = getters.getUserByUrl(url)
       return `${user.firstName[0]}${user.lastName[0]}`
     }
   }

@@ -2,9 +2,8 @@
   <v-card>
     <v-card-title class="success darken-2">
       <div class="headline">
-        <span class="white--text">
-          Create Sequence Type
-        </span>
+        <span v-if="! existingSequenceType" class="white--text">Create Sequence Type</span>
+        <span v-else class="white--text">Edit Existing Sequence Type</span>
       </div>
     </v-card-title>
     <v-card-text>
@@ -44,17 +43,11 @@
     <v-card-actions>
       <v-spacer />
       <div v-if="existingSequenceType">
-        <v-btn text class="warning" @click="closeDialog">
-          Cancel
-        </v-btn>
-        <v-btn text class="success" @click="updateSequenceTypeCaller">
-          Update
-        </v-btn>
+        <v-btn text class="warning" @click="closeDialog">Cancel</v-btn>
+        <v-btn text class="success" @click="updateSequenceTypeCaller">Update</v-btn>
       </div>
       <div v-else>
-        <v-btn text class="success" @click="createSequenceTypeCaller">
-          Create
-        </v-btn>
+        <v-btn text class="success" @click="createSequenceTypeCaller">Create</v-btn>
       </div>
     </v-card-actions>
   </v-card>
