@@ -46,13 +46,17 @@
           </template>
           <subject-info-card
             :existingSubject="item"
-            @close-subject-dialog="closeSubjectDialog(true, item)"
+            @close-subject-dialog="
+            
+            
+            
+            (true, item)"
           />
         </v-dialog>
       </template>
 
       <template v-slot:expanded-item="{ item, headers }">
-        <td :colspan="headers.length">
+        <td :colspan="headers.length" class="subject-data pa-0 ma-0">
           <subject-data :subject="item" />
           <hr />
         </td>
@@ -99,7 +103,6 @@ export default {
       descending: true
     },
     loading: false,
-    createSubjectDialog: false,
     editSubjectDialog: {},
     expanded: [],
     sexOptions,
@@ -132,7 +135,7 @@ export default {
 tr.selected {
   background-color: #e4f3ff;
 }
-div.embeded-table {
-  background-color: #e4f3ff;
+td.subject-data {
+  background-color: #dfe9fd;
 }
 </style>

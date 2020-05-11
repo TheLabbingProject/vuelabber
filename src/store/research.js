@@ -9,7 +9,8 @@ import { camelToSnakeCase } from '@/utils'
 const state = {
   studies: [],
   groups: [],
-  subjects: []
+  subjects: [],
+  plots: { subject: {} }
 }
 
 const getters = {
@@ -70,6 +71,11 @@ const mutations = {
     state.studies = state.studies.filter(
       existingStudy => existingStudy.id != study.id
     )
+  },
+  setSubjectDateOfBirthPlot(state, script) {
+    var plots = Object.assign({}, state.plots)
+    plots.subject.dateOfBirth = script
+    state.plots = plots
   }
 }
 
@@ -164,6 +170,12 @@ const actions = {
     return session
       .delete(`${SUBJECTS}/${subject.id}/`)
       .then(() => commit('removeSubjectFromState', subject))
+      .catch(console.error)
+  },
+  fetchSubjectsDateOfBirthPlot({ commit }) {
+    return session
+      .get(`${SUBJECTS}/plot/`)
+      .then(({ data }) => commit('setSubjectDateOfBirthPlot', data))
       .catch(console.error)
   }
 }

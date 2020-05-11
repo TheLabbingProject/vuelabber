@@ -1,30 +1,43 @@
 <template>
   <v-col>
-    <!-- <bokeh-vue :plot="plot" /> -->
+    <v-row class="px-3 pb-3">
+      <div class="title text-left">
+        Subjects
+      </div>
+      <v-spacer />
+      <v-dialog
+        v-model="createSubjectDialog"
+        width="600px"
+        v-if="currentUser.isStaff"
+      >
+        <template v-slot:activator="{ on }">
+          <v-btn color="success" v-on="on">
+            New Subject
+          </v-btn>
+        </template>
+        <subject-info-card
+          :createMode="true"
+          @close-subject-dialog="createSubjectDialog = false"
+        />
+      </v-dialog>
+    </v-row>
     <subject-table />
   </v-col>
 </template>
 
 <script>
-// import BokehVue from '@/components/BokehVue.vue'
 import SubjectTable from '@/components/research/subject-table.vue'
-import { mapState, mapActions } from 'vuex'
+import { mapState } from 'vuex'
 
 export default {
   name: 'SubjectBrowser',
-  // components: { BokehVue, SubjectTable },
   components: { SubjectTable },
-  mounted() {
-    // this.fetchPlot().then(({ data }) => (this.plot = data))
-  },
   data: () => ({
-    plot: { div: [], script: [] }
+    createSubjectDialog: false
   }),
   computed: {
-    // ...mapState('research', ['selectedSubjectId'])
-  },
-  methods: {
-    ...mapActions('mri', ['fetchPlot'])
+    ...mapState('research', ['selectedSubjectId']),
+    ...mapState('auth', { currentUser: 'user' })
   }
 }
 </script>

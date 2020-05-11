@@ -1,9 +1,7 @@
 <template>
   <v-col>
     <v-tabs v-model="active">
-      <v-tab>
-        MRI
-      </v-tab>
+      <v-tab>MRI</v-tab>
       <v-tab-item>
         <br />
         <scan-table :subject="subject" />
