@@ -1,26 +1,5 @@
 <template>
   <div>
-    <v-row class="px-3 pb-3">
-      <div class="title text-left">
-        Subjects
-      </div>
-      <v-spacer />
-      <v-dialog
-        v-model="createSubjectDialog"
-        width="600px"
-        v-if="currentUser.isStaff"
-      >
-        <template v-slot:activator="{ on }">
-          <v-btn color="success" v-on="on">
-            New Subject
-          </v-btn>
-        </template>
-        <subject-info-card
-          :createMode="true"
-          @close-subject-dialog="createSubjectDialog = false"
-        />
-      </v-dialog>
-    </v-row>
     <v-data-table
       dense
       item-key="id"
@@ -69,7 +48,7 @@
       </template>
 
       <template v-slot:expanded-item="{ item, headers }">
-        <td :colspan="headers.length">
+        <td :colspan="headers.length" class="subject-data pa-0 ma-0">
           <subject-data :subject="item" />
           <hr />
         </td>
@@ -116,7 +95,6 @@ export default {
       descending: true
     },
     loading: false,
-    createSubjectDialog: false,
     editSubjectDialog: {},
     expanded: [],
     sexOptions,
@@ -142,7 +120,7 @@ export default {
 >>> tr.selected {
   background-color: #e4f3ff;
 }
-div.embeded-table {
-  background-color: #e4f3ff;
+td.subject-data {
+  background-color: #dfe9fd;
 }
 </style>

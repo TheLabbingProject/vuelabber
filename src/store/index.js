@@ -10,7 +10,7 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-export default new Vuex.Store({
+const store = new Vuex.Store({
   modules: {
     accounts,
     analysis,
@@ -21,3 +21,5 @@ export default new Vuex.Store({
     research
   }
 })
+
+export default store
