@@ -3,7 +3,11 @@
     <v-row class="px-3 pb-3">
       <div class="title text-left">Subjects</div>
       <v-spacer />
-      <v-dialog v-model="createSubjectDialog" width="600px" v-if="currentUser.isStaff">
+      <v-dialog
+        v-model="createSubjectDialog"
+        width="600px"
+        v-if="currentUser.isStaff"
+      >
         <template v-slot:activator="{ on }">
           <v-btn color="success" v-on="on">New Subject</v-btn>
         </template>
@@ -35,10 +39,16 @@
           @fetch-subjects-end="loading = false"
         />
       </template>
-      <template v-slot:item.dateOfBirth="{ item }">{{ item.dateOfBirth | formatDate }}</template>
+      <template v-slot:item.dateOfBirth="{ item }">{{
+        item.dateOfBirth | formatDate
+      }}</template>
       <template v-slot:item.sex="{ item }">{{ sexOptions[item.sex] }}</template>
-      <template v-slot:item.gender="{ item }">{{ genderOptions[item.gender] }}</template>
-      <template v-slot:item.dominantHand="{ item }">{{ dominantHandOptions[item.dominantHand] }}</template>
+      <template v-slot:item.gender="{ item }">{{
+        genderOptions[item.gender]
+      }}</template>
+      <template v-slot:item.dominantHand="{ item }">{{
+        dominantHandOptions[item.dominantHand]
+      }}</template>
       <template v-slot:item.edit="{ item }" v-if="currentUser.isStaff">
         <v-dialog v-model="editSubjectDialog[item.id]" width="600px">
           <template v-slot:activator="{ on }">
@@ -46,11 +56,7 @@
           </template>
           <subject-info-card
             :existingSubject="item"
-            @close-subject-dialog="
-            
-            
-            
-            (true, item)"
+            @close-subject-dialog="true, item"
           />
         </v-dialog>
       </template>
