@@ -114,10 +114,10 @@ export default {
     sexOptions,
     genderOptions,
     dominantHandOptions,
-    subjectDialog: false
+    subjectDialog: false,
+    createSubjectDialog: false
   }),
   computed: {
-    // ...mapState('research', ['subjects', 'selectedSubjectId']),
     ...mapState('research', ['subjects']),
     ...mapState('auth', { currentUser: 'user' })
   },
