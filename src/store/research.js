@@ -115,7 +115,7 @@ const actions = {
   },
   createStudy({ commit }, study) {
     return session
-      .post(STUDIES, study)
+      .post(STUDIES + '/', study)
       .then(({ data }) => {
         commit('addStudy', data)
         return data
@@ -140,7 +140,7 @@ const actions = {
   createGroup({ dispatch }, group) {
     return (
       session
-        .post(GROUPS, group)
+        .post(GROUPS + '/', group)
         // Can't just add the returned value because GET
         // and POST return different JSONs (the POST result)
         // doesn't contain Study as an object but as a url
@@ -150,7 +150,7 @@ const actions = {
   },
   createSubject({ commit }, subject) {
     return session
-      .post(SUBJECTS, subject)
+      .post(SUBJECTS + '/', subject)
       .then(({ data }) => {
         commit('addSubject', data)
         return data
