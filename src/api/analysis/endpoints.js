@@ -1,6 +1,6 @@
 import BASE from '@/api/base_url.js'
 
-const ANALYSIS_BASE = `${BASE}/analysis`
+const ANALYSIS_BASE = `${BASE}/analyses`
 const ANALYSES = `${ANALYSIS_BASE}/analysis`
 const ANALYSIS_VERSIONS = `${ANALYSIS_BASE}/analysis_version`
 const CATEGORIES = `${ANALYSIS_BASE}/category`
