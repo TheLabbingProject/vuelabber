@@ -6,7 +6,8 @@ import session from '@/api/session'
 const state = {
   sequenceTypes: [],
   scans: [],
-  totalScanCount: 0
+  totalScanCount: 0,
+  scanPreviewLoader: ''
 }
 
 const getters = {
@@ -66,6 +67,12 @@ const mutations = {
     let updatedSequenceTypes = state.sequenceTypes.slice()
     updatedSequenceTypes[index] = updatedSequenceType
     state.sequenceTypes = updatedSequenceTypes
+  },
+  setScanPreviewLoader(state, script) {
+    state.scanPreviewLoader = script
+  },
+  clearScanPreviewLoader(state) {
+    state.scanPreviewLoader = ''
   }
 }
 
@@ -142,9 +149,6 @@ const actions = {
       })
       .catch(console.error)
   },
-  fetchPlot() {
-    return session.get(`${SCANS}/plot/1/`).catch(console.error)
-  },
   createSequenceType({ commit }, sequenceType) {
     return session
       .post(SEQUENCE_TYPES, sequenceType)
@@ -162,6 +166,14 @@ const actions = {
       .patch(`${SEQUENCE_TYPES}/${sequenceType.id}/`, sequenceType)
       .then(({ data }) => {
         commit('updateSequenceTypeState', data)
+      })
+      .catch(console.error)
+  },
+  fetchScanPreviewLoader({ commit }, scanId) {
+    return session
+      .get(`${SCANS}/${scanId}/plot`)
+      .then(({ data }) => {
+        commit('setScanPreviewLoader', data)
       })
       .catch(console.error)
   }

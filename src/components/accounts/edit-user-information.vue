@@ -2,42 +2,26 @@
   <v-col>
     <v-form @submit.prevent="submit">
       <v-text-field label="Username" v-model="user.username" disabled />
-      <v-select
-        label="Title"
-        v-model="title"
-        :items="Object.values(titlesDictionary)"
-      />
+      <v-text-field label="Institute" v-model="user.profile['institute']" />
+      <v-select label="Title" v-model="title" :items="Object.values(titlesDictionary)" />
       <v-text-field label="First Name" v-model="user.firstName" />
       <v-text-field label="Last Name" v-model="user.lastName" />
-      <v-text-field label="Email" v-model="user.email" />
       <v-menu v-model="dateOfBirthMenu" :close-on-content-click="false">
         <template v-slot:activator="{ on }">
-          <v-text-field
-            label="Date of Birth"
-            prepend-icon="cake"
-            v-model="dateOfBirth"
-            v-on="on"
-          ></v-text-field>
+          <v-text-field label="Date of Birth" prepend-icon="cake" v-model="dateOfBirth" v-on="on"></v-text-field>
         </template>
-        <v-date-picker
-          v-model="user.dateOfBirth"
-          @input="dateOfBirthMenu = false"
-        ></v-date-picker>
+        <v-date-picker v-model="user.profile['dateOfBirth']" @input="dateOfBirthMenu = false"></v-date-picker>
       </v-menu>
       <v-textarea
         hint="A short summary of who you are and what you're up to."
         label="Bio"
-        v-model="user.bio"
+        v-model="user.profile['bio']"
       />
     </v-form>
     <v-row>
       <v-spacer />
-      <v-btn class="mr-3" color="success" width="90px" @click="save">
-        Save
-      </v-btn>
-      <v-btn color="error" width="90px" @click="cancel">
-        Cancel
-      </v-btn>
+      <v-btn class="mr-3" color="success" width="90px" @click="save">Save</v-btn>
+      <v-btn color="error" width="90px" @click="cancel">Cancel</v-btn>
     </v-row>
   </v-col>
 </template>
@@ -52,7 +36,7 @@ export default {
   created() {
     this.user = Object.assign({}, this.userInformation)
     // Until image upload is fixed...
-    delete this.user.image
+    delete this.user.profile['image']
   },
   data: () => ({
     titlesDictionary,
@@ -62,15 +46,20 @@ export default {
   computed: {
     title: {
       get: function() {
-        return this.titlesDictionary[this.user.title]
+        return this.titlesDictionary[this.user.profile['title']]
       },
       set: function(selectedTitle) {
-        this.user.title = getKeyByValue(this.titlesDictionary, selectedTitle)
+        this.user.profile['title'] = getKeyByValue(
+          this.titlesDictionary,
+          selectedTitle
+        )
       }
     },
     dateOfBirth: {
       get: function() {
-        return this.$options.filters.formatDate(this.user.dateOfBirth)
+        return this.$options.filters.formatDate(
+          this.user.profile['dateOfBirth']
+        )
       },
       set: function(newValue) {
         this.user.formatDate = newValue

@@ -1,14 +1,10 @@
 <template>
-  <v-card>
+  <v-card v-if="! deleteWanted">
     <!-- Title -->
     <v-card-title class="success darken-3">
       <div>
-        <span class="white--text">
-          Subject Information
-        </span>
-        <span v-if="existingSubject" class="grey--text text--lighten-1">
-          {{ `#${subject.id}` }}
-        </span>
+        <span class="white--text">Subject Information</span>
+        <span v-if="existingSubject" class="grey--text text--lighten-1">{{ `#${subject.id}` }}</span>
       </div>
       <v-spacer />
 
@@ -16,10 +12,8 @@
       <v-icon
         v-if="existingSubject && editable && currentUser.isStaff"
         style="cursor: pointer;"
-        @dblclick="deleteSubject(existingSubject)"
-      >
-        delete
-      </v-icon>
+        @click="verifyDelete"
+      >delete</v-icon>
     </v-card-title>
 
     <!-- Body -->
@@ -101,10 +95,7 @@
                 :readonly="!editable"
               ></v-text-field>
             </template>
-            <v-date-picker
-              v-model="subject.dateOfBirth"
-              @input="dob_menu = false"
-            ></v-date-picker>
+            <v-date-picker v-model="subject.dateOfBirth" @input="dob_menu = false"></v-date-picker>
           </v-menu>
           <br />
           <object-table
@@ -135,10 +126,8 @@
         text
         v-if="editable && existingSubject"
         :disabled="!currentUser.isStaff"
-        @click="updateExistingSubject()"
-      >
-        Update
-      </v-btn>
+        @click="updateExistingSubject"
+      >Update</v-btn>
 
       <!-- Create -->
       <v-btn
@@ -146,16 +135,18 @@
         text
         v-if="!existingSubject && currentUser.isStaff"
         @click="createNewSubject"
-      >
-        Create
-      </v-btn>
+      >Create</v-btn>
 
       <!-- Cancel -->
-      <v-btn color="error" text @click="closeDialog">
-        Cancel
-      </v-btn>
+      <v-btn color="error" text @click="closeDialog">Cancel</v-btn>
     </v-card-actions>
   </v-card>
+  <deleteDialog
+    v-else
+    :action="deleteSubject"
+    :input="subject"
+    @close-dialog="deleteWanted = false"
+  />
 </template>
 
 <script>
@@ -164,10 +155,11 @@ import { mapActions, mapState } from 'vuex'
 import { sexOptions, genderOptions, dominantHandOptions } from './choices.js'
 import { createSelectItems } from '@/components/utils'
 import ObjectTable from '@/components/object-table.vue'
+import deleteDialog from '@/components/deleteDialog.vue'
 
 export default {
   name: 'SubjectInfoCard',
-  components: { ObjectTable },
+  components: { ObjectTable, deleteDialog },
   props: {
     existingSubject: Object,
     createMode: { type: Boolean, default: false }
@@ -186,7 +178,8 @@ export default {
     radioGroup: 'new',
     sexItems: createSelectItems(sexOptions),
     genderItems: createSelectItems(genderOptions),
-    dominantHandItems: createSelectItems(dominantHandOptions)
+    dominantHandItems: createSelectItems(dominantHandOptions),
+    deleteWanted: false
   }),
   computed: {
     formattedDate: function() {
@@ -196,6 +189,7 @@ export default {
     ...mapState('auth', { currentUser: 'user' })
   },
   methods: {
+    createSelectItems,
     closeDialog() {
       if (this.existingSubject && this.editable) this.editable = false
       this.$emit('close-subject-dialog')
@@ -235,6 +229,9 @@ export default {
     },
     updateCustomAttributes(updatedAttributes) {
       this.subject.customAttributes = updatedAttributes
+    },
+    verifyDelete() {
+      this.deleteWanted = true
     },
     ...mapActions('research', [
       'createSubject',

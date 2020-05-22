@@ -21,23 +21,17 @@
       }"
     >
       <!-- Date -->
-      <template v-slot:item.date="{ item }">
-        {{ item.date.slice(0, 10) | formatDate }}
-      </template>
+      <template v-slot:item.date="{ item }">{{ item.date.slice(0, 10) | formatDate }}</template>
 
       <!-- Time -->
-      <template v-slot:item.time="{ item }">
-        {{ item.time.slice(0, 8) }}
-      </template>
+      <template v-slot:item.time="{ item }">{{ item.time.slice(0, 8) }}</template>
 
       <!-- Sequence Type -->
       <template v-slot:item.sequenceType="{ item }">
         <div class="py-1">
           <v-dialog v-model="protocolInformationDialog[item.id]" width="800px">
             <template v-slot:activator="{ on }">
-              <v-btn small class="info" v-on="on">
-                {{ getSequenceTypeTitle(item) }}
-              </v-btn>
+              <v-btn small class="info" v-on="on">{{ getSequenceTypeTitle(item) }}</v-btn>
             </template>
             <protocol-information :series="item" />
           </v-dialog>
@@ -45,9 +39,7 @@
       </template>
 
       <!-- Spatial Resolution -->
-      <template v-slot:item.spatialResolution="{ item }">
-        {{ getSpatialResolution(item) }}
-      </template>
+      <template v-slot:item.spatialResolution="{ item }">{{ getSpatialResolution(item) }}</template>
 
       <!-- Scan Instance Dialog -->
       <template v-slot:item.scanInstance="{ item }">
@@ -58,9 +50,7 @@
             width="500px"
           >
             <template v-slot:activator="{ on }">
-              <v-btn small color="success" v-on="on">
-                {{ `Scan #${getScanByDicomSeries(item).id}` }}
-              </v-btn>
+              <v-btn small color="success" v-on="on">{{ `Scan #${getScanByDicomSeries(item).id}` }}</v-btn>
             </template>
             <scan-info
               :existingScan="getScanByDicomSeries(item)"

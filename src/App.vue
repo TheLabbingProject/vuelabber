@@ -6,125 +6,103 @@
         <!-- Home -->
         <v-list-item to="/home" class="drawer-link">
           <v-list-item-icon>
-            <v-icon>
-              home
-            </v-icon>
+            <v-icon>home</v-icon>
           </v-list-item-icon>
           <v-list-item-content>
-            <v-list-item-title>
-              Home
-            </v-list-item-title>
+            <v-list-item-title>Home</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 
         <!-- Studies -->
         <v-list-item to="/studies" class="drawer-link">
           <v-list-item-icon>
-            <v-icon>
-              star
-            </v-icon>
+            <v-icon>star</v-icon>
           </v-list-item-icon>
           <v-list-item-content>
-            <v-list-item-title>
-              Studies
-            </v-list-item-title>
+            <v-list-item-title>Studies</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 
         <!-- Subjects -->
         <v-list-item to="/subjects" class="drawer-link">
           <v-list-item-icon>
-            <v-icon>
-              people
-            </v-icon>
+            <v-icon>people</v-icon>
           </v-list-item-icon>
           <v-list-item-content>
-            <v-list-item-title>
-              Subjects
-            </v-list-item-title>
+            <v-list-item-title>Subjects</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 
         <!-- Data -->
         <v-list-group no-action prepend-icon="storage" :value="false">
           <template v-slot:activator>
-            <v-list-item-title class="drawer-link">
-              Data
-            </v-list-item-title>
+            <v-list-item-title class="drawer-link">Data</v-list-item-title>
           </template>
 
           <!-- MRI -->
           <v-list-group no-action sub-group :value="false">
             <template v-slot:activator>
               <v-list-item class="drawer-link pr-0">
-                <v-list-item-title>
-                  MRI
-                </v-list-item-title>
+                <v-list-item-title>MRI</v-list-item-title>
                 <v-list-item-icon>
-                  <v-icon>
-                    blur_on
-                  </v-icon>
+                  <v-icon>blur_on</v-icon>
                 </v-list-item-icon>
               </v-list-item>
             </template>
 
             <!-- Sequence Types -->
             <v-list-item to="/mri-sequence-types" class="drawer-link">
-              <v-list-item-title>
-                Sequence Types
-              </v-list-item-title>
+              <v-list-item-title>Sequence Types</v-list-item-title>
+              <v-list-item-icon>
+                <v-icon>list</v-icon>
+              </v-list-item-icon>
             </v-list-item>
 
             <!-- DICOM -->
             <v-list-item to="/dicom-browser" class="drawer-link">
-              <v-list-item-title>
-                DICOM
-              </v-list-item-title>
+              <v-list-item-title>DICOM</v-list-item-title>
+              <v-list-item-icon>
+                <v-icon>mdi-remote-desktop</v-icon>
+              </v-list-item-icon>
+            </v-list-item>
+
+            <!-- BrainBrowser -->
+            <v-list-item to="/brain-browser" class="drawer-link">
+              <v-list-item-title>Brain Browser</v-list-item-title>
+              <v-list-item-icon>
+                <v-icon>mdi-brain</v-icon>
+              </v-list-item-icon>
             </v-list-item>
           </v-list-group>
         </v-list-group>
 
         <!-- Analyses -->
-        <v-list-group no-action prepend-icon="equalizer" :value="false">
+        <v-list-group no-action prepend-icon="equalizer">
           <template v-slot:activator>
-            <v-list-item-title class="drawer-link">
-              Analyses
-            </v-list-item-title>
+            <v-list-item-title class="drawer-link">Analyses</v-list-item-title>
           </template>
 
           <!-- Browse -->
           <v-list-item to="/analysis-browser" class="drawer-link">
-            <v-list-item-title>
-              Browse
-            </v-list-item-title>
+            <v-list-item-title>Browse</v-list-item-title>
             <v-list-item-icon>
-              <v-icon>
-                search
-              </v-icon>
+              <v-icon>search</v-icon>
             </v-list-item-icon>
           </v-list-item>
 
           <!-- Runs -->
           <v-list-item to="/run-browser" class="drawer-link">
-            <v-list-item-title>
-              Runs
-            </v-list-item-title>
+            <v-list-item-title>Runs</v-list-item-title>
             <v-list-item-icon>
-              <v-icon>
-                format_list_bulleted
-              </v-icon>
+              <v-icon>format_list_bulleted</v-icon>
             </v-list-item-icon>
           </v-list-item>
 
           <!-- Pipelines -->
           <v-list-item to="/pipeline-browser" class="drawer-link">
-            <v-list-item-title>
-              Pipelines
-            </v-list-item-title>
+            <v-list-item-title>Pipelines</v-list-item-title>
             <v-list-item-icon>
-              <v-icon>
-                timeline
-              </v-icon>
+              <v-icon>timeline</v-icon>
             </v-list-item-icon>
           </v-list-item>
         </v-list-group>
@@ -136,9 +114,7 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
 
       <!-- Title -->
-      <v-toolbar-title>
-        pylabber
-      </v-toolbar-title>
+      <v-toolbar-title>pylabber</v-toolbar-title>
 
       <v-spacer />
 
@@ -148,16 +124,15 @@
           <template v-slot:activator="{ on }">
             <v-btn text v-on="on">
               <v-avatar size="36px" class="user-avatar">
-                <img :src="user.image" />
+                <img v-if="user.profile && user.profile['image']" :src="user.profile['image']" />
+                <img v-else src="/user.png" />
               </v-avatar>
               &nbsp; {{ user.username }}
             </v-btn>
           </template>
           <v-list>
             <router-link to="/logout" class="dropmenu-link">
-              <v-list-item>
-                Logout
-              </v-list-item>
+              <v-list-item>Logout</v-list-item>
             </router-link>
           </v-list>
         </v-menu>

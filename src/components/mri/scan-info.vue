@@ -1,13 +1,9 @@
 <template>
-  <v-card>
+  <v-card v-if="!deleteWanted">
     <v-card-title class="success darken-3">
       <div class="title">
-        <span class="white--text">
-          Scan Information
-        </span>
-        <span v-if="existingScan" class="grey--text text--lighten-1">
-          {{ `#${scan.id}` }}
-        </span>
+        <span class="white--text">Scan Information</span>
+        <span v-if="existingScan" class="grey--text text--lighten-1">{{ `#${scan.id}` }}</span>
       </div>
     </v-card-title>
 
@@ -115,14 +111,7 @@
 
         <v-row class="align-center">
           <!-- Delete button -->
-          <v-btn
-            text
-            v-if="existingScan && editable"
-            color="error"
-            @click="deleteExistingScan"
-          >
-            Delete
-          </v-btn>
+          <v-btn text v-if="existingScan && editable" color="error" @click="verifyDelete">Delete</v-btn>
 
           <v-spacer />
 
@@ -132,9 +121,7 @@
             v-if="editable && existingScan"
             color="warning"
             @click="updateExistingScan(scan)"
-          >
-            Update
-          </v-btn>
+          >Update</v-btn>
 
           <!-- Cancel button -->
           <v-btn
@@ -142,27 +129,31 @@
             v-if="!existingScan && radioGroup == 'new'"
             color="success"
             @click="createNewScan"
-          >
-            Create
-          </v-btn>
-          <v-btn color="green darken-1" text @click="closeDialog">
-            Cancel
-          </v-btn>
+          >Create</v-btn>
+          <v-btn color="green darken-1" text @click="closeDialog">Cancel</v-btn>
         </v-row>
       </v-col>
     </v-card-actions>
   </v-card>
+  <deleteDialog
+    v-else
+    :action="deleteExistingScan"
+    :input="scan"
+    @close-dialog="deleteWanted = false"
+  />
 </template>
 
 <script>
 import { mapActions, mapState } from 'vuex'
 import { createSelectItems } from '@/components/utils'
+import deleteDialog from '@/components/deleteDialog.vue'
 
 export default {
   name: 'ScanInfo',
   props: {
     existingScan: Object
   },
+  components: { deleteDialog },
   created() {
     this.initializeScan()
   },
@@ -171,7 +162,8 @@ export default {
     dateMenu: null,
     timeMenu: null,
     scan: Object.assign({}, cleanScan),
-    editable: false
+    editable: false,
+    deleteWanted: false
   }),
   computed: {
     scanDate: function() {
@@ -218,7 +210,10 @@ export default {
         this.editable = true
       }
     },
-    ...mapActions('mri', ['createScan', 'updateScan', 'deleteScan'])
+    ...mapActions('mri', ['createScan', 'updateScan', 'deleteScan']),
+    verifyDelete() {
+      this.deleteWanted = true
+    }
   },
   watch: {
     editable: function(isEditable) {

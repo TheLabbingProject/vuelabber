@@ -1,31 +1,26 @@
 <template>
   <v-row class="text-left">
     <!-- For an invalid username, display error alert -->
-    <v-alert :value="!user" type="error">
-      No user found!
-    </v-alert>
+    <v-alert :value="!user" type="error">No user found!</v-alert>
 
     <!-- For a valid user, display user information -->
     <v-row v-if="user && !editMode">
       <v-col cols="10">
         <div class="title pb-2">
-          <span>
-            {{ user | formatResearcherName }}
-          </span>
+          <span>{{ user | formatResearcherName }}</span>
           <!-- If current user is the viewed user, or staff, display edit icon -->
-          <v-icon class="pl-2" v-if="editPermissions" @click="editMode = true">
-            edit
-          </v-icon>
+          <v-icon class="pl-2" v-if="editPermissions" @click="editMode = true">edit</v-icon>
         </div>
-        <div>Institute: {{ user.institute }}</div>
+        <div>Institute: {{ user.profile.institute }}</div>
         <div>Email: {{ user.email }}</div>
-        <div>Date of Birth: {{ user.dateOfBirth | formatDate }}</div>
-        <div>Bio: {{ user.bio }}</div>
+        <div>Date of Birth: {{ user.profile.dateOfBirth | formatDate }}</div>
+        <div>Bio: {{ user.profile.bio }}</div>
       </v-col>
 
       <!-- Image -->
       <v-col cols="2">
-        <v-img :src="user.image" height="240px" width="240px" />
+        <v-img v-if="user.profile.image" :src="user.profile.image" height="240px" width="240px" />
+        <v-img v-else src="/user.png" height="240px" width="240px" />
       </v-col>
     </v-row>
 
