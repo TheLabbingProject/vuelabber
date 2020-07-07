@@ -6,14 +6,14 @@ const getSubjectQueryString = ({ filters, options }) => {
     ''}&born_before_date=${filters.bornBefore ||
     ''}&dominant_hand=${filters.dominantHand ||
     ''}&dicom_patient=${filters.dicomPatientId ||
-    ''}&page_size=${options.itemsPerPage || 100}&page=${options.page ||
+    ''}&page_size=${options.itemsPerPage ? options.itemsPerPage != -1 ? options.itemsPerPage : 1000 : 100}&page=${options.page ||
     1}&ordering=${options.descending ? '-' + options.sortBy : options.sortBy}`
 }
 
 const getGroupQueryString = ({ filters, options }) => {
   return `?id=${filters.id || ''}&description=${filters.description ||
     ''}&description_lookup=icontains&study=${filters.studyId ||
-    ''}&page_size=${options.itemsPerPage || 100}&page=${options.page ||
+    ''}&page_size=${options.itemsPerPage ? options.itemsPerPage != -1 ? options.itemsPerPage : 1000 : 100}&page=${options.page ||
     1}&ordering=${options.descending ? '-' + options.sortBy : options.sortBy}`
 }
 

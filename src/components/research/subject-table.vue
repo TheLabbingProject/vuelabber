@@ -3,11 +3,7 @@
     <v-row class="px-3 pb-3">
       <div class="title text-left">Subjects</div>
       <v-spacer />
-      <v-dialog
-        v-model="createSubjectDialog"
-        width="600px"
-        v-if="currentUser.isStaff"
-      >
+      <v-dialog v-model="createSubjectDialog" width="600px" v-if="currentUser.isStaff">
         <template v-slot:activator="{ on }">
           <v-btn color="success" v-on="on">New Subject</v-btn>
         </template>
@@ -28,6 +24,7 @@
       :items="subjects"
       :loading="loading"
       :options.sync="options"
+      :server-items-length="subjectCount"
       :footer-props="{
         itemsPerPageOptions
       }"
@@ -39,25 +36,28 @@
           @fetch-subjects-end="loading = false"
         />
       </template>
-      <template v-slot:item.dateOfBirth="{ item }">{{
+      <template v-slot:item.dateOfBirth="{ item }">
+        {{
         item.dateOfBirth | formatDate
-      }}</template>
+        }}
+      </template>
       <template v-slot:item.sex="{ item }">{{ sexOptions[item.sex] }}</template>
-      <template v-slot:item.gender="{ item }">{{
+      <template v-slot:item.gender="{ item }">
+        {{
         genderOptions[item.gender]
-      }}</template>
-      <template v-slot:item.dominantHand="{ item }">{{
+        }}
+      </template>
+      <template v-slot:item.dominantHand="{ item }">
+        {{
         dominantHandOptions[item.dominantHand]
-      }}</template>
+        }}
+      </template>
       <template v-slot:item.edit="{ item }" v-if="currentUser.isStaff">
         <v-dialog v-model="editSubjectDialog[item.id]" width="600px">
           <template v-slot:activator="{ on }">
             <v-icon v-on="on">edit</v-icon>
           </template>
-          <subject-info-card
-            :existingSubject="item"
-            @close-subject-dialog="true, item"
-          />
+          <subject-info-card :existingSubject="item" @close-subject-dialog="true, item" />
         </v-dialog>
       </template>
 
@@ -101,13 +101,13 @@ export default {
       { text: 'Gender', value: 'gender' },
       { text: 'Dominant Hand', value: 'dominantHand' }
     ],
-    itemsPerPageOptions: [10, 25, 50, -1],
     options: {
       itemsPerPage: 25,
       page: 1,
       sortBy: ['id'],
       descending: true
     },
+    itemsPerPageOptions: [10, 25, 50, -1],
     loading: false,
     editSubjectDialog: {},
     expanded: [],
@@ -118,7 +118,7 @@ export default {
     createSubjectDialog: false
   }),
   computed: {
-    ...mapState('research', ['subjects']),
+    ...mapState('research', ['subjects', 'subjectCount']),
     ...mapState('auth', { currentUser: 'user' })
   },
   methods: {
