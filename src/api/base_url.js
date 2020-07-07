@@ -1,10 +1,10 @@
-const DEVELOPMENT = 'http://localhost:8080/api'
-const PRODUCTION = 'https://pylabber.org/api'
+const DEVELOPMENT = 'http://localhost:8000/api'
+const PRODUCTION = 'http://' + process.env.APP_IP + '/api'
 
-const MODE = 'development'
+const MODE = process.env.APP_MODE || 'Development'
 
 var BASE = DEVELOPMENT
-if (MODE == 'production') {
+if (MODE == 'Production') {
   BASE = PRODUCTION
 }
 

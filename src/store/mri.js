@@ -82,12 +82,13 @@ const actions = {
     return session
       .get(`${SCANS}/${queryString}`)
       .then(({ data }) => {
+        commit('setScans', data.results)
         commit('setTotalScanCount', data.count)
-        return data.results
+        // return data.results
       })
-      .then(scans => {
-        commit('setScans', scans)
-      })
+      // .then(scans => {
+      //   commit('setScans', scans)
+      // })
       .catch(console.error)
   },
   fetchSequenceTypes({ commit }) {

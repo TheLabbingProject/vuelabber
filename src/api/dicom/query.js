@@ -6,15 +6,15 @@ const getPatientQueryString = ({ filters, options }) => {
     ''}&given_name_lookup=icontains&middle_name=&middle_name_lookup=&family_name=${filters.lastName ||
     ''}&family_name_lookup=icontains&name_suffix=&sex=${
     filters.sex ? filters.sex[0] : ''
-  }&study__id=${filters.studyId || ''}&page_size=${
+    }&study__id=${filters.studyId || ''}&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage
         : 10000
       : 100
-  }&page=${options.page || 1}&ordering=${
+    }&page=${options.page || 1}&ordering=${
     options.descending ? '-' + options.sortBy : options.sortBy
-  }`
+    }`
 }
 
 const getSeriesQueryString = ({ filters, options }) => {
@@ -42,9 +42,9 @@ const getSeriesQueryString = ({ filters, options }) => {
         ? options.itemsPerPage
         : 10000
       : 100
-  }&page=${options.page || 1}&ordering=${
+    }&page=${options.page || 1}&ordering=${
     options.descending ? '-' + options.sortBy : options.sortBy
-  }`
+    }`
 }
 
 const getStudyQueryString = ({ filters, options }) => {
@@ -59,9 +59,9 @@ const getStudyQueryString = ({ filters, options }) => {
         ? options.itemsPerPage
         : 10000
       : 100
-  }&page=${options.page || 1}&ordering=${
+    }&page=${options.page || 1}&ordering=${
     options.descending ? '-' + options.sortBy : options.sortBy
-  }`
+    }`
 }
 
 export { getPatientQueryString, getSeriesQueryString, getStudyQueryString }

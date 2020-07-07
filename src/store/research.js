@@ -10,7 +10,8 @@ const state = {
   studies: [],
   groups: [],
   subjects: [],
-  plots: { subject: {} }
+  plots: { subject: {} },
+  subjectCount: 0
 }
 
 const getters = {
@@ -76,6 +77,9 @@ const mutations = {
     var plots = Object.assign({}, state.plots)
     plots.subject.dateOfBirth = script
     state.plots = plots
+  },
+  setSubjectCount(state, count) {
+    state.subjectCount = count
   }
 }
 
@@ -92,6 +96,7 @@ const actions = {
       .get(`${SUBJECTS}/${queryString}`)
       .then(({ data }) => {
         commit('setSubjects', data.results)
+        commit('setSubjectCount', data.count)
         return data.results
       })
       .catch(console.error)

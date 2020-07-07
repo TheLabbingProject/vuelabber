@@ -28,8 +28,7 @@
             </template>
             <v-date-picker v-model="filters.afterDate" @input="afterDateMenu = false"></v-date-picker>
           </v-menu>
-        </v-col>
--
+        </v-col>-
         <!-- Before Date -->
         <v-col>
           <v-menu v-model="beforeDateMenu" :close-on-content-click="false">
