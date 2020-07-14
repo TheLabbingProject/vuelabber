@@ -1,11 +1,6 @@
 <template>
   <v-col>
-    <v-data-table
-      item-key="id"
-      :headers="headers"
-      :items="sequenceTypes"
-      :loading="loading"
-    >
+    <v-data-table item-key="id" :headers="headers" :items="sequenceTypes" :loading="loading">
       <!-- Title and Create button -->
       <template v-slot:top>
         <v-row class="px-3 pb-3">
@@ -13,13 +8,9 @@
           <v-spacer />
           <v-dialog v-model="createSequenceTypeDialog" width="400px">
             <template v-slot:activator="{ on }">
-              <v-btn class="success" v-on="on">
-                Create
-              </v-btn>
+              <v-btn class="success" v-on="on">Create</v-btn>
             </template>
-            <edit-sequence-type
-              @close-dialog="createSequenceTypeDialog = false"
-            />
+            <edit-sequence-type @close-dialog="createSequenceTypeDialog = false" />
           </v-dialog>
         </v-row>
       </template>
@@ -27,17 +18,12 @@
       <!-- Scanning Sequence -->
       <template v-slot:item.scanningSequence="{ item }">
         <v-col>
-          <div
-            class="py-1"
-            v-for="(sequence, index) in item.scanningSequence"
-            :key="index"
-          >
-            <v-chip small>
-              <v-avatar :color="scanningSequences[sequence].color">
-                {{ sequence }}
-              </v-avatar>
+          <div class="py-1" v-for="(sequences, index) in item.scanningSequence" :key="index">
+            <v-chip small v-for="(sequence, index2) in sequences" :key="index2">
+              <v-avatar :color="scanningSequences[sequence].color">{{ sequence }}</v-avatar>
               {{ scanningSequences[sequence].name }}
             </v-chip>
+            <v-divider v-if="item.scanningSequence.length > 1"></v-divider>
           </div>
         </v-col>
       </template>
@@ -45,17 +31,12 @@
       <!-- Sequence Variant -->
       <template v-slot:item.sequenceVariant="{ item }">
         <v-col>
-          <div
-            class="py-1"
-            v-for="(variant, index) in item.sequenceVariant"
-            :key="index"
-          >
-            <v-chip small>
-              <v-avatar :color="sequenceVariants[variant].color">
-                {{ variant }}
-              </v-avatar>
+          <div class="py-1" v-for="(variants, index) in item.sequenceVariant" :key="index">
+            <v-chip small v-for="(variant, index2) in variants" :key="index2">
+              <v-avatar :color="sequenceVariants[variant].color">{{ variant }}</v-avatar>
               {{ sequenceVariants[variant].name }}
             </v-chip>
+            <v-divider v-if="item.sequenceVariant.length > 1"></v-divider>
           </div>
         </v-col>
       </template>
@@ -64,9 +45,7 @@
       <template v-slot:item.edit="{ item }">
         <v-dialog v-model="editSequenceTypeDialog[item.id]" width="400px">
           <template v-slot:activator="{ on }">
-            <v-icon v-on="on">
-              edit
-            </v-icon>
+            <v-icon v-on="on">edit</v-icon>
           </template>
           <edit-sequence-type
             :existingSequenceType="item"
@@ -79,9 +58,7 @@
       <template v-slot:item.delete="{ item }">
         <v-dialog v-model="deleteSequenceTypeDialog[item.id]" width="400px">
           <template v-slot:activator="{ on }">
-            <v-icon v-on="on">
-              delete
-            </v-icon>
+            <v-icon v-on="on">delete</v-icon>
           </template>
           <delete-dialog
             :action="deleteSequenceType"
