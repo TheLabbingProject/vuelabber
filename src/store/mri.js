@@ -1,7 +1,9 @@
-import { SCANS, SEQUENCE_TYPES } from '@/api/mri/endpoints'
+/* eslint-disable */
+import { SCANS, SEQUENCE_TYPES, SEQUENCE_TYPE_DEFINITIONS } from '@/api/mri/endpoints'
 import { getScanQueryString } from '@/api/mri/query'
 import { arraysEqual, camelToSnakeCase } from '@/utils'
 import session from '@/api/session'
+
 
 const state = {
   sequenceTypes: [],
@@ -57,7 +59,7 @@ const mutations = {
       sequence => sequence.id != removedSequence.id
     )
   },
-  updateSequenceTypeState(state, updatedSequenceType) {
+  updateSequenceTypeState(state, updateSequenceTypeDefinition, updatedSequenceType) {
     let index = state.sequenceTypes.indexOf(
       state.sequenceTypes.find(
         sequence => sequence.id === updatedSequenceType.id
@@ -65,7 +67,8 @@ const mutations = {
     )
     // Mutating an array directly causes reactivity problems
     let updatedSequenceTypes = state.sequenceTypes.slice()
-    updatedSequenceTypes[index] = updatedSequenceType
+    updatedSequenceTypes[index].sequenceVariant.append(updateSequenceTypeDefinition.sequenceVariant)
+    updatedSequenceTypes[index].scanningSequence.append(updateSequenceTypeDefinition.scanningSequence)
     state.sequenceTypes = updatedSequenceTypes
   },
   setScanPreviewLoader(state, script) {
@@ -151,9 +154,15 @@ const actions = {
       .catch(console.error)
   },
   createSequenceType({ commit }, sequenceType) {
+    let sequenceTypeInput = { 'title': sequenceType.title, 'description': sequenceType.description }
     return session
-      .post(SEQUENCE_TYPES, sequenceType)
-      .then(({ data }) => commit('addSequenceType', data))
+      .post(SEQUENCE_TYPES, sequenceTypeInput)
+      .then(({ data }) => {
+        let sequenceTypeDef = { 'scanning_sequence': sequenceType.scanningSequence, 'sequence_variant': sequenceType.sequenceVariant, 'sequence_type': data }
+        session.post(SEQUENCE_TYPE_DEFINITIONS, sequenceTypeDef)
+          .then(({ def_data }) => commit('addSequenceType', data))
+          .catch(console.error)
+      })
       .catch(console.error)
   },
   deleteSequenceType({ commit }, sequenceType) {
@@ -163,12 +172,22 @@ const actions = {
       .catch(console.error)
   },
   updateSequenceType({ commit }, sequenceType) {
-    return session
-      .patch(`${SEQUENCE_TYPES}/${sequenceType.id}/`, sequenceType)
-      .then(({ data }) => {
-        commit('updateSequenceTypeState', data)
-      })
-      .catch(console.error)
+    let sequenceTypeDefinitionArgs = { 'scanning_sequence': sequenceType.scanningSequence.filter(elem => !Array.isArray(elem)), 'sequence_variant': sequenceType.sequenceVariant.filter(elem => !Array.isArray(elem)) }
+    return session.get(SEQUENCE_TYPE_DEFINITIONS, sequenceTypeDefinitionArgs).then(({ data }) => {
+      let index = data.results.indexOf(
+        state.sequenceTypes.find(definition => definition.sequenceVariant == sequenceType.sequenceVariant && definition.scanningSequence == sequenceType.scanningSequence)
+      )
+      if (index == -1) {
+        sequenceTypeDefinitionArgs['title'] = sequenceType.title
+        sequenceTypeDefinitionArgs['sequence_type'] = sequenceType.id
+        return session
+          .post(`${SEQUENCE_TYPE_DEFINITIONS}/`, sequenceTypeDefinitionArgs)
+          .then(({ data }) => {
+            commit('updateSequenceTypeState', data, sequenceType)
+          })
+          .catch(console.error)
+      }
+    }).catch(console.error)
   },
   fetchScanPreviewLoader({ commit }, scanId) {
     return session
