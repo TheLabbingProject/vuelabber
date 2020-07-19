@@ -23,7 +23,10 @@
               <v-avatar :color="scanningSequences[sequence].color">{{ sequence }}</v-avatar>
               {{ scanningSequences[sequence].name }}
             </v-chip>
-            <v-divider v-if="item.scanningSequence.length > 1"></v-divider>
+            <div class="py-1"></div>
+            <v-divider
+              v-if="item.scanningSequence.length > 1 && index < item.scanningSequence.length-1"
+            ></v-divider>
           </div>
         </v-col>
       </template>
@@ -33,10 +36,15 @@
         <v-col>
           <div class="py-1" v-for="(variants, index) in item.sequenceVariant" :key="index">
             <v-chip small v-for="(variant, index2) in variants" :key="index2">
-              <v-avatar :color="sequenceVariants[variant].color">{{ variant }}</v-avatar>
+              <v-avatar
+                :color="sequenceVariants[variant].color"
+              >{{ variant != "NONE" ? variant : "NO" }}</v-avatar>
               {{ sequenceVariants[variant].name }}
             </v-chip>
-            <v-divider v-if="item.sequenceVariant.length > 1"></v-divider>
+            <div class="py-1"></div>
+            <v-divider
+              v-if="item.sequenceVariant.length > 1 && index != item.sequenceVariant.length - 1"
+            ></v-divider>
           </div>
         </v-col>
       </template>

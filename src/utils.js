@@ -14,6 +14,18 @@ export function arraysEqual(a, b) {
   return true
 }
 
+export function arrayAdder(old_arr, new_arr) {
+  let length = old_arr.length;
+  let total = []
+  total.push(old_arr)
+  if (length === 2)
+    total = total.reduce((acc, curr) => {
+      return acc.concat(curr);
+    }, []);
+  total.push(new_arr);
+  return total;
+}
+
 export const camelToSnakeCase = obj => {
   let result = {}
   Object.keys(obj).forEach(

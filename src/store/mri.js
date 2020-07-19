@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { SCANS, SEQUENCE_TYPES, SEQUENCE_TYPE_DEFINITIONS } from '@/api/mri/endpoints'
 import { getScanQueryString } from '@/api/mri/query'
-import { arraysEqual, camelToSnakeCase } from '@/utils'
+import { arraysEqual, camelToSnakeCase, arrayAdder } from '@/utils'
 import session from '@/api/session'
 
 
@@ -67,8 +67,8 @@ const mutations = {
     )
     // Mutating an array directly causes reactivity problems
     let updatedSequenceTypes = state.sequenceTypes.slice()
-    updatedSequenceTypes[index].sequenceVariant.append(updateSequenceTypeDefinition.sequenceVariant)
-    updatedSequenceTypes[index].scanningSequence.append(updateSequenceTypeDefinition.scanningSequence)
+    updatedSequenceTypes[index].sequenceVariant = arrayAdder(updatedSequenceTypes[index].sequenceVariant, updateSequenceTypeDefinition.sequenceVariant)
+    updatedSequenceTypes[index].scanningSequence = arrayAdder(updatedSequenceTypes[index].scanningSequence, updateSequenceTypeDefinition.scanningSequence)
     state.sequenceTypes = updatedSequenceTypes
   },
   setScanPreviewLoader(state, script) {
@@ -179,7 +179,7 @@ const actions = {
       )
       if (index == -1) {
         sequenceTypeDefinitionArgs['title'] = sequenceType.title
-        sequenceTypeDefinitionArgs['sequence_type'] = sequenceType.id
+        sequenceTypeDefinitionArgs['sequence_id'] = sequenceType.id
         return session
           .post(`${SEQUENCE_TYPE_DEFINITIONS}/`, sequenceTypeDefinitionArgs)
           .then(({ data }) => {
