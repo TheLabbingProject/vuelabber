@@ -20,8 +20,8 @@ const getters = {
     return series =>
       state.sequenceTypes.find(
         item =>
-          arraysEqual(item.scanningSequence, series.scanningSequence) &&
-          arraysEqual(item.sequenceVariant, series.sequenceVariant)
+          arraysEqual(item.sequenceTypeDefinitions.scanningSequence, series.scanningSequence) &&
+          arraysEqual(item.sequenceTypeDefinitions.sequenceVariant, series.sequenceVariant)
       )
   }
 }

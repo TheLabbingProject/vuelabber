@@ -23,7 +23,7 @@
         chips
         multiple
         label="Scanning Sequence"
-        v-model="sequenceType.scanningSequence"
+        v-model="sequenceType.sequenceDefinitions.scanningSequence"
         :disabled="Boolean(fromScan)"
         :items="scanningSequenceItems"
         :rules="[rules.requiredMultiple]"
@@ -34,7 +34,7 @@
         chips
         multiple
         label="Sequence Variants"
-        v-model="sequenceType.sequenceVariant"
+        v-model="sequenceType.sequenceDefinitions.sequenceVariant"
         :disabled="Boolean(fromScan)"
         :items="sequenceVariantItems"
         :rules="[rules.requiredMultiple]"
@@ -91,8 +91,10 @@ export default {
         filters: { id: dicomId },
         options: {}
       }).then(({ scanningSequence, sequenceVariant }) => {
-        this.sequenceType.scanningSequence = scanningSequence
-        this.sequenceType.sequenceVariant = sequenceVariant
+        this.sequenceType.sequenceDefinitions.push({
+          scanningSequence: scanningSequence,
+          sequenceVariant: sequenceVariant
+        })
       })
     },
     closeDialog() {
@@ -114,8 +116,7 @@ export default {
 const cleanSequenceType = {
   title: '',
   description: '',
-  scanningSequence: [],
-  sequenceVariant: []
+  sequenceDefinitions: [{ scanningSequence: [], sequenceVariant: [] }]
 }
 </script>
 

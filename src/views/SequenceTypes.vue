@@ -16,35 +16,37 @@
       </template>
 
       <!-- Scanning Sequence -->
-      <template v-slot:item.scanningSequence="{ item }">
+      <template v-slot:item.sequenceDefinitions.scanningSequence="{ item }">
         <v-col>
-          <div class="py-1" v-for="(sequences, index) in item.scanningSequence" :key="index">
-            <v-chip small v-for="(sequence, index2) in sequences" :key="index2">
+          <div class="py-1" v-for="(sequences, index) in item.sequenceDefinitions" :key="index">
+            {{ sequences }}
+            <!-- <v-chip small v-for="(sequence, index2) in sequences.scanningSequence" :key="index2">
               <v-avatar :color="scanningSequences[sequence].color">{{ sequence }}</v-avatar>
               {{ scanningSequences[sequence].name }}
             </v-chip>
-            <div class="py-1"></div>
-            <v-divider
+            <div class="py-1"></div>-->
+            <!-- <v-divider
               v-if="item.scanningSequence.length > 1 && index < item.scanningSequence.length-1"
-            ></v-divider>
+            ></v-divider>-->
           </div>
         </v-col>
       </template>
 
       <!-- Sequence Variant -->
-      <template v-slot:item.sequenceVariant="{ item }">
+      <template v-slot:item.sequenceDefinitions.sequenceVariant="{ item }">
         <v-col>
-          <div class="py-1" v-for="(variants, index) in item.sequenceVariant" :key="index">
-            <v-chip small v-for="(variant, index2) in variants" :key="index2">
+          <div class="py-1" v-for="(variants, index) in item.sequenceDefinitions" :key="index">
+            {{ variants }}
+            <!-- <v-chip small v-for="(variant, index2) in variants.sequenceVariant" :key="index2">
               <v-avatar
                 :color="sequenceVariants[variant].color"
               >{{ variant != "NONE" ? variant : "NO" }}</v-avatar>
               {{ sequenceVariants[variant].name }}
             </v-chip>
-            <div class="py-1"></div>
-            <v-divider
+            <div class="py-1"></div>-->
+            <!-- <v-divider
               v-if="item.sequenceVariant.length > 1 && index != item.sequenceVariant.length - 1"
-            ></v-divider>
+            ></v-divider>-->
           </div>
         </v-col>
       </template>
