@@ -15,40 +15,58 @@
         </v-row>
       </template>
 
-      <!-- Scanning Sequence -->
-      <template v-slot:item.sequenceDefinitions.scanningSequence="{ item }">
+      <!-- Scanning Sequence & Sequence Variant -->
+      <template v-slot:item.sequenceDefinitions="{ item }">
         <v-col>
-          <div class="py-1" v-for="(sequences, index) in item.sequenceDefinitions" :key="index">
-            {{ sequences }}
-            <!-- <v-chip small v-for="(sequence, index2) in sequences.scanningSequence" :key="index2">
-              <v-avatar :color="scanningSequences[sequence].color">{{ sequence }}</v-avatar>
-              {{ scanningSequences[sequence].name }}
-            </v-chip>
-            <div class="py-1"></div>-->
-            <!-- <v-divider
-              v-if="item.scanningSequence.length > 1 && index < item.scanningSequence.length-1"
-            ></v-divider>-->
+          <div class="py-1" v-for="(definition, index) in item.sequenceDefinitions" :key="index">
+            <v-row>
+              <v-col>
+                <v-chip
+                  small
+                  v-for="(sequence, index2) in definition.scanningSequence"
+                  :key="index2"
+                >
+                  <v-avatar :color="scanningSequences[sequence].color">{{ sequence }}</v-avatar>
+                  {{ scanningSequences[sequence].name }}
+                </v-chip>
+              </v-col>
+              <v-col>
+                <v-chip small v-for="(variant, index2) in definition.sequenceVariant" :key="index2">
+                  <v-avatar
+                    :color="sequenceVariants[variant].color"
+                  >{{ variant != "NONE" ? variant : "NO" }}</v-avatar>
+                  {{ sequenceVariants[variant].name }}
+                </v-chip>
+              </v-col>
+              <v-col>
+                <v-dialog v-model="editSequenceTypeDefinitionDialog[definition.id]" width="550px">
+                  <template v-slot:activator="{ on }">
+                    <v-icon v-on="on">edit</v-icon>
+                  </template>
+                  <edit-sequence-type-definition
+                    :existingSequenceTypeDefinition="definition"
+                    @close-dialog="editSequenceTypeDefinitionDialog[definition.id] = false"
+                  />
+                </v-dialog>
+              </v-col>
+            </v-row>
+            <div class="py-1"></div>
+            <v-divider v-if="index < item.sequenceDefinitions.length - 1"></v-divider>
           </div>
         </v-col>
       </template>
 
-      <!-- Sequence Variant -->
-      <template v-slot:item.sequenceDefinitions.sequenceVariant="{ item }">
-        <v-col>
-          <div class="py-1" v-for="(variants, index) in item.sequenceDefinitions" :key="index">
-            {{ variants }}
-            <!-- <v-chip small v-for="(variant, index2) in variants.sequenceVariant" :key="index2">
-              <v-avatar
-                :color="sequenceVariants[variant].color"
-              >{{ variant != "NONE" ? variant : "NO" }}</v-avatar>
-              {{ sequenceVariants[variant].name }}
-            </v-chip>
-            <div class="py-1"></div>-->
-            <!-- <v-divider
-              v-if="item.sequenceVariant.length > 1 && index != item.sequenceVariant.length - 1"
-            ></v-divider>-->
-          </div>
-        </v-col>
+      <!-- Add Definition -->
+      <template v-slot:item.add="{ item }">
+        <v-dialog v-model="createSequenceTypeDefinitionDialog" width="400px">
+          <template v-slot:activator="{ on }">
+            <v-icon v-on="on">mdi-plus</v-icon>
+          </template>
+          <edit-sequence-type-definition
+            :sequenceTypeId="item.id"
+            @close-dialog="createSequenceTypeDefinitionDialog = false"
+          />
+        </v-dialog>
       </template>
 
       <!-- Edit -->
@@ -85,11 +103,12 @@
 import { mapActions, mapState } from 'vuex'
 import { scanningSequences, sequenceVariants } from '@/components/mri/utils'
 import EditSequenceType from '@/components/mri/edit-sequence-type.vue'
+import EditSequenceTypeDefinition from '@/components/mri/edit-sequence-type-definition.vue'
 import DeleteDialog from '@/components/deleteDialog.vue'
 
 export default {
   name: 'SequenceTypes',
-  components: { DeleteDialog, EditSequenceType },
+  components: { DeleteDialog, EditSequenceType, EditSequenceTypeDefinition },
   created() {
     this.fetchSequenceTypes()
   },
@@ -97,17 +116,29 @@ export default {
     loading: false,
     headers: [
       { text: 'Title', value: 'title', align: 'left' },
-      { text: 'Scanning Sequence', value: 'scanningSequence', align: 'left' },
-      { text: 'Variants', value: 'sequenceVariant', align: 'left' },
+      {
+        text: 'Scanning Sequence & Variants',
+        value: 'sequenceDefinitions',
+        align: 'center'
+      },
       { text: 'Description', value: 'description', align: 'left' },
+      {
+        text: 'Add Definition',
+        value: 'add',
+        align: 'center'
+      },
       { text: 'Edit', value: 'edit', align: 'left' },
       { text: 'Delete', value: 'delete', align: 'left' }
     ],
     createSequenceTypeDialog: false,
+    createSequenceTypeDefinitionDialog: false,
     deleteSequenceTypeDialog: {},
+    deleteSequenceTypeDefinitionDialog: {},
     editSequenceTypeDialog: {},
+    editSequenceTypeDefinitionDialog: {},
     scanningSequences,
-    sequenceVariants
+    sequenceVariants,
+    sequenceTypeDefinition: {}
   }),
   computed: {
     ...mapState('mri', ['sequenceTypes'])
