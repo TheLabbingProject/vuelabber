@@ -104,7 +104,9 @@ export default {
 
 const cleanSequenceType = {
   title: '',
-  description: ''
+  description: '',
+  scanningSequence: [],
+  sequenceVariant: []
 }
 </script>
 

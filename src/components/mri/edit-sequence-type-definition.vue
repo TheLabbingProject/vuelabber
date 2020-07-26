@@ -13,6 +13,7 @@
       </div>
     </v-card-title>
     <v-card-text>
+      <span>{{ sequenceType }}</span>
       <!-- Scanning Sequence -->
       <v-select
         chips
@@ -56,7 +57,7 @@ import { createSelectItems } from '@/components/utils'
 export default {
   name: 'EditSequenceTypeDefinition',
   props: {
-    sequenceTypeId: Number,
+    sequenceType: Object,
     existingSequenceTypeDefinition: Object,
     fromScan: Object
   },
@@ -103,7 +104,7 @@ export default {
       )
     },
     createSequenceTypeDefinitionCaller() {
-      this.sequenceTypeDefinition['sequence_id'] = this.sequenceTypeId
+      this.sequenceTypeDefinition['sequenceId'] = this.sequenceType.id
       delete this.sequenceTypeDefinition['id']
       this.createSequenceTypeDefinition(this.sequenceTypeDefinition).then(
         this.closeDialog()

@@ -51,7 +51,7 @@ const mutations = {
     newScans[index] = updatedScan
     state.scans = newScans
   },
-  createSequenceType(state, sequenceType) {
+  createSequenceType(state, sequenceType, sequenceTypeDefinition) {
     state.sequenceTypes.push(sequenceType)
   },
   removeSequenceTypeFromState(state, removedSequence) {
@@ -70,14 +70,14 @@ const mutations = {
     updatedSequenceTypes[index] = updatedSequenceType
     state.sequenceTypes = updatedSequenceTypes
   },
-  createSequenceTypeDefinition(state, sequenceTypeDefinition) {
+  createSequenceTypeDefinitionState(state, sequenceTypeDefinition) {
     let index = state.sequenceTypes.indexOf(
       state.sequenceTypes.find(
-        definition => definition.id === sequenceTypeDefinition.id
+        definition => definition.id === sequenceTypeDefinition['sequenceId']
       )
     )
-    delete sequenceTypeDefinition['sequence_id']
-    state.sequenceTypes[index].sequenceTypeDefinitions.push(sequenceTypeDefinition)
+    delete sequenceTypeDefinition['sequenceId']
+    state.sequenceTypes[index].sequenceDefinitions.push(sequenceTypeDefinition)
   },
   updateSequenceTypeDefinitionState(state, updatedSequenceTypeDefinition) {
     let index = state.sequenceTypes.indexOf(
@@ -85,15 +85,25 @@ const mutations = {
         seq => seq.id === updatedSequenceTypeDefinition.sequenceId
       )
     )
-    let updatedSequenceTypeDefinitions = state.sequenceTypes[index].sequenceTypeDefinitions.slice()
+    let updatedSequenceTypeDefinitions = state.sequenceTypes[index].sequenceDefinitions.slice()
     let definition_index = updatedSequenceTypeDefinitions.indexOf(
       updatedSequenceTypeDefinitions.find(
         definition => definition.id === updatedSequenceTypeDefinition
       )
     )
-    delete updatedSequenceTypeDefinition['sequence_id']
+    delete updatedSequenceTypeDefinition['sequenceId']
     updatedSequenceTypeDefinitions[definition_index] = updatedSequenceTypeDefinition
-    state.sequenceTypes[index].sequenceTypeDefinitions = updatedSequenceTypeDefinitions
+    state.sequenceTypes[index].sequenceDefinitions = updatedSequenceTypeDefinitions
+  },
+  removeSequenceTypeDefinitionFromState(state, removedDefinition) {
+    let index = state.sequenceTypes.indexOf(
+      state.sequenceTypes.find(
+        seq => seq.id === updatedSequenceTypeDefinition.sequenceId
+      )
+    )
+    state.sequenceTypes[index].sequenceDefinitions = state.sequenceTypes[index].sequenceDefinitions.filter(
+      sequence => sequence.id != removedDefinition.id
+    )
   },
   setScanPreviewLoader(state, script) {
     state.scanPreviewLoader = script
@@ -177,17 +187,21 @@ const actions = {
       })
       .catch(console.error)
   },
-  createSequenceType({ commit }, sequenceType) {
+  createSequenceType({ commit, dispatch }, sequenceType) {
     let sequenceTypeInput = {
       'title': sequenceType.title,
       'description': sequenceType.description,
-      'scanning_sequence': sequenceType.scanningSequence,
-      'sequence_variant': sequenceType.sequenceVariant
     }
     return session
-      .post(SEQUENCE_TYPES, sequenceTypeInput)
+      .post(`${SEQUENCE_TYPES}/`, sequenceTypeInput)
       .then(({ data }) => {
-        commit('addSequenceType', data)
+        let sequenceTypeDefinitionArgs = {
+          'scanningSequence': sequenceType.scanningSequence,
+          'sequenceVariant': sequenceType.sequenceVariant,
+          'sequenceId': data.id
+        }
+        dispatch('createSequenceTypeDefinition', sequenceTypeDefinitionArgs)
+        commit('createSequenceType', data, sequenceTypeDefinitionArgs)
       })
       .catch(console.error)
   },
@@ -212,12 +226,26 @@ const actions = {
       'sequence_variant': sequenceTypeDefinition.sequenceVariant,
       'scanning_sequence': sequenceTypeDefinition.scanningSequence
     }
+    console.log(sequenceTypeDefinitionArgs)
     return session.post(`${SEQUENCE_TYPE_DEFINITIONS}/`, sequenceTypeDefinitionArgs)
-      .then(({ data }) => { commit('updateSequenceTypeDefinitionState', data, sequenceTypeDefinition) })
+      .then(({ data }) => { commit('createSequenceTypeDefinitionState', sequenceTypeDefinition) })
       .catch(console.error)
   },
   updateSequenceTypeDefinition({ commit }, sequenceTypeDefinition) {
-
+    let sequenceTypeDefinitionArgs = {
+      'sequence_variant': sequenceTypeDefinition.sequenceVariant,
+      'scanning_sequence': sequenceTypeDefinition.scanningSequence
+    }
+    return session
+      .patch(`${SEQUENCE_TYPE_DEFINITIONS}/${sequenceTypeDefinition.id}/`, sequenceTypeDefinitionArgs)
+      .then(({ data }) => commit('updateSequenceTypeDefinitionState', sequenceTypeDefinition))
+      .catch(console.error)
+  },
+  deleteSequenceTypeDefinition({ commit }, sequenceTypeDefinition) {
+    return session
+      .delete(`${SEQUENCE_TYPE_DEFINITIONS}/${sequenceTypeDefinition.id}/`)
+      .then(() => commit('removeSequenceTypeDefinitionFromState'), sequenceTypeDefinition)
+      .catch(console.error)
   },
   fetchScanPreviewLoader({ commit }, scanId) {
     return session

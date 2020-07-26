@@ -33,6 +33,7 @@ export default {
       } else {
         this.action(this.input)
       }
+      this.closeDialog()
     },
     closeDialog: function() {
       this.$emit('close-dialog')

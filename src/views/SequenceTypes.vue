@@ -30,6 +30,7 @@
                   {{ scanningSequences[sequence].name }}
                 </v-chip>
               </v-col>
+              <v-divider vertical></v-divider>
               <v-col>
                 <v-chip small v-for="(variant, index2) in definition.sequenceVariant" :key="index2">
                   <v-avatar
@@ -38,6 +39,7 @@
                   {{ sequenceVariants[variant].name }}
                 </v-chip>
               </v-col>
+              <!-- Edit Definition -->
               <v-col>
                 <v-dialog v-model="editSequenceTypeDefinitionDialog[definition.id]" width="550px">
                   <template v-slot:activator="{ on }">
@@ -46,6 +48,19 @@
                   <edit-sequence-type-definition
                     :existingSequenceTypeDefinition="definition"
                     @close-dialog="editSequenceTypeDefinitionDialog[definition.id] = false"
+                  />
+                </v-dialog>
+              </v-col>
+              <!-- Delete Definition -->
+              <v-col>
+                <v-dialog v-model="deleteSequenceTypeDefinitionDialog[definition.id]" width="550px">
+                  <template v-slot:activator="{ on }">
+                    <v-icon v-on="on">delete</v-icon>
+                  </template>
+                  <delete-dialog
+                    :action="deleteSequenceTypeDefinition"
+                    :input="definition"
+                    @close-dialog="deleteSequenceTypeDefinitionDialog[definition.id] = false"
                   />
                 </v-dialog>
               </v-col>
@@ -58,13 +73,14 @@
 
       <!-- Add Definition -->
       <template v-slot:item.add="{ item }">
-        <v-dialog v-model="createSequenceTypeDefinitionDialog" width="400px">
+        <v-dialog v-model="createSequenceTypeDefinitionDialog[item.id]" width="400px">
           <template v-slot:activator="{ on }">
             <v-icon v-on="on">mdi-plus</v-icon>
           </template>
           <edit-sequence-type-definition
-            :sequenceTypeId="item.id"
-            @close-dialog="createSequenceTypeDefinitionDialog = false"
+            :sequenceType="item"
+            @close-dialog="createSequenceTypeDefinitionDialog[item.id] = false"
+            :key="createSequenceTypeDefinitionDialog[item.id]"
           />
         </v-dialog>
       </template>
@@ -121,7 +137,12 @@ export default {
         value: 'sequenceDefinitions',
         align: 'center'
       },
-      { text: 'Description', value: 'description', align: 'left' },
+      {
+        text: 'Description',
+        value: 'description',
+        align: 'left',
+        width: '400px'
+      },
       {
         text: 'Add Definition',
         value: 'add',
@@ -131,7 +152,7 @@ export default {
       { text: 'Delete', value: 'delete', align: 'left' }
     ],
     createSequenceTypeDialog: false,
-    createSequenceTypeDefinitionDialog: false,
+    createSequenceTypeDefinitionDialog: {},
     deleteSequenceTypeDialog: {},
     deleteSequenceTypeDefinitionDialog: {},
     editSequenceTypeDialog: {},
@@ -144,7 +165,11 @@ export default {
     ...mapState('mri', ['sequenceTypes'])
   },
   methods: {
-    ...mapActions('mri', ['fetchSequenceTypes', 'deleteSequenceType'])
+    ...mapActions('mri', [
+      'fetchSequenceTypes',
+      'deleteSequenceType',
+      'deleteSequenceTypeDefinition'
+    ])
   }
 }
 </script>
