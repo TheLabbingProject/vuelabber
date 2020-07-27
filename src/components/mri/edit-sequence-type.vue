@@ -18,27 +18,29 @@
       <!-- Description -->
       <v-textarea label="Description" v-model="sequenceType.description" />
 
-      <!-- Scanning Sequence -->
-      <v-select
-        chips
-        multiple
-        label="Scanning Sequence"
-        v-model="sequenceType.scanningSequence"
-        :disabled="Boolean(fromScan)"
-        :items="scanningSequenceItems"
-        :rules="[rules.requiredMultiple]"
-      />
+      <div v-if="!existingSequenceType">
+        <!-- Scanning Sequence -->
+        <v-select
+          chips
+          multiple
+          label="Scanning Sequence"
+          v-model="sequenceType.scanningSequence"
+          :disabled="Boolean(fromScan)"
+          :items="scanningSequenceItems"
+          :rules="[rules.requiredMultiple]"
+        />
 
-      <!-- Sequence Variants -->
-      <v-select
-        chips
-        multiple
-        label="Sequence Variants"
-        v-model="sequenceType.sequenceVariant"
-        :disabled="Boolean(fromScan)"
-        :items="sequenceVariantItems"
-        :rules="[rules.requiredMultiple]"
-      />
+        <!-- Sequence Variants -->
+        <v-select
+          chips
+          multiple
+          label="Sequence Variants"
+          v-model="sequenceType.sequenceVariant"
+          :disabled="Boolean(fromScan)"
+          :items="sequenceVariantItems"
+          :rules="[rules.requiredMultiple]"
+        />
+      </div>
     </v-card-text>
     <v-card-actions>
       <v-spacer />
@@ -84,17 +86,6 @@ export default {
     ...mapState('dicom', ['seriesList'])
   },
   methods: {
-    setSequenceDefinitionFromDicomUrl(dicomUrl) {
-      let splitUrl = dicomUrl.split('/')
-      let dicomId = Number(splitUrl[splitUrl.length - 2])
-      this.fetchSeries({
-        filters: { id: dicomId },
-        options: {}
-      }).then(({ scanningSequence, sequenceVariant }) => {
-        this.sequenceType.scanningSequence = scanningSequence
-        this.sequenceType.sequenceVariant = sequenceVariant
-      })
-    },
     closeDialog() {
       this.$emit('close-dialog')
     },

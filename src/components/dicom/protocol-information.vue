@@ -14,29 +14,34 @@
         </div>
         <v-row>
           <v-col class="text-center">
-            <v-subheader class="justify-center">Scanning Sequence</v-subheader>
-            <div
-              class="py-1"
-              v-for="(sequence, index) in sequenceType.scanningSequence"
-              :key="index"
-            >
-              <v-chip small>
-                <v-avatar :color="getScanningSequenceColor(sequence)">{{ sequence }}</v-avatar>
-                {{ getScanningSequenceName(sequence) }}
-              </v-chip>
-            </div>
-          </v-col>
-          <v-col class="text-center">
-            <v-subheader class="justify-center">Sequence Variant</v-subheader>
-            <div class="py-1" v-for="(variant, index) in sequenceType.sequenceVariant" :key="index">
-              <v-chip small>
-                <v-avatar :color="getSequenceVariantColor(variant)">
-                  {{
-                  variant
-                  }}
-                </v-avatar>
-                {{ getSequenceVariantName(variant) }}
-              </v-chip>
+            <div v-for="(definition, index) in sequenceType.sequenceDefinitions" :key="index">
+              <v-subheader class="justify-left">Scanning Sequence</v-subheader>
+              <div
+                class="py-1"
+                v-for="(sequence, index2) in definition.scanningSequence"
+                :key="index2"
+              >
+                <v-chip small>
+                  <v-avatar :color="getScanningSequenceColor(sequence)">{{ sequence }}</v-avatar>
+                  {{ getScanningSequenceName(sequence) }}
+                </v-chip>
+              </div>
+              <v-subheader class="justify-right">Sequence Variant</v-subheader>
+              <div
+                class="py-1"
+                v-for="(variant, index2) in definition.sequenceVariant"
+                :key="index2"
+              >
+                <v-chip small>
+                  <v-avatar :color="getSequenceVariantColor(variant)">
+                    {{
+                    variant === "NONE" ? "NO" : variant
+                    }}
+                  </v-avatar>
+                  {{ getSequenceVariantName(variant) }}
+                </v-chip>
+              </div>
+              <v-divider v-if="index < sequenceType.sequenceDefinitions.length - 1"></v-divider>
             </div>
           </v-col>
           <v-col class="text-center">
