@@ -140,11 +140,11 @@
     </v-app-bar>
 
     <!-- Content -->
-    <v-main>
+    <v-content>
       <v-container fluid>
         <router-view />
       </v-container>
-    </v-main>
+    </v-content>
 
     <!-- Footer -->
     <v-footer color="indigo" app>

@@ -13,7 +13,6 @@
       </div>
     </v-card-title>
     <v-card-text>
-      <span>{{ sequenceType }}</span>
       <!-- Scanning Sequence -->
       <v-select
         chips

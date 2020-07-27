@@ -47,7 +47,7 @@
                   </template>
                   <edit-sequence-type-definition
                     :existingSequenceTypeDefinition="definition"
-                    @close-dialog="editSequenceTypeDefinitionDialog[definition.id] = false"
+                    @close-dialog="updatingSequenceTypes(editSequenceTypeDefinitionDialog, definition)"
                   />
                 </v-dialog>
               </v-col>
@@ -60,7 +60,7 @@
                   <delete-dialog
                     :action="deleteSequenceTypeDefinition"
                     :input="definition"
-                    @close-dialog="deleteSequenceTypeDefinitionDialog[definition.id] = false"
+                    @close-dialog="updatingSequenceTypes(deleteSequenceTypeDefinitionDialog, definition)"
                   />
                 </v-dialog>
               </v-col>
@@ -79,7 +79,7 @@
           </template>
           <edit-sequence-type-definition
             :sequenceType="item"
-            @close-dialog="createSequenceTypeDefinitionDialog[item.id] = false"
+            @close-dialog="updatingSequenceTypes(createSequenceTypeDefinitionDialog, item)"
             :key="createSequenceTypeDefinitionDialog[item.id]"
           />
         </v-dialog>
@@ -93,7 +93,7 @@
           </template>
           <edit-sequence-type
             :existingSequenceType="item"
-            @close-dialog="editSequenceTypeDialog[item.id] = false"
+            @close-dialog="updatingSequenceTypes(editSequenceTypeDialog, item)"
           />
         </v-dialog>
       </template>
@@ -107,7 +107,7 @@
           <delete-dialog
             :action="deleteSequenceType"
             :input="item"
-            @close-dialog="deleteSequenceTypeDialog[item.id] = false"
+            @close-dialog="updatingSequenceTypes(deleteSequenceTypeDialog, item)"
           />
         </v-dialog>
       </template>
@@ -133,7 +133,7 @@ export default {
     headers: [
       { text: 'Title', value: 'title', align: 'left' },
       {
-        text: 'Scanning Sequence & Variants',
+        text: 'Scanning Sequence | Variants',
         value: 'sequenceDefinitions',
         align: 'center'
       },
@@ -165,6 +165,10 @@ export default {
     ...mapState('mri', ['sequenceTypes'])
   },
   methods: {
+    updatingSequenceTypes(indicator, item) {
+      indicator[item.id] = false
+      this.fetchSequenceTypes()
+    },
     ...mapActions('mri', [
       'fetchSequenceTypes',
       'deleteSequenceType',
