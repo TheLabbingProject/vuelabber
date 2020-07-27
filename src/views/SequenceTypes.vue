@@ -80,7 +80,6 @@
           <edit-sequence-type-definition
             :sequenceType="item"
             @close-dialog="updatingSequenceTypes(createSequenceTypeDefinitionDialog, item)"
-            :key="createSequenceTypeDefinitionDialog[item.id]"
           />
         </v-dialog>
       </template>
