@@ -1,13 +1,14 @@
 /* eslint-disable */
 import { SCANS, SEQUENCE_TYPES, SEQUENCE_TYPE_DEFINITIONS } from '@/api/mri/endpoints'
 import { getScanQueryString } from '@/api/mri/query'
-import { arraysEqual, camelToSnakeCase, arrayAdder } from '@/utils'
+import { arraysEqual, camelToSnakeCase } from '@/utils'
 import session from '@/api/session'
 
 
 const state = {
   sequenceTypes: [],
   scans: [],
+  sessions: [],
   totalScanCount: 0,
   scanPreviewLoader: ''
 }

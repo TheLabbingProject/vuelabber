@@ -4,14 +4,14 @@
       <v-tab>MRI</v-tab>
       <v-tab-item>
         <br />
-        <scan-table :subject="subject" />
+        <session-table :subject="subject" />
       </v-tab-item>
     </v-tabs>
   </v-col>
 </template>
 
 <script>
-import ScanTable from '@/components/mri/scan-table.vue'
+import SessionTable from '@/components/mri/session-table.vue'
 
 export default {
   name: 'SubjectData',
@@ -19,7 +19,7 @@ export default {
     subject: Object
   },
   components: {
-    ScanTable
+    SessionTable
   },
   data: () => ({
     active: 0
