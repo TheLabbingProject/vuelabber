@@ -10,28 +10,21 @@
       :items="sessions"
       :loading="loading"
       :options.sync="options"
-      :server-items-length="subjectCount"
+      :server-items-length="sessionCount"
       :footer-props="{
         itemsPerPageOptions
       }"
     >
       <template v-slot:top>
         <session-table-controls
+          :subject="subject"
           :options="options"
           @fetch-sessions-start="loading = true"
           @fetch-sessions-end="loading = false"
         />
       </template>
-      <template v-slot:item.date="{ item }">
-        {{
-        item.date | formatDate
-        }}
-      </template>
-      <template v-slot:item.time="{ item }">
-        {{
-        item.time | formatTime
-        }}
-      </template>
+      <template v-slot:item.date="{ item }">{{formatDate(item.time)}}</template>
+      <template v-slot:item.time="{ item }">{{formatTime(item.time)}}</template>
 
       <template v-slot:expanded-item="{ item, headers }">
         <td :colspan="headers.length" class="subject-data pa-0 ma-0">
@@ -46,19 +39,19 @@
 <script>
 import ScanTable from '@/components/mri/scan-table.vue'
 import SessionTableControls from '@/components/mri/session-table-controls.vue'
-import { mapActions, mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 
 export default {
   name: 'SessionTable',
+  props: {
+    subject: Object
+  },
   components: {
     ScanTable,
     SessionTableControls
   },
   created() {
-    // Add edit column for staff users
-    this.fetchUsers({ filters: {}, pagination: {} }).then(() =>
-      this.appendEditColumn()
-    )
+    this.fetchSessions({ filters: { subject: this.subject }, options: {} })
   },
   data: () => ({
     headers: [
@@ -89,9 +82,10 @@ export default {
     },
     formatTime(sessionTime) {
       if (!sessionTime) return null
-      return sessionTime.slice(11, 23)
+      let time = sessionTime.slice(11, 23)
+      return time
     },
-    ...mapActions('accounts', ['fetchUsers'])
+    ...mapActions('mri', ['fetchSessions'])
   }
 }
 </script>

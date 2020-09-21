@@ -1,6 +1,6 @@
 <template>
   <v-row class="px-4 justify-space-between align-center">
-    <!-- Description -->
+    <!-- ID -->
     <v-col :cols="2">
       <v-text-field v-model="filters.id" label="ID" />
     </v-col>
@@ -48,14 +48,14 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
-import { createSelectItems } from '@/components/utils'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'SessionTableControls',
   props: { options: Object, subject: Object },
   created() {
-    this.$set(this.filters, 'subject', this.subject.id)
+    let subject_id = this.subject.id
+    this.$set(this.filters, 'subject', subject_id)
   },
   data: () => ({
     filters: {
@@ -68,14 +68,7 @@ export default {
     afterDateMenu: false,
     beforeDateMenu: false
   }),
-  computed: {
-    sequenceTypeItems: function() {
-      let items = createSelectItems(this.sequenceTypes, 'title', 'id')
-      items.push({ text: 'Undefined', value: -1 })
-      return items
-    },
-    ...mapState('mri', ['sequenceTypes'])
-  },
+  computed: {},
   methods: {
     update() {
       this.$emit('fetch-sessions-start')
@@ -85,7 +78,7 @@ export default {
     ...mapActions('mri', ['fetchSessions'])
   },
   watch: {
-    subject: function(selectedSubject) {
+    subject(selectedSubject) {
       this.$set(this.filters, 'subject', selectedSubject.id)
     },
     filters: {

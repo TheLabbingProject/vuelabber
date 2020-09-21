@@ -15,8 +15,16 @@ const getScanQueryString = ({ filters, options }) => {
     }`
 }
 
-const getSessionQueryString = () => {
-  return ''
+const getSessionQueryString = ({ filters, options }) => {
+  return `?subject_id=${filters.subject || ''}&created_after=&created_before=&time_after=${filters.afterDate ||
+    ''}&time_before=${filters.beforeDate ||
+    ''}&page_size=${options.itemsPerPage
+      ? options.itemsPerPage != -1
+        ? options.itemsPerPage
+        : 10000
+      : 100
+    }&page=${options.page || 1}&ordering=${options.descending ? '-' + options.sortBy : options.sortBy
+    }`
 }
 
 export { getScanQueryString, getSessionQueryString }

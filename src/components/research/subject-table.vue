@@ -111,6 +111,7 @@ export default {
     loading: false,
     editSubjectDialog: {},
     expanded: [],
+    expand: true,
     sexOptions,
     genderOptions,
     dominantHandOptions,
