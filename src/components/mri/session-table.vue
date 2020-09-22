@@ -28,7 +28,7 @@
 
       <template v-slot:expanded-item="{ item, headers }">
         <td :colspan="headers.length" class="subject-data pa-0 ma-0">
-          <scan-table :subject="item" />
+          <scan-table :subject="subject" :session="item" />
           <hr />
         </td>
       </template>

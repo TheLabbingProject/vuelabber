@@ -67,9 +67,10 @@ import { createSelectItems } from '@/components/utils'
 
 export default {
   name: 'ScanTableControls',
-  props: { options: Object, subject: Object },
+  props: { options: Object, subject: Object, session: Object },
   created() {
     this.$set(this.filters, 'subject', this.subject.id)
+    this.$set(this.filters, 'session', this.session.id)
   },
   data: () => ({
     filters: {
@@ -79,7 +80,7 @@ export default {
       beforeDate: '',
       sequenceType: '',
       dicomId: '',
-      subject: ''
+      session: ''
     },
     afterDateMenu: false,
     beforeDateMenu: false
@@ -103,6 +104,9 @@ export default {
   watch: {
     subject: function(selectedSubject) {
       this.$set(this.filters, 'subject', selectedSubject.id)
+    },
+    session: function(selectedSession) {
+      this.$set(this.filters, 'session', selectedSession.id)
     },
     filters: {
       handler() {

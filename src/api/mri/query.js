@@ -5,7 +5,7 @@ const getScanQueryString = ({ filters, options }) => {
     ''}&created_after=&created_before=&scan_time_after=${filters.afterDate ||
     ''}&scan_time_before=${filters.beforeDate ||
     ''}&echo_time=&inversion_time=&repetition_time=&institution_name=&is_updated_from_dicom=&dicom__id=${filters.dicomId ||
-    ''}&sequence_type=${filters.sequenceType || ''}&session_in=${filters.subject.mri_session_set ||
+    ''}&sequence_type=${filters.sequenceType || ''}&session=${filters.session ||
     ''}&page_size=${options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage
@@ -16,7 +16,7 @@ const getScanQueryString = ({ filters, options }) => {
 }
 
 const getSessionQueryString = ({ filters, options }) => {
-  return `?subject_id=${filters.subject || ''}&created_after=&created_before=&time_after=${filters.afterDate ||
+  return `?subject=${filters.subject || ''}&created_after=&created_before=&time_after=${filters.afterDate ||
     ''}&time_before=${filters.beforeDate ||
     ''}&page_size=${options.itemsPerPage
       ? options.itemsPerPage != -1

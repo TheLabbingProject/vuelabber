@@ -61,6 +61,7 @@
           ref="tableController"
           :options="options"
           :subject="subject"
+          :session="session"
           @fetch-scans-start="loading = true"
           @fetch-scans-end="loading = false"
         />
@@ -130,7 +131,8 @@ import VueScript2 from 'vue-script2'
 export default {
   name: 'ScanTable',
   props: {
-    subject: Object
+    subject: Object,
+    session: Object
   },
   components: {
     EditSequenceType,

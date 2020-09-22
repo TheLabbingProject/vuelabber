@@ -54,8 +54,7 @@ export default {
   name: 'SessionTableControls',
   props: { options: Object, subject: Object },
   created() {
-    let subject_id = this.subject.id
-    this.$set(this.filters, 'subject', subject_id)
+    this.$set(this.filters, 'subject', this.subject.id)
   },
   data: () => ({
     filters: {
