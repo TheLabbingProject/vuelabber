@@ -50,9 +50,6 @@ export default {
     ScanTable,
     SessionTableControls
   },
-  created() {
-    this.fetchSessions({ filters: { subject: this.subject }, options: {} })
-  },
   data: () => ({
     headers: [
       { text: 'ID', value: 'id', align: 'left' },
