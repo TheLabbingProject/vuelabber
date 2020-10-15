@@ -20,7 +20,10 @@
                 v-on="on"
               ></v-text-field>
             </template>
-            <v-date-picker v-model="filters.afterDate" @input="afterDateMenu = false"></v-date-picker>
+            <v-date-picker
+              v-model="filters.afterDate"
+              @input="afterDateMenu = false"
+            ></v-date-picker>
           </v-menu>
         </v-col>
         <!-- Before Date -->
@@ -35,7 +38,10 @@
                 v-on="on"
               ></v-text-field>
             </template>
-            <v-date-picker v-model="filters.beforeDate" @input="beforeDateMenu = false"></v-date-picker>
+            <v-date-picker
+              v-model="filters.beforeDate"
+              @input="beforeDateMenu = false"
+            ></v-date-picker>
           </v-menu>
         </v-col>
       </v-row>
@@ -54,7 +60,7 @@ export default {
   name: 'SessionTableControls',
   props: { options: Object, subject: Object },
   created() {
-    this.$set(this.filters, 'subject', this.subject.id)
+    this.$set(this.filters, 'subject', [this.subject.id])
   },
   data: () => ({
     filters: {

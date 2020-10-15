@@ -16,7 +16,7 @@ const getScanQueryString = ({ filters, options }) => {
 }
 
 const getSessionQueryString = ({ filters, options }) => {
-  return `?subject=${filters.subject || ''}&created_after=&created_before=&time_after=${filters.afterDate ||
+  return `?subject_id_in=${filters.subject || ''}&created_after=&created_before=&time_after=${filters.afterDate ||
     ''}&time_before=${filters.beforeDate ||
     ''}&page_size=${options.itemsPerPage
       ? options.itemsPerPage != -1
