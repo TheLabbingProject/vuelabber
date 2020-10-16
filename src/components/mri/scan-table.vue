@@ -12,7 +12,10 @@
           <v-expansion-panel-content>
             <v-card>
               <v-card-text>
-                <scan-upload :subject="subject" @file-upload-complete="update()" />
+                <scan-upload
+                  :subject="subject"
+                  @file-upload-complete="update()"
+                />
               </v-card-text>
             </v-card>
           </v-expansion-panel-content>
@@ -61,20 +64,27 @@
           ref="tableController"
           :options="options"
           :subject="subject"
+          :session="session"
           @fetch-scans-start="loading = true"
           @fetch-scans-end="loading = false"
         />
       </template>
 
-      <template v-slot:item.date="{ item }">{{formatDate(item.time)}}</template>
+      <template v-slot:item.date="{ item }">{{
+        formatDate(item.time)
+      }}</template>
 
-      <template v-slot:item.time="{ item }">{{formatTime(item.time)}}</template>
+      <template v-slot:item.time="{ item }">{{
+        formatTime(item.time)
+      }}</template>
 
       <template v-slot:item.sequenceType="{ item }">
         <div v-if="item.sequenceType" class="py-1">
           <v-dialog v-model="sequenceTypeDialog[item.id]" width="800px">
             <template v-slot:activator="{ on }">
-              <v-btn small class="info" v-on="on">{{item.sequenceType.title}}</v-btn>
+              <v-btn small class="info" v-on="on">{{
+                item.sequenceType.title
+              }}</v-btn>
             </template>
             <protocol-information :scan="item" />
           </v-dialog>
@@ -94,9 +104,9 @@
       </template>
 
       <!-- Spatial Resolution -->
-      <template
-        v-slot:item.spatialResolution="{ item }"
-      >{{formatSpatialResolution(item.spatialResolution)}}</template>
+      <template v-slot:item.spatialResolution="{ item }">{{
+        formatSpatialResolution(item.spatialResolution)
+      }}</template>
 
       <!-- Study Groups -->
       <template v-slot:item.studyGroups="{ item }">
@@ -105,13 +115,16 @@
             small
             close
             @click:close="disassociateFromGroup(item, groupUrl)"
-          >{{ stringifyGroup(getGroupByUrl(groupUrl)) }}</v-chip>
+            >{{ stringifyGroup(getGroupByUrl(groupUrl)) }}</v-chip
+          >
         </div>
       </template>
 
       <!-- Preview -->
       <template v-slot:item.preview="{ item }">
-        <v-btn small class="warning" @click="loadPreview(item.id)">Preview</v-btn>
+        <v-btn small class="warning" @click="loadPreview(item.id)"
+          >Preview</v-btn
+        >
       </template>
     </v-data-table>
   </div>
@@ -130,7 +143,8 @@ import VueScript2 from 'vue-script2'
 export default {
   name: 'ScanTable',
   props: {
-    subject: Object
+    subject: Object,
+    session: Object
   },
   components: {
     EditSequenceType,

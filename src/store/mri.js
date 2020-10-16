@@ -1,14 +1,16 @@
 /* eslint-disable */
-import { SCANS, SEQUENCE_TYPES, SEQUENCE_TYPE_DEFINITIONS } from '@/api/mri/endpoints'
-import { getScanQueryString } from '@/api/mri/query'
-import { arraysEqual, camelToSnakeCase, arrayAdder } from '@/utils'
+import { SCANS, SEQUENCE_TYPES, SEQUENCE_TYPE_DEFINITIONS, SESSIONS } from '@/api/mri/endpoints'
+import { getScanQueryString, getSessionQueryString } from '@/api/mri/query'
+import { arraysEqual, camelToSnakeCase } from '@/utils'
 import session from '@/api/session'
 
 
 const state = {
   sequenceTypes: [],
   scans: [],
+  sessions: [],
   totalScanCount: 0,
+  sessionCount: 0,
   scanPreviewLoader: ''
 }
 
@@ -35,6 +37,12 @@ const mutations = {
   },
   setTotalScanCount(state, count) {
     state.totalScanCount = count
+  },
+  setSessions(state, sessions) {
+    state.sessions = sessions
+  },
+  setSessionCount(state, count) {
+    state.sessionCount = count
   },
   addScan(state, scan) {
     state.scans.push(scan)
@@ -121,17 +129,23 @@ const actions = {
       .then(({ data }) => {
         commit('setScans', data.results)
         commit('setTotalScanCount', data.count)
-        // return data.results
       })
-      // .then(scans => {
-      //   commit('setScans', scans)
-      // })
       .catch(console.error)
   },
   fetchSequenceTypes({ commit }) {
     return session
       .get(SEQUENCE_TYPES)
       .then(({ data }) => commit('setSequenceTypes', data.results))
+      .catch(console.error)
+  },
+  fetchSessions({ commit }, { filters, options }) {
+    let queryString = getSessionQueryString({ filters, options })
+    return session
+      .get(`${SESSIONS}/${queryString}`)
+      .then(({ data }) => {
+        commit('setSessions', data.results)
+        commit('setSessionCount', data.count)
+      })
       .catch(console.error)
   },
   getOrCreateScanFromDicomSeries({ commit }, dicomSeries) {
