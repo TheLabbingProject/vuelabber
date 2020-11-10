@@ -39,7 +39,7 @@
 <script>
 import ScanTable from '@/components/mri/scan-table.vue'
 import SessionTableControls from '@/components/mri/session-table-controls.vue'
-import { mapState, mapActions } from 'vuex'
+import { mapState } from 'vuex'
 
 export default {
   name: 'SessionTable',
@@ -81,8 +81,7 @@ export default {
       if (!sessionTime) return null
       let time = sessionTime.slice(11, 23)
       return time
-    },
-    ...mapActions('mri', ['fetchSessions'])
+    }
   }
 }
 </script>
