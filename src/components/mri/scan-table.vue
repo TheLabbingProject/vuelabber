@@ -203,11 +203,11 @@ export default {
       this.updateScan(scan)
     },
     formatSpatialResolution(floatArray) {
-      return floatArray
+      return floatArray ? floatArray
         .map(item => parseFloat(item.toFixed(2)))
         .toString()
         .replace(/,/g, ' x ')
-        .trim()
+        .trim() : null
     },
     formatDate(scanTime) {
       if (!scanTime) return null
