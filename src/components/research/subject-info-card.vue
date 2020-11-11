@@ -1,10 +1,12 @@
 <template>
-  <v-card v-if="! deleteWanted">
+  <v-card v-if="!deleteWanted">
     <!-- Title -->
     <v-card-title class="success darken-3">
       <div>
         <span class="white--text">Subject Information</span>
-        <span v-if="existingSubject" class="grey--text text--lighten-1">{{ `#${subject.id}` }}</span>
+        <span v-if="existingSubject" class="grey--text text--lighten-1">{{
+          `#${subject.id}`
+        }}</span>
       </div>
       <v-spacer />
 
@@ -13,7 +15,8 @@
         v-if="existingSubject && editable && currentUser.isStaff"
         style="cursor: pointer;"
         @click="verifyDelete"
-      >delete</v-icon>
+        >delete</v-icon
+      >
     </v-card-title>
 
     <!-- Body -->
@@ -95,7 +98,10 @@
                 :readonly="!editable"
               ></v-text-field>
             </template>
-            <v-date-picker v-model="subject.dateOfBirth" @input="dob_menu = false"></v-date-picker>
+            <v-date-picker
+              v-model="subject.dateOfBirth"
+              @input="dob_menu = false"
+            ></v-date-picker>
           </v-menu>
           <br />
           <object-table
@@ -127,7 +133,8 @@
         v-if="editable && existingSubject"
         :disabled="!currentUser.isStaff"
         @click="updateExistingSubject"
-      >Update</v-btn>
+        >Update</v-btn
+      >
 
       <!-- Create -->
       <v-btn
@@ -135,7 +142,8 @@
         text
         v-if="!existingSubject && currentUser.isStaff"
         @click="createNewSubject"
-      >Create</v-btn>
+        >Create</v-btn
+      >
 
       <!-- Cancel -->
       <v-btn color="error" text @click="closeDialog">Cancel</v-btn>

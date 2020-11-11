@@ -23,8 +23,12 @@
           @fetch-sessions-end="loading = false"
         />
       </template>
-      <template v-slot:item.date="{ item }">{{formatDate(item.time)}}</template>
-      <template v-slot:item.time="{ item }">{{formatTime(item.time)}}</template>
+      <template v-slot:item.date="{ item }">{{
+        formatDate(item.time)
+      }}</template>
+      <template v-slot:item.time="{ item }">{{
+        formatTime(item.time)
+      }}</template>
 
       <template v-slot:expanded-item="{ item, headers }">
         <td :colspan="headers.length" class="subject-data pa-0 ma-0">

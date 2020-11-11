@@ -1,3 +1,11 @@
+const parseOrdering = ({ sortBy, sortDesc }) => {
+  return sortBy
+    .map((value, index) => {
+      return sortDesc[index] ? '-' + value : value
+    })
+    .join(',')
+}
+
 const getSubjectQueryString = ({ filters, options }) => {
   return `?id=${filters.id || ''}&first_name=${filters.firstName ||
     ''}&first_name_lookup=icontains&last_name=${filters.lastName ||
@@ -11,9 +19,7 @@ const getSubjectQueryString = ({ filters, options }) => {
         ? options.itemsPerPage
         : 1000
       : 100
-  }&page=${options.page || 1}&ordering=${
-    options.descending ? '-' + options.sortBy : options.sortBy
-  }`
+  }&page=${options.page || 1}&ordering=${parseOrdering(options)}`
 }
 
 const getGroupQueryString = ({ filters, options }) => {
