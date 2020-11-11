@@ -10,10 +10,13 @@
       <router-link
         :to="{ name: 'analysisInformation', params: { analysisId: item.id } }"
         class="nav-link"
-      >{{ item.title }}</router-link>
+        >{{ item.title }}</router-link
+      >
     </template>
 
-    <template v-slot:item.versions="{ item }">{{ getAnalysisVersions(item).length }}</template>
+    <template v-slot:item.versions="{ item }">{{
+      getAnalysisVersions(item).length
+    }}</template>
   </v-data-table>
 </template>
 
