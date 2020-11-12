@@ -29,15 +29,22 @@
           <v-row>
             <v-col cols="4">
               <v-avatar size="100px">
-                <v-img v-if="user.profile && user.profile['image']" :src="user.profile['image']" />
+                <v-img
+                  v-if="user.profile && user.profile['image']"
+                  :src="user.profile['image']"
+                />
                 <v-img v-else src="/user.png" />
               </v-avatar>
             </v-col>
             <v-col>
               <v-card-title class="text-left pl-0">
                 <v-col>
-                  <div class="subtitle-1">{{ user | formatResearcherName }}</div>
-                  <div class="subtitle-2 grey--text font-italic">{{ user.profile.institute }}</div>
+                  <div class="subtitle-1">
+                    {{ user | formatResearcherName }}
+                  </div>
+                  <div class="subtitle-2 grey--text font-italic">
+                    {{ user.profile.institute }}
+                  </div>
                 </v-col>
               </v-card-title>
             </v-col>

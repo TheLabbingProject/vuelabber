@@ -4,7 +4,12 @@
     <v-card-title class="success darken-3 white--text">
       <span>{{ cardTitle }}</span>
       <v-spacer />
-      <v-icon v-if="existingStudy" @click="verifyStudyDelete()" style="cursor: pointer;">delete</v-icon>
+      <v-icon
+        v-if="existingStudy"
+        @click="verifyStudyDelete()"
+        style="cursor: pointer;"
+        >delete</v-icon
+      >
     </v-card-title>
 
     <!-- Body -->
@@ -46,7 +51,8 @@
         v-if="!existingStudy"
         :disabled="$v.study.$error"
         @click="createNewStudy"
-      >Create</v-btn>
+        >Create</v-btn
+      >
 
       <!-- Update existing study -->
       <v-btn
@@ -55,13 +61,21 @@
         v-else
         :disabled="$v.study.$error"
         @click="updateExistingStudy"
-      >Update</v-btn>
+        >Update</v-btn
+      >
 
       <!-- Cancel study creation/update -->
-      <v-btn color="error" text @click="$emit('close-study-dialog')">Cancel</v-btn>
+      <v-btn color="error" text @click="$emit('close-study-dialog')"
+        >Cancel</v-btn
+      >
     </v-card-actions>
   </v-card>
-  <deleteDialog v-else :action="deleteStudy" :input="study" @close-dialog="deleteWanted = false" />
+  <deleteDialog
+    v-else
+    :action="deleteStudy"
+    :input="study"
+    @close-dialog="deleteWanted = false"
+  />
 </template>
 
 <script>

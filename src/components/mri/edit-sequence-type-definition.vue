@@ -2,14 +2,14 @@
   <v-card>
     <v-card-title class="success darken-2 justify-center">
       <div class="headline">
-        <span
-          v-if="! existingSequenceTypeDefinition"
-          class="white--text"
-        >Create Sequence Type Definition</span>
-        <span
-          v-else
-          class="white--text"
-        >Edit Existing Sequence Type Definition #{{ sequenceTypeDefinition.id }}</span>
+        <span v-if="!existingSequenceTypeDefinition" class="white--text"
+          >Create Sequence Type Definition</span
+        >
+        <span v-else class="white--text"
+          >Edit Existing Sequence Type Definition #{{
+            sequenceTypeDefinition.id
+          }}</span
+        >
       </div>
     </v-card-title>
     <v-card-text>
@@ -39,10 +39,14 @@
       <v-spacer />
       <div v-if="existingSequenceTypeDefinition">
         <v-btn text class="warning" @click="closeDialog">Cancel</v-btn>
-        <v-btn text class="success" @click="updateSequenceTypeDefinitionCaller">Update</v-btn>
+        <v-btn text class="success" @click="updateSequenceTypeDefinitionCaller"
+          >Update</v-btn
+        >
       </div>
       <div v-else>
-        <v-btn text class="success" @click="createSequenceTypeDefinitionCaller">Create</v-btn>
+        <v-btn text class="success" @click="createSequenceTypeDefinitionCaller"
+          >Create</v-btn
+        >
       </div>
     </v-card-actions>
   </v-card>

@@ -35,8 +35,12 @@ export default {
   }),
   created() {
     this.loading = true
-    this.fetchInputs({ filters: { run: this.run.id }, pagination: {} })
-    this.loading = false
+    let filters = { run: this.run.id }
+    let pagination = {}
+    let options = { filters: filters, pagination: pagination }
+    this.fetchInputs(options).then(() => {
+      this.loading = false
+    })
   },
   computed: {
     ...mapState('analysis', ['inputs'])
@@ -47,8 +51,12 @@ export default {
   watch: {
     run: function(selectedRun) {
       this.loading = true
-      this.fetchInputs({ filters: { run: selectedRun.id }, pagination: {} })
-      this.loading = false
+      let filters = { run: selectedRun.id }
+      let pagination = {}
+      let options = { filters: filters, pagination: pagination }
+      this.fetchInputs(options).then(() => {
+        this.loading = false
+      })
     }
   }
 }

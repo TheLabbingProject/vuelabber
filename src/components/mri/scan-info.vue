@@ -3,7 +3,9 @@
     <v-card-title class="success darken-3">
       <div class="title">
         <span class="white--text">Scan Information</span>
-        <span v-if="existingScan" class="grey--text text--lighten-1">{{ `#${scan.id}` }}</span>
+        <span v-if="existingScan" class="grey--text text--lighten-1">{{
+          `#${scan.id}`
+        }}</span>
       </div>
     </v-card-title>
 
@@ -111,7 +113,13 @@
 
         <v-row class="align-center">
           <!-- Delete button -->
-          <v-btn text v-if="existingScan && editable" color="error" @click="verifyDelete">Delete</v-btn>
+          <v-btn
+            text
+            v-if="existingScan && editable"
+            color="error"
+            @click="verifyDelete"
+            >Delete</v-btn
+          >
 
           <v-spacer />
 
@@ -121,7 +129,8 @@
             v-if="editable && existingScan"
             color="warning"
             @click="updateExistingScan(scan)"
-          >Update</v-btn>
+            >Update</v-btn
+          >
 
           <!-- Cancel button -->
           <v-btn
@@ -129,7 +138,8 @@
             v-if="!existingScan && radioGroup == 'new'"
             color="success"
             @click="createNewScan"
-          >Create</v-btn>
+            >Create</v-btn
+          >
           <v-btn color="green darken-1" text @click="closeDialog">Cancel</v-btn>
         </v-row>
       </v-col>

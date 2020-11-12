@@ -97,7 +97,8 @@ export default {
   },
   mounted() {
     let display = null
-    let elem = $('#app').find('#brainDisplay')[0]
+    // let elem = $('#app').find('#brainDisplay')[0]
+    let elem = null
     axios
       .get(
         'https://brainbrowser.cbrain.mcgill.ca/surface-viewer-widget?' +

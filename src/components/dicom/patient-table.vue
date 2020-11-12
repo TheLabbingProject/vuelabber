@@ -23,7 +23,9 @@
       }"
     >
       <template v-slot:item.sex="{ item }">{{ getPatientSex(item) }}</template>
-      <template v-slot:item.dateOfBirth="{ item }">{{ item.dateOfBirth | formatDate }}</template>
+      <template v-slot:item.dateOfBirth="{ item }">{{
+        item.dateOfBirth | formatDate
+      }}</template>
       <template v-slot:item.subject="{ item }">
         <div class="py-1">
           <v-dialog v-model="subjectDialog[item.id]" width="400px">
@@ -33,8 +35,11 @@
                 color="success"
                 v-on="on"
                 v-if="patientToSubject[item.id]"
-              >Subject #{{ patientToSubject[item.id].id }}</v-btn>
-              <v-btn v-else small color="warning" v-on="on" disabled>Create</v-btn>
+                >Subject #{{ patientToSubject[item.id].id }}</v-btn
+              >
+              <v-btn v-else small color="warning" v-on="on" disabled
+                >Create</v-btn
+              >
             </template>
             <subject-info-card
               :existingSubject="patientToSubject[item.id]"
