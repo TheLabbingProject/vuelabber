@@ -8,9 +8,6 @@
     :items="inputSpecifications"
     :loading="loading"
   >
-    <template v-slot:item.inputDefinitionsNumber="{ item }">
-      {{ item.inputDefinitions.length }}
-    </template>
     <template v-slot:item.created="{ item }">
       {{ item.created | formatDateTime }}
     </template>
@@ -27,13 +24,13 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapState } from 'vuex'
 import InputDefinitionTable from '@/components/analysis/input-definition-table.vue'
 
 export default {
   name: 'InputSpecificationTable',
   components: { InputDefinitionTable },
-  props: { analysis: Object, expandedInputSpecificationId: String },
+  props: { analysis: Object, expandedInputSpecificationId: Number },
   created() {
     if (this.expandedInputSpecificationId) {
       this.expandByChosenId(this.expandedInputSpecificationId)
@@ -55,7 +52,7 @@ export default {
       },
       {
         text: 'Number of Input Definitions',
-        value: 'inputDefinitionsNumber',
+        value: 'inputDefinitionsCount',
         align: 'center',
         width: '15%'
       }
@@ -63,15 +60,12 @@ export default {
     loading: false
   }),
   computed: {
-    inputSpecifications: function() {
-      return this.getAnalysisInputSpecifications(this.analysis)
-    },
-    ...mapGetters('analysis', ['getAnalysisInputSpecifications'])
+    ...mapState('analysis', ['inputSpecifications'])
   },
   methods: {
     expandByChosenId: function(chosenId) {
       this.expanded = this.inputSpecifications.filter(
-        inputSpecification => inputSpecification.url === chosenId
+        inputSpecification => inputSpecification.id === chosenId
       )
     }
   },

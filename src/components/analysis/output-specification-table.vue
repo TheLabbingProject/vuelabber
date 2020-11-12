@@ -8,9 +8,6 @@
     :items="outputSpecifications"
     :loading="loading"
   >
-    <template v-slot:item.outputDefinitionsNumber="{ item }">
-      {{ item.outputDefinitions.length }}
-    </template>
     <template v-slot:item.created="{ item }">
       {{ item.created | formatDateTime }}
     </template>
@@ -27,13 +24,13 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapState } from 'vuex'
 import OutputDefinitionTable from '@/components/analysis/output-definition-table.vue'
 
 export default {
   name: 'OutputSpecificationTable',
   components: { OutputDefinitionTable },
-  props: { analysis: Object, expandedOutputSpecificationId: String },
+  props: { analysis: Object, expandedOutputSpecificationId: Number },
   created() {
     if (this.expandedOutputSpecificationId) {
       this.expandByChosenId(this.expandedOutputSpecificationId)
@@ -55,7 +52,7 @@ export default {
       },
       {
         text: 'Number of Output Definitions',
-        value: 'outputDefinitionsNumber',
+        value: 'outputDefinitionsCount',
         align: 'center',
         width: '15%'
       }
@@ -63,15 +60,12 @@ export default {
     loading: false
   }),
   computed: {
-    outputSpecifications: function() {
-      return this.getAnalysisOutputSpecifications(this.analysis)
-    },
-    ...mapGetters('analysis', ['getAnalysisOutputSpecifications'])
+    ...mapState('analysis', ['outputSpecifications'])
   },
   methods: {
     expandByChosenId: function(chosenId) {
       this.expanded = this.outputSpecifications.filter(
-        outputSpecification => outputSpecification.url === chosenId
+        outputSpecification => outputSpecification.id === chosenId
       )
     }
   },

@@ -7,21 +7,21 @@
     :loading="loading"
   >
     <template v-slot:item.inputSpecification="{ item }">
-      <a @click="goToInputSpecification(item.inputSpecification.url)">
-        {{ item.inputSpecification.id }}
+      <a @click="goToInputSpecification(item.inputSpecification)">
+        {{ item.inputSpecification }}
       </a>
     </template>
 
     <template v-slot:item.outputSpecification="{ item }">
-      <a @click="goToOutputSpecification(item.outputSpecification.url)">
-        {{ item.outputSpecification.id }}
+      <a @click="goToOutputSpecification(item.outputSpecification)">
+        {{ item.outputSpecification }}
       </a>
     </template>
   </v-data-table>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapState } from 'vuex'
 
 export default {
   name: 'AnalysisVersionTable',
@@ -46,10 +46,7 @@ export default {
     loading: false
   }),
   computed: {
-    analysisVersions: function() {
-      return this.getAnalysisVersions(this.analysis)
-    },
-    ...mapGetters('analysis', ['getAnalysisVersions'])
+    ...mapState('analysis', ['analysisVersions'])
   },
   methods: {
     goToInputSpecification: function(inputSpecificationId) {
