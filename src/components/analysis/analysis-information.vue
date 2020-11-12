@@ -1,68 +1,62 @@
 <template>
-  <v-scale-transition hide-on-leave>
-    <v-skeleton-loader
-      v-if="fetchedAnalyses === false"
-      type="article, actions"
-    />
-    <div v-else>
-      <div v-if="analysis" class="text-left">
-        <div class="title pb-1">
-          {{ analysis.title }}
+  <div>
+    <div v-if="analysis" class="text-left">
+      <div class="title pb-1">
+        {{ analysis.title }}
+      </div>
+      <hr />
+      <div class="py-3">
+        <div v-if="analysis.description">
+          {{ analysis.description }}
         </div>
-        <hr />
-        <div class="py-3">
-          <div v-if="analysis.description">
-            {{ analysis.description }}
-          </div>
-          <div v-else>
-            No description provided.
-          </div>
+        <div v-else>
+          No description provided.
         </div>
+      </div>
 
-        <v-tabs
-          v-model="tab"
-          background-color="deep-purple accent-4"
-          class="elevation-2"
-          centered
-          dark
-          grow
-        >
-          <v-tabs-slider />
-          <v-tab key="versions">
-            Versions
-          </v-tab>
-          <v-tab-item key="versions">
-            <analysis-version-table
-              :analysis="analysis"
-              @goToInputSpecification="goToInputSpecification"
-              @goToOutputSpecification="goToOutputSpecification"
-            />
-          </v-tab-item>
-          <v-tab key="inputSpecifications">
-            Input Specifications
-          </v-tab>
-          <v-tab-item key="inputSpecifications">
-            <input-specification-table
-              :analysis="analysis"
-              :expandedInputSpecificationId="chosenInputSpecificationId"
-            />
-          </v-tab-item>
-          <v-tab key="outputSpecifications">
-            Output Specifications
-          </v-tab>
-          <v-tab-item key="outputSpecifications">
-            <output-specification-table
-              :analysis="analysis"
-              :expandedOutputSpecificationId="chosenOutputSpecificationId"
-            />
-          </v-tab-item>
-        </v-tabs>
-      </div>
-      <div v-else>
-        Invalid analysis ID!
-      </div>
+      <v-tabs
+        v-model="tab"
+        background-color="deep-purple accent-4"
+        class="elevation-2"
+        centered
+        dark
+        grow
+      >
+        <v-tabs-slider />
+        <v-tab key="versions">
+          Versions
+        </v-tab>
+        <v-tab-item key="versions">
+          <analysis-version-table
+            :analysis="analysis"
+            @goToInputSpecification="goToInputSpecification"
+            @goToOutputSpecification="goToOutputSpecification"
+          />
+        </v-tab-item>
+        <v-tab key="inputSpecifications">
+          Input Specifications
+        </v-tab>
+        <v-tab-item key="inputSpecifications">
+          <input-specification-table
+            :analysis="analysis"
+            :expandedInputSpecificationId="chosenInputSpecificationId"
+          />
+        </v-tab-item>
+        <v-tab key="outputSpecifications">
+          Output Specifications
+        </v-tab>
+        <v-tab-item key="outputSpecifications">
+          <output-specification-table
+            :analysis="analysis"
+            :expandedOutputSpecificationId="chosenOutputSpecificationId"
+          />
+        </v-tab-item>
+      </v-tabs>
     </div>
-  </v-scale-transition>
+    <div v-else>
+      Invalid analysis ID!
+    </div>
+  </div>
 </template>
 
 <script>
@@ -80,15 +74,15 @@ export default {
   },
   props: { analysisId: [String, Number] },
   created() {
-    this.fetchAnalyses().then(() => (this.fetchedAnalyses = true))
-    this.fetchAnalysisVersions()
-    this.fetchInputSpecifications()
-    this.fetchOutputSpecifications()
+    let filters = { analysis: this.analysisId }
+    let options = { filters: filters, pagination: {} }
+    this.fetchAnalysisVersions(options)
+    this.fetchInputSpecifications(options)
+    this.fetchOutputSpecifications(options)
   },
 
   data: () => ({
     tab: null,
-    fetchedAnalyses: false,
     chosenInputSpecificationId: null,
     chosenOutputSpecificationId: null
   }),

@@ -15,10 +15,14 @@ import {
 } from '@/api/analysis/endpoints'
 import {
   getCategoryQueryString,
+  getAnalysisQueryString,
+  getAnalysisVersionQueryString,
   getInputDefinitionQueryString,
+  getInputSpecificationQueryString,
   getInputsQueryString,
   getOutputDefinitionQueryString,
-  getOutputsQueryString
+  getOutputsQueryString,
+  getOutputSpecificationQueryString
 } from '@/api/analysis/query'
 import session from '@/api/session'
 
@@ -55,24 +59,6 @@ const getters = {
   getAnalysisById(state) {
     return analysisId =>
       state.analyses.find(analysis => analysis.id === analysisId)
-  },
-  getAnalysisVersions(state) {
-    return analysis =>
-      state.analysisVersions.filter(
-        analysisVersion => analysisVersion.analysis.id === analysis.id
-      )
-  },
-  getAnalysisInputSpecifications(state) {
-    return analysis =>
-      state.inputSpecifications.filter(
-        inputSpecification => inputSpecification.analysis === analysis.url
-      )
-  },
-  getAnalysisOutputSpecifications(state) {
-    return analysis =>
-      state.outputSpecifications.filter(
-        outputSpecification => outputSpecification.analysis === analysis.url
-      )
   },
   getRunAnalysisVersion(state) {
     return run =>
@@ -134,15 +120,17 @@ const mutations = {
 }
 
 const actions = {
-  fetchAnalyses({ commit }) {
+  fetchAnalyses({ commit }, options) {
+    let queryString = getAnalysisQueryString(options)
     return session
-      .get(ANALYSES)
+      .get(`${ANALYSES}/${queryString}`)
       .then(({ data }) => commit('setAnalyses', data.results))
       .catch(console.error)
   },
-  fetchAnalysisVersions({ commit }) {
+  fetchAnalysisVersions({ commit }, options) {
+    let queryString = getAnalysisVersionQueryString(options)
     return session
-      .get(ANALYSIS_VERSIONS)
+      .get(`${ANALYSIS_VERSIONS}/${queryString}`)
       .then(({ data }) => commit('setAnalysisVersions', data.results))
       .catch(console.error)
   },
@@ -154,9 +142,11 @@ const actions = {
       .then(({ data }) => commit(commitMethod, data.results))
       .catch(console.error)
   },
-  fetchInputSpecifications({ commit }) {
+  fetchInputSpecifications({ commit }, options) {
+    let queryString = getInputSpecificationQueryString(options)
+    let URL = `${INPUT_SPECIFICATIONS}/${queryString}`
     return session
-      .get(INPUT_SPECIFICATIONS)
+      .get(URL)
       .then(({ data }) => commit('setInputSpecifications', data.results))
       .catch(console.error)
   },
@@ -167,9 +157,11 @@ const actions = {
       .then(({ data }) => commit('setInputDefinitions', data.results))
       .catch(console.error)
   },
-  fetchOutputSpecifications({ commit }) {
+  fetchOutputSpecifications({ commit }, options) {
+    let queryString = getOutputSpecificationQueryString(options)
+    let URL = `${OUTPUT_SPECIFICATIONS}/${queryString}`
     return session
-      .get(OUTPUT_SPECIFICATIONS)
+      .get(URL)
       .then(({ data }) => commit('setOutputSpecifications', data.results))
       .catch(console.error)
   },
