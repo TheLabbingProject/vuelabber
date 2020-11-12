@@ -9,7 +9,10 @@
             <template v-slot:activator="{ on }">
               <v-btn v-on="on" class="info">New Study</v-btn>
             </template>
-            <study-info-card @close-study-dialog="closeStudyDialog(false)" :key="studyDialog" />
+            <study-info-card
+              @close-study-dialog="closeStudyDialog(false)"
+              :key="studyDialog"
+            />
           </v-dialog>
         </v-col>
       </v-row>
@@ -17,7 +20,11 @@
 
     <!-- Existing study card -->
     <div v-if="currentUser">
-      <v-card class="mb-4 mx-2" v-for="study in filteredStudies" :key="study.id">
+      <v-card
+        class="mb-4 mx-2"
+        v-for="study in filteredStudies"
+        :key="study.id"
+      >
         <!-- Title -->
         <v-card-title class="title purple darken-2 white--text">
           <span>{{ study.title }}</span>
@@ -38,14 +45,22 @@
         <!-- Body -->
         <v-card-text class="text-xs-left">
           <!-- Study Description -->
-          <div v-if="study.description" class="text-left pt-3">{{ study.description }}</div>
-          <div v-else class="grey--text text--lighten-0 font-italic">No description available</div>
+          <div v-if="study.description" class="text-left pt-3">
+            {{ study.description }}
+          </div>
+          <div v-else class="grey--text text--lighten-0 font-italic">
+            No description available
+          </div>
         </v-card-text>
 
         <!-- Actions -->
         <v-card-actions>
           <!-- Collaborator avatars -->
-          <div class="px-1" v-for="collaborator in study.collaborators" :key="collaborator">
+          <div
+            class="px-1"
+            v-for="collaborator in study.collaborators"
+            :key="collaborator"
+          >
             <v-avatar
               v-if="getUserByUrl(collaborator)"
               class="m-1 white--text"
@@ -55,7 +70,9 @@
                 v-if="getUserByUrl(collaborator).profile['image']"
                 :src="getUserByUrl(collaborator).profile['image']"
               />
-              <div v-else>{{ getUserInitialsFromUrl(collaborator) | CapitalizeInitials}}</div>
+              <div v-else>
+                {{ getUserInitialsFromUrl(collaborator) | CapitalizeInitials }}
+              </div>
             </v-avatar>
           </div>
         </v-card-actions>

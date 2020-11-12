@@ -9,7 +9,9 @@
         <div class="title pb-2">
           <span>{{ user | formatResearcherName }}</span>
           <!-- If current user is the viewed user, or staff, display edit icon -->
-          <v-icon class="pl-2" v-if="editPermissions" @click="editMode = true">edit</v-icon>
+          <v-icon class="pl-2" v-if="editPermissions" @click="editMode = true"
+            >edit</v-icon
+          >
         </div>
         <div>Institute: {{ user.profile.institute }}</div>
         <div>Email: {{ user.email }}</div>
@@ -19,7 +21,12 @@
 
       <!-- Image -->
       <v-col cols="2">
-        <v-img v-if="user.profile.image" :src="user.profile.image" height="240px" width="240px" />
+        <v-img
+          v-if="user.profile.image"
+          :src="user.profile.image"
+          height="240px"
+          width="240px"
+        />
         <v-img v-else src="/user.png" height="240px" width="240px" />
       </v-col>
     </v-row>

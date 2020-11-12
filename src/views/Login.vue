@@ -18,7 +18,9 @@
           required
         />
 
-        <v-btn @click="loginHandler(inputs)" color="success" id="login-button">Login</v-btn>
+        <v-btn @click="loginHandler(inputs)" color="success" id="login-button"
+          >Login</v-btn
+        >
       </v-col>
     </form>
   </div>

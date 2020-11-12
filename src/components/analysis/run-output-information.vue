@@ -24,8 +24,12 @@ export default {
   }),
   created() {
     this.loading = true
-    this.fetchOutputs({ filters: { run: this.run.id }, pagination: {} })
-    this.loading = false
+    let filters = { run: this.run.id }
+    let pagination = {}
+    let options = { filters: filters, pagination: pagination }
+    this.fetchOutputs(options).then(() => {
+      this.loading = false
+    })
   },
   computed: {
     ...mapState('analysis', ['outputs'])
@@ -36,8 +40,12 @@ export default {
   watch: {
     run: function(selectedRun) {
       this.loading = true
-      this.fetchOutputs({ filters: { run: selectedRun.id }, pagination: {} })
-      this.loading = false
+      let filters = { run: selectedRun.id }
+      let pagination = {}
+      let options = { filters: filters, pagination: pagination }
+      this.fetchOutputs(options).then(() => {
+        this.loading = false
+      })
     }
   }
 }

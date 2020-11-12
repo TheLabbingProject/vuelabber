@@ -1,6 +1,8 @@
 <template>
   <v-card>
-    <v-card-title class="headline cyan darken-3 white--text">Create New Group</v-card-title>
+    <v-card-title class="headline cyan darken-3 white--text"
+      >Create New Group</v-card-title
+    >
 
     <v-card-text>
       <v-col>
@@ -21,7 +23,9 @@
     <v-card-actions>
       <v-spacer />
       <v-btn color="success" text @click="createNewGroup">Submit</v-btn>
-      <v-btn color="error" text @click="$emit('close-group-dialog')">Cancel</v-btn>
+      <v-btn color="error" text @click="$emit('close-group-dialog')"
+        >Cancel</v-btn
+      >
     </v-card-actions>
   </v-card>
 </template>

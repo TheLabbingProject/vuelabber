@@ -124,7 +124,10 @@
           <template v-slot:activator="{ on }">
             <v-btn text v-on="on">
               <v-avatar size="36px" class="user-avatar">
-                <img v-if="user.profile && user.profile['image']" :src="user.profile['image']" />
+                <img
+                  v-if="user.profile && user.profile['image']"
+                  :src="user.profile['image']"
+                />
                 <img v-else src="/user.png" />
               </v-avatar>
               &nbsp; {{ user.username }}
