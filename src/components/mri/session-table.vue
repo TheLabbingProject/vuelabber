@@ -23,8 +23,12 @@
           @fetch-sessions-end="loading = false"
         />
       </template>
-      <template v-slot:item.date="{ item }">{{formatDate(item.time)}}</template>
-      <template v-slot:item.time="{ item }">{{formatTime(item.time)}}</template>
+      <template v-slot:item.date="{ item }">{{
+        formatDate(item.time)
+      }}</template>
+      <template v-slot:item.time="{ item }">{{
+        formatTime(item.time)
+      }}</template>
 
       <template v-slot:expanded-item="{ item, headers }">
         <td :colspan="headers.length" class="subject-data pa-0 ma-0">
@@ -39,7 +43,7 @@
 <script>
 import ScanTable from '@/components/mri/scan-table.vue'
 import SessionTableControls from '@/components/mri/session-table-controls.vue'
-import { mapState, mapActions } from 'vuex'
+import { mapState } from 'vuex'
 
 export default {
   name: 'SessionTable',
@@ -81,8 +85,7 @@ export default {
       if (!sessionTime) return null
       let time = sessionTime.slice(11, 23)
       return time
-    },
-    ...mapActions('mri', ['fetchSessions'])
+    }
   }
 }
 </script>

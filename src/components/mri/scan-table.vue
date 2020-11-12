@@ -204,10 +204,12 @@ export default {
     },
     formatSpatialResolution(floatArray) {
       return floatArray
-        .map(item => parseFloat(item.toFixed(2)))
-        .toString()
-        .replace(/,/g, ' x ')
-        .trim()
+        ? floatArray
+            .map(item => parseFloat(item.toFixed(2)))
+            .toString()
+            .replace(/,/g, ' x ')
+            .trim()
+        : null
     },
     formatDate(scanTime) {
       if (!scanTime) return null

@@ -4,10 +4,18 @@
       <v-text-field label="ID" v-model="filters.id" />
     </v-col>
     <v-col :cols="1">
-      <v-text-field label="First Name" v-model="filters.firstName" :disabled="Boolean(filters.id)" />
+      <v-text-field
+        label="First Name"
+        v-model="filters.firstName"
+        :disabled="Boolean(filters.id)"
+      />
     </v-col>
     <v-col :cols="1">
-      <v-text-field label="Last Name" v-model="filters.lastName" :disabled="Boolean(filters.id)" />
+      <v-text-field
+        label="Last Name"
+        v-model="filters.lastName"
+        :disabled="Boolean(filters.id)"
+      />
     </v-col>
     <v-col :cols="3">
       <v-row class="align-center">
@@ -24,9 +32,12 @@
                 :disabled="Boolean(filters.id)"
               ></v-text-field>
             </template>
-            <v-date-picker v-model="filters.bornAfter" @input="bornAfterMenu = false"></v-date-picker>
-          </v-menu>
-        </v-col>-
+            <v-date-picker
+              v-model="filters.bornAfter"
+              @input="bornAfterMenu = false"
+            ></v-date-picker>
+          </v-menu> </v-col
+        >-
         <v-col>
           <v-menu v-model="bornBeforeMenu" :close-on-content-click="false">
             <template v-slot:activator="{ on }">
@@ -39,7 +50,10 @@
                 :disabled="Boolean(filters.id)"
               ></v-text-field>
             </template>
-            <v-date-picker v-model="filters.bornBefore" @input="bornBeforeMenu = false"></v-date-picker>
+            <v-date-picker
+              v-model="filters.bornBefore"
+              @input="bornBeforeMenu = false"
+            ></v-date-picker>
           </v-menu>
         </v-col>
       </v-row>
