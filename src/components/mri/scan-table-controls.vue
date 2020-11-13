@@ -75,8 +75,12 @@ export default {
   name: 'ScanTableControls',
   props: { options: Object, subject: Object, session: Object },
   created() {
-    this.$set(this.filters, 'subject', this.subject.id)
-    this.$set(this.filters, 'session', this.session.id)
+    if (this.subject) {
+      this.$set(this.filters, 'subject', this.subject.id)
+    }
+    if (this.session) {
+      this.$set(this.filters, 'session', this.session.id)
+    }
   },
   data: () => ({
     filters: {
@@ -102,8 +106,10 @@ export default {
   methods: {
     update() {
       this.$emit('fetch-scans-start')
-      this.fetchScans({ filters: this.filters, options: this.options })
-      this.$emit('fetch-scans-end')
+      let query = { filters: this.filters, options: this.options }
+      this.fetchScans(query).then(() => {
+        this.$emit('fetch-scans-end')
+      })
     },
     ...mapActions('mri', ['fetchScans'])
   },

@@ -156,8 +156,8 @@ const actions = {
       .then(({ data }) => commit('setSequenceTypes', data.results))
       .catch(console.error)
   },
-  fetchSessions({ commit }, { filters, options }) {
-    let queryString = getSessionQueryString({ filters, options })
+  fetchSessions({ commit }, query) {
+    let queryString = getSessionQueryString(query)
     return session
       .get(`${SESSIONS}/${queryString}`)
       .then(({ data }) => {

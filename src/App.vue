@@ -50,6 +50,14 @@
               </v-list-item>
             </template>
 
+            <!-- Browser -->
+            <v-list-item to="/mri-browser" class="drawer-link">
+              <v-list-item-title>Browser</v-list-item-title>
+              <v-list-item-icon>
+                <v-icon>search</v-icon>
+              </v-list-item-icon>
+            </v-list-item>
+
             <!-- Sequence Types -->
             <v-list-item to="/mri-sequence-types" class="drawer-link">
               <v-list-item-title>Sequence Types</v-list-item-title>

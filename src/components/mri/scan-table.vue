@@ -1,11 +1,11 @@
 <template>
   <div>
     <v-col v-if="currentUser.isStaff">
-      <hr />
-      <br />
+      <!-- <hr />
+      <br /> -->
       <v-expansion-panels>
         <!-- Scan Upload -->
-        <v-expansion-panel>
+        <!-- <v-expansion-panel>
           <v-expansion-panel-header>
             <div class="text-center">Upload</div>
           </v-expansion-panel-header>
@@ -19,7 +19,7 @@
               </v-card-text>
             </v-card>
           </v-expansion-panel-content>
-        </v-expansion-panel>
+        </v-expansion-panel> -->
 
         <!-- Study Group Association -->
         <v-expansion-panel>
@@ -36,8 +36,8 @@
         </v-expansion-panel>
       </v-expansion-panels>
 
-      <br />
-      <hr />
+      <!-- <br />
+      <hr /> -->
     </v-col>
 
     <!-- Scan Preview -->
@@ -136,7 +136,7 @@ import { scanPreviewScript } from '@/api/mri/endpoints'
 import EditSequenceType from '@/components/mri/edit-sequence-type.vue'
 import GroupAssociation from '@/components/mri/group-association.vue'
 import ProtocolInformation from '@/components/dicom/protocol-information.vue'
-import ScanUpload from '@/components/mri/scan-upload.vue'
+// import ScanUpload from '@/components/mri/scan-upload.vue'
 import ScanTableControls from '@/components/mri/scan-table-controls.vue'
 import VueScript2 from 'vue-script2'
 
@@ -150,8 +150,8 @@ export default {
     EditSequenceType,
     GroupAssociation,
     ProtocolInformation,
-    ScanTableControls,
-    ScanUpload
+    ScanTableControls
+    // ScanUpload
   },
   created() {
     this.fetchSequenceTypes()
@@ -181,8 +181,8 @@ export default {
     selected: [],
     options: {
       page: 1,
-      sortBy: ['-date', 'time'],
-      descending: false,
+      sortBy: ['date', 'time'],
+      sortDesc: [true, false],
       itemsPerPage: 25
     },
     itemsPerPageOptions: [10, 25, 50, -1],

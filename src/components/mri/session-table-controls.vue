@@ -58,9 +58,15 @@ import { mapActions } from 'vuex'
 
 export default {
   name: 'SessionTableControls',
-  props: { options: Object, subject: Object },
-  created() {
-    this.$set(this.filters, 'subject', [this.subject.id])
+  props: ['subject', 'options', 'bus'],
+  mounted() {
+    // eslint-disable-next-line
+    EventBus.$on('fetch-sessions', this.update)
+    if (this.subject) {
+      this.$set(this.filters, 'subject', this.subject.id)
+    }
+    // eslint-disable-next-line
+    EventBus.$emit('session-table-ready')
   },
   data: () => ({
     filters: {
@@ -76,15 +82,27 @@ export default {
   computed: {},
   methods: {
     update() {
+      let options = Object.assign({}, this.options)
+      options['sortBy'] = options['sortBy'].map(item => {
+        if (item == 'date') {
+          return 'time__date'
+        } else if (item == 'time') {
+          return 'time__time'
+        }
+      })
       this.$emit('fetch-sessions-start')
-      this.fetchSessions({ filters: this.filters, options: this.options })
-      this.$emit('fetch-sessions-end')
+      let query = { filters: this.filters, options: options }
+      this.fetchSessions(query).then(() => {
+        this.$emit('fetch-sessions-end')
+      })
     },
     ...mapActions('mri', ['fetchSessions'])
   },
   watch: {
     subject(selectedSubject) {
-      this.$set(this.filters, 'subject', selectedSubject.id)
+      if (selectedSubject) {
+        this.$set(this.filters, 'subject', selectedSubject.id)
+      }
     },
     filters: {
       handler() {
