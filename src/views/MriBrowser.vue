@@ -23,12 +23,11 @@ import SessionTable from '@/components/mri/session-table.vue'
 export default {
   name: 'MriBrowser',
   components: { ScanTable, SessionTable },
-  mounted() {
-    // eslint-disable-next-line
-    EventBus.$on('session-table-ready', this.loadSessions)
-    // eslint-disable-next-line
-    EventBus.$on('scan-table-ready', this.loadScans)
-  },
+  //   mounted() {
+  //     // eslint-disable-next-line
+  //     EventBus.$on('session-table-ready', this.loadSessions)
+  //     this.loadScans()
+  //   },
   data: () => ({
     active: null
   }),
@@ -48,6 +47,7 @@ export default {
   },
   watch: {
     active: function(value) {
+      console.log(value)
       if (value === 0) {
         this.loadSessions()
       } else if (value === 1) {

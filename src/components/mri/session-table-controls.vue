@@ -65,8 +65,7 @@ export default {
     if (this.subject) {
       this.$set(this.filters, 'subject', this.subject.id)
     }
-    // eslint-disable-next-line
-    EventBus.$emit('session-table-ready')
+    this.update()
   },
   data: () => ({
     filters: {
