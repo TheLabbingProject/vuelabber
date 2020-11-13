@@ -183,7 +183,7 @@ export default {
     options: {
       page: 1,
       sortBy: ['date', 'time'],
-      sortDesc: [true, true],
+      sortDesc: [true, false],
       itemsPerPage: 25
     },
     itemsPerPageOptions: [10, 25, 50, -1],

@@ -143,6 +143,7 @@ const mutations = {
 
 const actions = {
   fetchScans({ commit }, { filters, options }) {
+    commit('setScans', [])
     let queryString = getScanQueryString({ filters, options })
     return session
       .get(`${SCANS}/${queryString}`)
@@ -159,6 +160,7 @@ const actions = {
       .catch(console.error)
   },
   fetchSessions({ commit }, query) {
+    commit('setSessions', [])
     let queryString = getSessionQueryString(query)
     return session
       .get(`${SESSIONS}/${queryString}`)

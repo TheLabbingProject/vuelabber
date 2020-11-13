@@ -26,19 +26,8 @@
           @fetch-sessions-end="loading = false"
         />
       </template>
-      <template v-slot:item.date="{ item }">
-        {{ formatDate(item.time) }}
-      </template>
-      <template v-slot:item.time="{ item }">
-        {{ formatTime(item.time) }}
-      </template>
 
-      <template v-slot:expanded-item="{ item, headers }">
-        <td :colspan="headers.length" class="subject-data pa-0 ma-0">
-          <scan-table :subject="subject" :session="item" />
-          <hr />
-        </td>
-      </template>
+      <!-- Subject ID button opening subject info dialog -->
       <template v-slot:item.subject="{ item }">
         <div class="py-1">
           <v-dialog v-model="editSubjectDialog[item.id]" width="600px">
@@ -50,6 +39,22 @@
             <subject-info-card :subjectId="item.subject.id" />
           </v-dialog>
         </div>
+      </template>
+
+      <!-- Date and time -->
+      <template v-slot:item.date="{ item }">
+        {{ formatDate(item.time) }}
+      </template>
+      <template v-slot:item.time="{ item }">
+        {{ formatTime(item.time) }}
+      </template>
+
+      <!-- Show scan table when expanded -->
+      <template v-slot:expanded-item="{ item, headers }">
+        <td :colspan="headers.length" class="subject-data pa-0 ma-0">
+          <scan-table :subject="subject" :session="item" />
+          <hr />
+        </td>
       </template>
     </v-data-table>
   </div>

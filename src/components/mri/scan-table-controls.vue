@@ -85,8 +85,7 @@ export default {
   mounted() {
     // eslint-disable-next-line
     EventBus.$on('fetch-scans', this.update)
-    // eslint-disable-next-line
-    EventBus.$emit('scan-table-ready')
+    this.update()
   },
   data: () => ({
     filters: {
@@ -120,7 +119,7 @@ export default {
       })
       return options
     },
-    ...mapState('mri', ['sequenceTypes'])
+    ...mapState('mri', ['sequenceTypes', 'scans'])
   },
   methods: {
     update() {
