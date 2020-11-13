@@ -79,19 +79,25 @@ export default {
     afterDateMenu: false,
     beforeDateMenu: false
   }),
-  computed: {},
-  methods: {
-    update() {
+  computed: {
+    parsedOptions: function() {
       let options = Object.assign({}, this.options)
       options['sortBy'] = options['sortBy'].map(item => {
         if (item == 'date') {
           return 'time__date'
         } else if (item == 'time') {
           return 'time__time'
+        } else {
+          return item
         }
       })
+      return options
+    }
+  },
+  methods: {
+    update() {
       this.$emit('fetch-sessions-start')
-      let query = { filters: this.filters, options: options }
+      let query = { filters: this.filters, options: this.parsedOptions }
       this.fetchSessions(query).then(() => {
         this.$emit('fetch-sessions-end')
       })

@@ -182,6 +182,7 @@ export default {
       let query = { filters: filters, options: this.options }
       this.fetchSubjects(query).then(() => {
         this.subject = Object.assign({}, this.subjects[0])
+        this.editable = false
       })
     }
   },
