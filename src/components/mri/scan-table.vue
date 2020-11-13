@@ -50,6 +50,7 @@
       v-model="selected"
       item-key="id"
       show-select
+      multi-sort
       :footer-props="{
         'items-per-page-options': itemsPerPageOptions
       }"
@@ -153,15 +154,15 @@ export default {
     ScanTableControls
     // ScanUpload
   },
-  created() {
+  mounted() {
     this.fetchSequenceTypes()
     this.fetchGroups({ filters: {}, options: {} })
   },
   data: () => ({
     sequenceTypeDialog: {},
     headers: [
-      { text: 'Date', value: 'date', sortable: false },
-      { text: 'Time', value: 'time', sortable: false },
+      { text: 'Date', value: 'date' },
+      { text: 'Time', value: 'time' },
       { text: 'Number', value: 'number' },
       { text: 'Description', value: 'description' },
       {
@@ -182,7 +183,7 @@ export default {
     options: {
       page: 1,
       sortBy: ['date', 'time'],
-      sortDesc: [true, false],
+      sortDesc: [true, true],
       itemsPerPage: 25
     },
     itemsPerPageOptions: [10, 25, 50, -1],

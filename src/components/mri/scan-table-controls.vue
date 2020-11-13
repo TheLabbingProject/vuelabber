@@ -82,6 +82,12 @@ export default {
       this.$set(this.filters, 'session', this.session.id)
     }
   },
+  mounted() {
+    // eslint-disable-next-line
+    EventBus.$on('fetch-scans', this.update)
+    // eslint-disable-next-line
+    EventBus.$emit('scan-table-ready')
+  },
   data: () => ({
     filters: {
       number: '',
@@ -101,12 +107,25 @@ export default {
       items.push({ text: 'Undefined', value: -1 })
       return items
     },
+    parsedOptions: function() {
+      let options = Object.assign({}, this.options)
+      options['sortBy'] = options['sortBy'].map(item => {
+        if (item == 'date') {
+          return 'time__date'
+        } else if (item == 'time') {
+          return 'time__time'
+        } else {
+          return item
+        }
+      })
+      return options
+    },
     ...mapState('mri', ['sequenceTypes'])
   },
   methods: {
     update() {
       this.$emit('fetch-scans-start')
-      let query = { filters: this.filters, options: this.options }
+      let query = { filters: this.filters, options: this.parsedOptions }
       this.fetchScans(query).then(() => {
         this.$emit('fetch-scans-end')
       })

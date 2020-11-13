@@ -25,7 +25,9 @@ export default {
   components: { ScanTable, SessionTable },
   mounted() {
     // eslint-disable-next-line
-    EventBus.$on("session-table-ready", this.loadSessions)
+    EventBus.$on('session-table-ready', this.loadSessions)
+    // eslint-disable-next-line
+    EventBus.$on('scan-table-ready', this.loadScans)
   },
   data: () => ({
     active: null
@@ -38,6 +40,19 @@ export default {
     loadSessions() {
       // eslint-disable-next-line
       EventBus.$emit('fetch-sessions')
+    },
+    loadScans() {
+      // eslint-disable-next-line
+      EventBus.$emit('fetch-scans')
+    }
+  },
+  watch: {
+    active: function(value) {
+      if (value === 0) {
+        this.loadSessions()
+      } else if (value === 1) {
+        this.loadScans()
+      }
     }
   }
 }
