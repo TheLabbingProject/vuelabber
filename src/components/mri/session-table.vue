@@ -30,13 +30,16 @@
       <!-- Subject ID button opening subject info dialog -->
       <template v-slot:item.subject="{ item }">
         <div class="py-1">
-          <v-dialog v-model="editSubjectDialog[item.id]" width="600px">
+          <v-dialog v-model="editSubjectDialog[item.subject.id]" width="600px">
             <template v-slot:activator="{ on }">
               <v-btn small color="info" v-on="on">
                 {{ item.subject.idNumber }}
               </v-btn>
             </template>
-            <subject-info-card :subjectId="item.subject.id" />
+            <subject-info-card
+              :subjectId="item.subject.id"
+              @close-subject-dialog="editSubjectDialog[item.subject.id] = false"
+            />
           </v-dialog>
         </div>
       </template>
@@ -52,7 +55,7 @@
       <!-- Show scan table when expanded -->
       <template v-slot:expanded-item="{ item, headers }">
         <td :colspan="headers.length" class="subject-data pa-0 ma-0">
-          <scan-table :subject="subject" :session="item" />
+          <scan-table :subject="item.subject" :session="item" />
           <hr />
         </td>
       </template>
@@ -74,6 +77,11 @@ export default {
     SessionTableControls,
     SubjectInfoCard
   },
+  mounted() {
+    if (this.subject) {
+      this.headers.splice(1, 1)
+    }
+  },
   data: () => ({
     headers: [
       { text: 'ID', value: 'id', align: 'left', width: 1 },
@@ -91,7 +99,7 @@ export default {
     itemsPerPageOptions: [10, 25, 50, -1],
     loading: false,
     expanded: [],
-    editSubjectDialog: []
+    editSubjectDialog: {}
   }),
   computed: {
     ...mapState('mri', ['sessions', 'sessionCount']),

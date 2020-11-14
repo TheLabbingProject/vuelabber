@@ -23,10 +23,17 @@
     <v-card-text>
       <v-col>
         <v-form @submit.prevent="submit">
+          <v-text-field
+            label="ID Number"
+            v-model="subject.idNumber"
+            :counter="64"
+            :readonly="!editable"
+          />
+
           <!-- First Name -->
           <v-text-field
             label="First Name"
-            v-if="existingSubject && !editable"
+            v-if="(existingSubject || subjectId) && !editable"
             v-model="subject.firstName"
             :counter="64"
             :readonly="!editable"
@@ -44,7 +51,7 @@
           <!-- Last Name -->
           <v-text-field
             label="Last Name"
-            v-if="existingSubject && !editable"
+            v-if="(existingSubject || subjectId) && !editable"
             v-model="subject.lastName"
             :counter="64"
             :readonly="!editable"
@@ -119,7 +126,7 @@
       <!-- View/Edit mode switch -->
       <div v-if="currentUser.isStaff" px-3>
         <v-switch
-          v-if="existingSubject"
+          v-if="existingSubject || subjectId"
           v-model="editable"
           :label="editable ? 'Edit Mode' : 'View Mode'"
         />
@@ -130,7 +137,7 @@
       <v-btn
         color="warning"
         text
-        v-if="editable && existingSubject"
+        v-if="editable && (existingSubject || subjectId)"
         :disabled="!currentUser.isStaff"
         @click="updateExistingSubject"
         >Update</v-btn
@@ -140,13 +147,16 @@
       <v-btn
         color="success"
         text
-        v-if="!existingSubject && currentUser.isStaff"
+        v-if="!existingSubject && !subjectId && currentUser.isStaff"
         @click="createNewSubject"
-        >Create</v-btn
       >
+        Create
+      </v-btn>
 
       <!-- Cancel -->
-      <v-btn color="error" text @click="closeDialog">Cancel</v-btn>
+      <v-btn color="error" text @click="closeDialog">
+        Cancel
+      </v-btn>
     </v-card-actions>
   </v-card>
   <deleteDialog
@@ -171,25 +181,20 @@ export default {
   props: {
     existingSubject: Object,
     createMode: { type: Boolean, default: false },
-    subjectId: Number
+    subjectId: { type: Number, default: 0 }
   },
   created() {
     if (this.existingSubject) {
       this.subject = Object.assign({}, this.existingSubject)
       this.editable = false
-    } else if (this.subjectId) {
-      let filters = { id: this.subjectId }
-      let query = { filters: filters, options: this.options }
-      this.fetchSubjects(query).then(() => {
-        this.subject = Object.assign({}, this.subjects[0])
-        this.editable = false
-      })
+    } else if (this.subjectId != 0) {
+      this.fetchSubjectById()
     }
   },
   data: () => ({
     selectedSubjectRepresentation: '',
     subject: Object.assign({}, cleanSubject),
-    editable: true,
+    editable: false,
     dob_menu: false,
     radioGroup: 'new',
     sexItems: createSelectItems(sexOptions),
@@ -213,7 +218,8 @@ export default {
   methods: {
     createSelectItems,
     closeDialog() {
-      if (this.existingSubject && this.editable) this.editable = false
+      if ((this.existingSubject || this.subjectId) && this.editable)
+        this.editable = false
       this.$emit('close-subject-dialog')
     },
     undefinedToNull() {
@@ -255,6 +261,13 @@ export default {
     verifyDelete() {
       this.deleteWanted = true
     },
+    fetchSubjectById() {
+      let filters = { id: this.subjectId }
+      let query = { filters: filters, options: this.options }
+      this.fetchSubjects(query).then(() => {
+        this.subject = Object.assign({}, this.subjects[0])
+      })
+    },
     ...mapActions('research', [
       'fetchSubjects',
       'createSubject',
@@ -265,7 +278,11 @@ export default {
   watch: {
     editable: function(isEditable) {
       if (!isEditable) {
-        this.subject = Object.assign({}, this.existingSubject)
+        if (this.subjectId == 0) {
+          this.subject = Object.assign({}, this.existingSubject)
+        } else if (this.subjectId != 0) {
+          this.fetchSubjectById()
+        }
       }
     }
   }
