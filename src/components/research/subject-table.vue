@@ -94,7 +94,8 @@ export default {
   },
   data: () => ({
     headers: [
-      { text: 'ID', value: 'id', align: 'left' },
+      { text: 'ID', value: 'id', align: 'left', width: 1 },
+      { text: 'ID Number', value: 'idNumber', align: 'center' },
       { text: 'First Name', value: 'firstName' },
       { text: 'Last Name', value: 'lastName' },
       { text: 'Date of Birth', value: 'dateOfBirth' },
