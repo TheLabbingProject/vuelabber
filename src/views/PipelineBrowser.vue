@@ -41,7 +41,7 @@ export default {
   name: 'PipelineBrowser',
   components: { PipelineFlowchart },
   created() {
-    this.fetchAnalyses()
+    this.fetchAnalyses({})
     this.fetchPipelines()
     this.fetchedPipelines = true
   },

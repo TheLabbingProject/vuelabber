@@ -20,7 +20,7 @@ export default {
   created() {
     this.loading = true
     this.fetchUsers({ filters: {}, pagination: {} })
-    this.fetchAnalyses()
+    this.fetchAnalyses({})
     this.fetchAnalysisVersions()
     this.fetchRuns().then(() => (this.fetchedRuns = true))
     this.loading = false

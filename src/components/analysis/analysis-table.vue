@@ -10,32 +10,34 @@
       <router-link
         :to="{ name: 'analysisInformation', params: { analysisId: item.id } }"
         class="nav-link"
-      >{{ item.title }}</router-link>
+        >{{ item.title }}</router-link
+      >
     </template>
-
-    <template v-slot:item.versions="{ item }">{{ getAnalysisVersions(item).length }}</template>
   </v-data-table>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   name: 'AnalysisTable',
   props: { category: Object },
+  created() {
+    let filters = { category: this.category.id }
+    this.fetchAnalyses({ filters: filters, pagination: {} })
+  },
   data: () => ({
     headers: [
       { text: 'Title', value: 'title' },
-      { text: 'Description', value: 'description' },
-      { text: 'Versions', value: 'versions' }
+      { text: 'Description', value: 'description' }
     ],
     loading: false
   }),
   computed: {
-    analyses: function() {
-      return this.categoryAnalyses(this.category)
-    },
-    ...mapGetters('analysis', ['categoryAnalyses', 'getAnalysisVersions'])
+    ...mapState('analysis', ['analyses'])
+  },
+  methods: {
+    ...mapActions('analysis', ['fetchAnalyses'])
   }
 }
 </script>

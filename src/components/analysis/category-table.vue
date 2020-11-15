@@ -10,7 +10,10 @@
   >
     <template v-slot:expanded-item="{ item, headers }">
       <td class="pr-0 pl-4 blue lighten-5" :colspan="headers.length">
-        <analysis-table v-if="isEmptyArray(item.subcategories)" :category="item" />
+        <analysis-table
+          v-if="isEmptyArray(item.subcategories)"
+          :category="item"
+        />
         <category-table v-else :parentCategory="item" />
       </td>
     </template>
