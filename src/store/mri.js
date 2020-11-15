@@ -69,6 +69,15 @@ const mutations = {
     newScans[index] = updatedScan
     state.scans = newScans
   },
+  updateSessionState(state, updatedSession) {
+    let index = state.sessions.indexOf(
+      state.sessions.find(session => session.id === updatedSession.id)
+    )
+    // Mutating an array directly causes reactivity problems
+    let newSessions = state.sessions.slice()
+    newSessions[index] = updatedSession
+    state.sessionn = newSessions
+  },
   createSequenceType(state, sequenceType, sequenceTypeDefinition) {
     state.sequenceTypes.push(sequenceType)
   },
@@ -218,6 +227,16 @@ const actions = {
       .patch(`${SCANS}/${scan.id}/`, scan)
       .then(({ data }) => {
         commit('updateScanState', data)
+      })
+      .catch(console.error)
+  },
+  patchSession({ commit }, data) {
+    let { sessionId, ...dataWithoutId } = data
+    return session
+      .patch(`${SESSIONS}/${sessionId}/`, dataWithoutId)
+      .then(({ data }) => {
+        commit('updateSessionState', data)
+        return true
       })
       .catch(console.error)
   },
