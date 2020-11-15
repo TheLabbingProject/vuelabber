@@ -52,6 +52,27 @@
         {{ formatTime(item.time) }}
       </template>
 
+      <!-- Comments -->
+      <template v-slot:item.comments="{ item }">
+        <v-edit-dialog
+          :return-value.sync="item.comments"
+          large
+          persistent
+          @save="saveComments(item)"
+        >
+          <div>{{ item.comments }}</div>
+          <template v-slot:input>
+            <v-text-field
+              v-model="item.comments"
+              label="Edit"
+              single-line
+              counter
+              autofocus
+            ></v-text-field>
+          </template>
+        </v-edit-dialog>
+      </template>
+
       <!-- Show scan table when expanded -->
       <template v-slot:expanded-item="{ item, headers }">
         <td :colspan="headers.length" class="subject-data pa-0 ma-0">
@@ -60,6 +81,14 @@
         </td>
       </template>
     </v-data-table>
+    <v-snackbar v-model="snack" :timeout="3000" :color="snackColor">
+      {{ snackText }}
+      <template v-slot:action="{ attrs }">
+        <v-btn v-bind="attrs" text @click="snack = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
 
@@ -67,7 +96,7 @@
 import ScanTable from '@/components/mri/scan-table.vue'
 import SessionTableControls from '@/components/mri/session-table-controls.vue'
 import SubjectInfoCard from '@/components/research/subject-info-card.vue'
-import { mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   name: 'SessionTable',
@@ -99,7 +128,10 @@ export default {
     itemsPerPageOptions: [10, 25, 50, -1],
     loading: false,
     expanded: [],
-    editSubjectDialog: {}
+    editSubjectDialog: {},
+    snack: false,
+    snackColor: '',
+    snackText: ''
   }),
   computed: {
     ...mapState('mri', ['sessions', 'sessionCount']),
@@ -115,7 +147,22 @@ export default {
       if (!sessionTime) return null
       let time = sessionTime.slice(11, 23)
       return time
-    }
+    },
+    saveComments(session) {
+      let data = { sessionId: session.id, comments: session.comments }
+      this.patchSession(data).then(response => {
+        if (!response) {
+          this.snack = true
+          this.snackColor = 'error'
+          this.snackText = `Failed to update session #${session.id}!`
+        } else {
+          this.snack = true
+          this.snackColor = 'success'
+          this.snackText = `Session #${session.id} successfully updated!`
+        }
+      })
+    },
+    ...mapActions('mri', ['patchSession'])
   }
 }
 </script>
