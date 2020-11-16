@@ -18,6 +18,18 @@ const getStudyQueryString = ({ filters, options }) => {
   }&page=${options.page || 1}&ordering=${parseOrdering(options)}`
 }
 
+const getEventQueryString = ({ filters, options }) => {
+  return `?id=${filters.id || ''}&title=${filters.title ||
+    ''}&title_lookup=icontains&description=${filters.description ||
+    ''}&description_lookup=icontains&page_size=${
+    options.itemsPerPage
+      ? options.itemsPerPage != -1
+        ? options.itemsPerPage
+        : 1000
+      : 100
+  }&page=${options.page || 1}&ordering=${parseOrdering(options)}`
+}
+
 const getSubjectQueryString = ({ filters, options }) => {
   return `?id=${filters.id || ''}&first_name=${filters.firstName ||
     ''}&first_name_lookup=icontains&last_name=${filters.lastName ||
@@ -50,7 +62,20 @@ const getGroupQueryString = ({ filters, options }) => {
 const getProcedureQueryString = ({ filters, options }) => {
   return `?id=${filters.id || ''}&title=${filters.title ||
     ''}&title_lookup=icontains&description=${filters.description ||
-    ''}&description_lookup=icontains&study=${filters.studyId || ''}&page_size=${
+    ''}&description_lookup=icontains${
+    filters.studyId ? `&study=${filters.studyId}` : ''
+  }&page_size=${
+    options.itemsPerPage
+      ? options.itemsPerPage != -1
+        ? options.itemsPerPage
+        : 1000
+      : 100
+  }&page=${options.page || 1}&ordering=${parseOrdering(options)}`
+}
+
+const getProcedureStepQueryString = ({ filters, options }) => {
+  return `?id=${filters.id || ''}&index=${filters.index ||
+    ''}&procedure=${filters.procedure || ''}&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage
@@ -60,8 +85,10 @@ const getProcedureQueryString = ({ filters, options }) => {
 }
 
 export {
+  getEventQueryString,
   getGroupQueryString,
   getProcedureQueryString,
+  getProcedureStepQueryString,
   getStudyQueryString,
   getSubjectQueryString
 }

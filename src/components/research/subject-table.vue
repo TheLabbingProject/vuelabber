@@ -88,9 +88,8 @@ export default {
   },
   created() {
     // Add edit column for staff users
-    this.fetchUsers({ filters: {}, pagination: {} }).then(() =>
-      this.appendEditColumn()
-    )
+    let query = { filters: {}, options: {} }
+    this.fetchUsers(query).then(() => this.appendEditColumn())
   },
   data: () => ({
     headers: [
@@ -109,6 +108,7 @@ export default {
       sortBy: ['id'],
       descending: true
     },
+    editHeader: { text: 'Edit', value: 'edit' },
     itemsPerPageOptions: [10, 25, 50, -1],
     loading: false,
     editSubjectDialog: {},
@@ -132,7 +132,7 @@ export default {
     },
     appendEditColumn() {
       if (this.currentUser.isStaff) {
-        this.headers.push({ text: 'Edit', value: 'edit' })
+        this.headers.push(this.editHeader)
       }
     },
     ...mapActions('accounts', ['fetchUsers'])

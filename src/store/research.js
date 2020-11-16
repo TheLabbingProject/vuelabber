@@ -1,7 +1,17 @@
 import session from '@/api/session'
-import { GROUPS, STUDIES, SUBJECTS } from '@/api/research/endpoints'
 import {
+  EVENTS,
+  GROUPS,
+  PROCEDURE_STEPS,
+  PROCEDURES,
+  STUDIES,
+  SUBJECTS
+} from '@/api/research/endpoints'
+import {
+  getEventQueryString,
   getGroupQueryString,
+  getProcedureQueryString,
+  getProcedureStepQueryString,
   getStudyQueryString,
   getSubjectQueryString
 } from '@/api/research/query'
@@ -13,7 +23,13 @@ const state = {
   subjects: [],
   plots: { subject: {} },
   subjectCount: 0,
-  studyCount: 0
+  studyCount: 0,
+  procedures: [],
+  procedureCount: 0,
+  events: [],
+  eventCount: 0,
+  procedureSteps: [],
+  procedureStepCount: 0
 }
 
 const getters = {
@@ -32,8 +48,17 @@ const mutations = {
   setStudies(state, studies) {
     state.studies = studies
   },
+  setProcedures(state, procedures) {
+    state.procedures = procedures
+  },
+  setProcedureSteps(state, procedureSteps) {
+    state.procedureSteps = procedureSteps
+  },
   setSubjects(state, subjects) {
     state.subjects = subjects
+  },
+  setEvents(state, events) {
+    state.events = events
   },
   addSubject(state, subject) {
     state.subjects.push(subject)
@@ -52,6 +77,39 @@ const mutations = {
     let newStudies = state.studies.slice()
     newStudies[index] = updatedStudy
     state.studies = newStudies
+  },
+  updateProcedureState(state, updatedProcedure) {
+    let index = state.procedures.indexOf(
+      state.procedures.find(procedure => procedure.id === updatedProcedure.id)
+    )
+    // Mutating an array directly causes reactivity problems
+    let newProcedures = state.procedures.slice()
+    newProcedures[index] = updatedProcedure
+    state.procedures = newProcedures
+  },
+  updateProcedureStepState(state, updatedProcedureStep) {
+    let index = state.procedureSteps.indexOf(
+      state.procedureSteps.find(
+        procedureStep => procedureStep.id === updatedProcedureStep.id
+      )
+    )
+    // Mutating an array directly causes reactivity problems
+    let newProcedureSteps = state.procedureSteps.slice()
+    newProcedureSteps[index] = updatedProcedureStep
+    state.procedureSteps = newProcedureSteps
+  },
+  updateEventState(state, updatedEvent) {
+    let index = state.procedureSteps.indexOf(
+      state.procedureSteps.find(
+        procedureStep => procedureStep.event.id === updatedEvent.id
+      )
+    )
+    // Mutating an array directly causes reactivity problems
+    let newProcedureSteps = state.procedureSteps.slice()
+    newProcedureSteps[index] = Object.assign(state.procedureSteps[index], {
+      event: updatedEvent
+    })
+    state.procedureSteps = newProcedureSteps
   },
   addGroup(state, group) {
     state.groups.push(group)
@@ -75,6 +133,11 @@ const mutations = {
       existingStudy => existingStudy.id != study.id
     )
   },
+  removeProcedureFromState(state, procedure) {
+    state.procedures = state.procedures.filter(
+      existingProcedure => existingProcedure.id != procedure.id
+    )
+  },
   setSubjectDateOfBirthPlot(state, script) {
     var plots = Object.assign({}, state.plots)
     plots.subject.dateOfBirth = script
@@ -85,6 +148,15 @@ const mutations = {
   },
   setStudyCount(state, count) {
     state.studyCount = count
+  },
+  setProcedureCount(state, count) {
+    state.procedureCount = count
+  },
+  setProcedureStepCount(state, count) {
+    state.procedureStepCount = count
+  },
+  setEventCount(state, count) {
+    state.eventCount = count
   }
 }
 
@@ -100,13 +172,46 @@ const actions = {
       })
       .catch(console.error)
   },
-  fetchSubjects({ commit }, { filters, options }) {
-    let queryString = getSubjectQueryString({ filters, options })
+  fetchProcedures({ commit }, query) {
+    let queryString = getProcedureQueryString(query)
+    let URL = `${PROCEDURES}/${queryString}`
+    return session
+      .get(URL)
+      .then(({ data }) => {
+        commit('setProcedures', data.results)
+        commit('setProcedureCount', data.count)
+      })
+      .catch(console.error)
+  },
+  fetchProcedureSteps({ commit }, query) {
+    let queryString = getProcedureStepQueryString(query)
+    let URL = `${PROCEDURE_STEPS}/${queryString}`
+    return session
+      .get(URL)
+      .then(({ data }) => {
+        commit('setProcedureSteps', data.results)
+        commit('setProcedureStepCount', data.count)
+      })
+      .catch(console.error)
+  },
+  fetchSubjects({ commit }, query) {
+    let queryString = getSubjectQueryString(query)
     return session
       .get(`${SUBJECTS}/${queryString}`)
       .then(({ data }) => {
         commit('setSubjects', data.results)
         commit('setSubjectCount', data.count)
+        return data.results
+      })
+      .catch(console.error)
+  },
+  fetchEvents({ commit }, query) {
+    let queryString = getEventQueryString(query)
+    return session
+      .get(`${EVENTS}/${queryString}`)
+      .then(({ data }) => {
+        commit('setEvents', data.results)
+        commit('setEventCount', data.count)
         return data.results
       })
       .catch(console.error)
@@ -160,6 +265,44 @@ const actions = {
     return session
       .delete(`${STUDIES}/${study.id}/`)
       .then(() => commit('removeStudyFromState', study))
+      .catch(console.error)
+  },
+  patchProcedure({ commit }, data) {
+    let { procedureId, ...dataWithoutId } = data
+    let URL = `${PROCEDURES}/${procedureId}/`
+    return session
+      .patch(URL, dataWithoutId)
+      .then(({ data }) => {
+        commit('updateProcedureState', data)
+        return true
+      })
+      .catch(console.error)
+  },
+  updateEvent({ commit }, data) {
+    let URL = `${EVENTS}/${data.id}/`
+    return session
+      .patch(URL, data)
+      .then(({ data }) => {
+        commit('updateEventState', data)
+      })
+      .catch(console.error)
+  },
+  patchProcedureStep({ commit }, data) {
+    let { procedureStepId, ...dataWithoutId } = data
+    let URL = `${PROCEDURE_STEPS}/${procedureStepId}/`
+    return session
+      .patch(URL, dataWithoutId)
+      .then(({ data }) => {
+        commit('updateProcedureStepState', data)
+        return true
+      })
+      .catch(console.error)
+  },
+  deleteProcedure({ commit }, procedure) {
+    let URL = `${PROCEDURES}/${procedure.id}/`
+    return session
+      .delete(URL)
+      .then(() => commit('removeProcedureFromState', procedure))
       .catch(console.error)
   },
   createGroup({ dispatch }, group) {

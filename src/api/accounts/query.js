@@ -1,11 +1,16 @@
-const getUserQueryString = ({ filters, pagination }) => {
-  return `?id=${filters.id || ''}&username=${filters.username ||
-    ''}&page_size=${pagination.itemsPerPage || 100}&page=${pagination.page ||
+const getUserQueryString = ({ filters, options }) => {
+  return `?id=${filters.id || ''}&username${filters.username ||
+    ''}=&username_lookup=icontains&first_name=${filters.firstName ||
+    ''}&first_name_lookup=icontains&last_name=${filters.lastName ||
+    ''}&last_name_lookup=icontains&email=${filters.email ||
+    ''}&email_lookup=icontains&institute=${filters.institute || ''}${
+    filters.study ? `&study=${filters.study}` : ''
+  }&page_size=${options.itemsPerPage || 100}&page=${options.page ||
     1}&ordering=${
-    pagination.sortBy
-      ? pagination.descending
-        ? '-' + pagination.sortBy
-        : pagination.sortBy
+    options.sortBy
+      ? options.sortDesc
+        ? '-' + options.sortBy
+        : options.sortBy
       : ''
   }`
 }

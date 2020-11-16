@@ -43,13 +43,13 @@ export default {
   //   // this.$loadScript(
   //   //   '../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js'
   //   // ).then(() => {
-  //   //   // window.dispatchEvent(event)
+  //   //   // window.disupdateEvent(event)
   //   // })
   //   // this.$loadScript(
   //   //   '../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js'
   //   // ).then(() => {
   //   //   require('../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js')
-  //   //   // window.dispatchEvent(event)
+  //   //   // window.disupdateEvent(event)
   //   // })
   // },
   // created() {}

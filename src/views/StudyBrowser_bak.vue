@@ -89,9 +89,8 @@ export default {
   name: 'StudyBrowser',
   components: { StudyInfoCard },
   created() {
-    this.fetchUsers({ filters: {}, pagination: {} }).then(() =>
-      this.fetchStudies()
-    )
+    let query = { filters: {}, options: {} }
+    this.fetchUsers(query).then(() => this.fetchStudies())
   },
   data: () => ({
     editStudyDialog: {},

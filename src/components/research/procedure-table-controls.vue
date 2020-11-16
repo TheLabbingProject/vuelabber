@@ -1,5 +1,5 @@
 <template>
-  <v-row class="px-4 align-left">
+  <v-row class="px-4 align-left" v-if="showControls">
     <v-col :cols="1" style="max-width: 100px;">
       <v-text-field label="ID" v-model="filters.id" />
     </v-col>
@@ -24,10 +24,17 @@
 import { mapActions } from 'vuex'
 
 export default {
-  name: 'SubjectTableControls',
-  props: { options: Object },
+  name: 'ProcedureTableControls',
+  props: {
+    options: Object,
+    study: Object,
+    showControls: { type: Boolean, default: true }
+  },
   created() {
-    this.fetchStudies({ filters: this.filters, options: this.options })
+    if (this.study) {
+      this.filters.studyId = this.study.id
+    }
+    this.update()
   },
   data: () => ({
     filters: {
@@ -36,15 +43,19 @@ export default {
       description: ''
     }
   }),
+  computed: {
+    query: function() {
+      return { filters: this.filters, options: this.options }
+    }
+  },
   methods: {
     update() {
-      this.$emit('fetch-studies-start')
-      let query = { filters: this.filters, options: this.options }
-      this.fetchStudies(query).then(() => {
-        this.$emit('fetch-studies-end')
+      this.$emit('fetch-procedures-start')
+      this.fetchProcedures(this.query).then(() => {
+        this.$emit('fetch-procedures-end')
       })
     },
-    ...mapActions('research', ['fetchStudies'])
+    ...mapActions('research', ['fetchProcedures'])
   },
   watch: {
     filters: {

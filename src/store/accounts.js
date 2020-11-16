@@ -1,10 +1,11 @@
 import session from '@/api/session'
-import { USERS, LABS } from '@/api/accounts/endpoints'
+import { ACCOUNTS_BASE, LABS, USERS } from '@/api/accounts/endpoints'
 import { getUserQueryString } from '@/api/accounts/query'
 
 const state = {
   users: [],
-  labs: []
+  labs: [],
+  institutionNames: []
 }
 
 const getters = {
@@ -35,15 +36,39 @@ const mutations = {
   },
   setLabs(state, labs) {
     state.labs = labs
+  },
+  setInstitutionNames(state, institutionNames) {
+    state.institutionNames = institutionNames.map(name =>
+      name == undefined ? '' : name
+    )
   }
 }
 
 const actions = {
-  fetchUsers({ commit }, { filters, pagination }) {
-    let queryString = getUserQueryString({ filters, pagination })
+  fetchUsers({ commit }, query) {
+    let queryString = getUserQueryString(query)
+    let URL = `${USERS}/${queryString}`
     return session
-      .get(`${USERS}/${queryString}`)
+      .get(URL)
       .then(({ data }) => commit('setUsers', data.results))
+      .catch(console.error)
+  },
+  patchUser({ commit }, data) {
+    let { userId, ...dataWithoutId } = data
+    return session
+      .patch(`${USERS}/${userId}/`, dataWithoutId)
+      .then(({ data }) => {
+        commit('updateUserState', data)
+        return true
+      })
+      .catch(console.error)
+  },
+  fetchInstitutionNames({ commit }) {
+    return session
+      .get(`${ACCOUNTS_BASE}/institutionList`)
+      .then(({ data }) => {
+        commit('setInstitutionNames', data.results)
+      })
       .catch(console.error)
   },
   updateUser({ commit }, user) {
