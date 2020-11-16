@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-row class="px-3 pb-3">
+    <v-row class="px-3">
       <div class="title text-left">Studies</div>
       <v-spacer />
       <v-dialog v-model="createStudyDialog" width="600px" v-if="user.isStaff">
@@ -35,25 +35,23 @@
           @fetch-studies-start="loading = true"
           @fetch-studies-end="loading = false"
         />
-        <v-toolbar flat>
-          <v-dialog v-model="deleteStudyDialog" max-width="500px">
-            <v-card>
-              <v-card-title class="h4">
-                Are you sure you want to delete this item?
-              </v-card-title>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDeleteDialog">
-                  Cancel
-                </v-btn>
-                <v-btn color="blue darken-1" text @click="deleteStudyConfirm">
-                  OK
-                </v-btn>
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-toolbar>
+        <v-dialog v-model="deleteStudyDialog" max-width="500px">
+          <v-card>
+            <v-card-title class="h4">
+              Are you sure you want to delete this item?
+            </v-card-title>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="closeDeleteDialog">
+                Cancel
+              </v-btn>
+              <v-btn color="blue darken-1" text @click="deleteStudyConfirm">
+                OK
+              </v-btn>
+              <v-spacer></v-spacer>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </template>
 
       <!-- Title -->

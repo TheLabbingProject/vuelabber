@@ -48,7 +48,8 @@ import { mapActions, mapState } from 'vuex'
 export default {
   name: 'UserInformation',
   created() {
-    this.fetchUsers({ filters: { username: this.username }, pagination: {} })
+    let query = { filters: { username: this.username }, options: {} }
+    this.fetchUsers(query)
   },
   components: { EditUserInformation },
   props: { username: String },

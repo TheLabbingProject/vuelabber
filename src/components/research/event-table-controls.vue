@@ -1,5 +1,5 @@
 <template>
-  <v-row class="px-4 align-left">
+  <v-row class="px-4 align-left" v-if="showControls">
     <v-col :cols="1" style="max-width: 100px;">
       <v-text-field label="ID" v-model="filters.id" />
     </v-col>
@@ -24,27 +24,39 @@
 import { mapActions } from 'vuex'
 
 export default {
-  name: 'SubjectTableControls',
-  props: { options: Object },
+  name: 'EventTableControls',
+  props: {
+    options: Object,
+    procedure: Object,
+    showControls: { type: Boolean, default: true }
+  },
   created() {
-    this.fetchStudies({ filters: this.filters, options: this.options })
+    if (this.procedure) {
+      this.filters.procedureId = this.procedure.id
+    }
+    this.update()
   },
   data: () => ({
     filters: {
       id: '',
       title: '',
-      description: ''
+      description: '',
+      procedureId: ''
     }
   }),
+  computed: {
+    query: function() {
+      return { filters: this.filters, options: this.options }
+    }
+  },
   methods: {
     update() {
-      this.$emit('fetch-studies-start')
-      let query = { filters: this.filters, options: this.options }
-      this.fetchStudies(query).then(() => {
-        this.$emit('fetch-studies-end')
+      this.$emit('fetch-events-start')
+      this.fetchEvents(this.query).then(() => {
+        this.$emit('fetch-events-end')
       })
     },
-    ...mapActions('research', ['fetchStudies'])
+    ...mapActions('research', ['fetchEvents'])
   },
   watch: {
     filters: {

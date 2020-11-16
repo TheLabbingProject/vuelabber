@@ -94,7 +94,8 @@ export default {
   },
   created() {
     this.study = cloneStudy(this.existingStudy)
-    this.fetchUsers({ filters: {}, pagination: {} }).then(
+    let query = { filters: {}, options: {} }
+    this.fetchUsers(query).then(
       (this.selectedCollaborators = this.study.collaborators.map(collaborator =>
         this.getCollaboratorName(this.getUserByUrl(collaborator))
       ))

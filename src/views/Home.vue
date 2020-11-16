@@ -60,9 +60,10 @@ import { mapActions, mapState } from 'vuex'
 
 export default {
   name: 'HomeView',
-  created() {
+  mounted() {
     this.fetchLabs()
-    this.fetchUsers({ filters: {}, pagination: {} })
+    let query = { filters: {}, options: {} }
+    this.fetchUsers(query)
   },
   computed: {
     ...mapState('accounts', ['labs', 'users'])
