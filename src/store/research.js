@@ -2,6 +2,7 @@ import session from '@/api/session'
 import { GROUPS, STUDIES, SUBJECTS } from '@/api/research/endpoints'
 import {
   getGroupQueryString,
+  getStudyQueryString,
   getSubjectQueryString
 } from '@/api/research/query'
 import { camelToSnakeCase } from '@/utils'
@@ -11,7 +12,8 @@ const state = {
   groups: [],
   subjects: [],
   plots: { subject: {} },
-  subjectCount: 0
+  subjectCount: 0,
+  studyCount: 0
 }
 
 const getters = {
@@ -80,14 +82,22 @@ const mutations = {
   },
   setSubjectCount(state, count) {
     state.subjectCount = count
+  },
+  setStudyCount(state, count) {
+    state.studyCount = count
   }
 }
 
 const actions = {
-  fetchStudies({ commit }) {
+  fetchStudies({ commit }, query) {
+    let queryString = getStudyQueryString(query)
+    let URL = `${STUDIES}/${queryString}`
     return session
-      .get(STUDIES)
-      .then(({ data }) => commit('setStudies', data.results))
+      .get(URL)
+      .then(({ data }) => {
+        commit('setStudies', data.results)
+        commit('setStudyCount', data.count)
+      })
       .catch(console.error)
   },
   fetchSubjects({ commit }, { filters, options }) {
@@ -133,6 +143,16 @@ const actions = {
       .then(({ data }) => {
         commit('updateStudyState', data)
         return data
+      })
+      .catch(console.error)
+  },
+  patchStudy({ commit }, data) {
+    let { studyId, ...dataWithoutId } = data
+    return session
+      .patch(`${STUDIES}/${studyId}/`, dataWithoutId)
+      .then(({ data }) => {
+        commit('updateStudyState', data)
+        return true
       })
       .catch(console.error)
   },

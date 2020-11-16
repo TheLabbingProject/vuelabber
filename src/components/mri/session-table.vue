@@ -150,17 +150,7 @@ export default {
     },
     saveComments(session) {
       let data = { sessionId: session.id, comments: session.comments }
-      this.patchSession(data).then(response => {
-        if (!response) {
-          this.snack = true
-          this.snackColor = 'error'
-          this.snackText = `Failed to update session #${session.id}!`
-        } else {
-          this.snack = true
-          this.snackColor = 'success'
-          this.snackText = `Session #${session.id} successfully updated!`
-        }
-      })
+      this.patchSession(data)
     },
     ...mapActions('mri', ['patchSession'])
   }

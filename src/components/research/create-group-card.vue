@@ -37,7 +37,7 @@ export default {
   name: 'CreateGroupCard',
   props: { study: Object },
   created() {
-    this.fetchStudies()
+    this.fetchStudies({ filters: {}, options: {} })
     if (this.study) {
       this.selectedStudy = this.study
     }

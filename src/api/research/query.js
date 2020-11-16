@@ -6,6 +6,18 @@ const parseOrdering = ({ sortBy, sortDesc }) => {
     .join(',')
 }
 
+const getStudyQueryString = ({ filters, options }) => {
+  return `?id=${filters.id || ''}&title=${filters.title ||
+    ''}&title_lookup=icontains&description=${filters.description ||
+    ''}&description_lookup=icontains&page_size=${
+    options.itemsPerPage
+      ? options.itemsPerPage != -1
+        ? options.itemsPerPage
+        : 1000
+      : 100
+  }&page=${options.page || 1}&ordering=${parseOrdering(options)}`
+}
+
 const getSubjectQueryString = ({ filters, options }) => {
   return `?id=${filters.id || ''}&first_name=${filters.firstName ||
     ''}&first_name_lookup=icontains&last_name=${filters.lastName ||
@@ -35,4 +47,21 @@ const getGroupQueryString = ({ filters, options }) => {
   }`
 }
 
-export { getGroupQueryString, getSubjectQueryString }
+const getProcedureQueryString = ({ filters, options }) => {
+  return `?id=${filters.id || ''}&title=${filters.title ||
+    ''}&title_lookup=icontains&description=${filters.description ||
+    ''}&description_lookup=icontains&study=${filters.studyId || ''}&page_size=${
+    options.itemsPerPage
+      ? options.itemsPerPage != -1
+        ? options.itemsPerPage
+        : 1000
+      : 100
+  }&page=${options.page || 1}&ordering=${parseOrdering(options)}`
+}
+
+export {
+  getGroupQueryString,
+  getProcedureQueryString,
+  getStudyQueryString,
+  getSubjectQueryString
+}
