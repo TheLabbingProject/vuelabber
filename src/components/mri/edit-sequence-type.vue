@@ -76,7 +76,7 @@ export default {
     if (this.existingSequenceType) {
       this.sequenceType = Object.assign({}, this.existingSequenceType)
     } else if (this.fromScan && this.fromScan.dicom) {
-      this.setSequenceDefinitionFromDicomUrl(this.fromScan.dicom)
+      this.setSequenceDefinitionFromDicom(this.fromScan.dicom)
     }
   },
   data: () => ({
@@ -102,6 +102,15 @@ export default {
     },
     updateSequenceTypeCaller() {
       this.updateSequenceType(this.sequenceType).then(this.closeDialog())
+    },
+    setSequenceDefinitionFromDicom(dicomId) {
+      this.fetchSeries({
+        filters: { id: dicomId },
+        options: {}
+      }).then(({ scanningSequence, sequenceVariant }) => {
+        this.sequenceType['scanningSequence'] = scanningSequence
+        this.sequenceType['sequenceVariant'] = sequenceVariant
+      })
     },
     ...mapActions('dicom', ['fetchSeries']),
     ...mapActions('mri', ['createSequenceType', 'updateSequenceType'])

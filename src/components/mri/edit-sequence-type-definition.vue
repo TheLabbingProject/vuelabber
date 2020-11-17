@@ -87,9 +87,7 @@ export default {
     ...mapState('dicom', ['seriesList'])
   },
   methods: {
-    setSequenceDefinitionFromDicomUrl(dicomUrl) {
-      let splitUrl = dicomUrl.split('/')
-      let dicomId = Number(splitUrl[splitUrl.length - 2])
+    setSequenceDefinitionFromDicomUrl(dicomId) {
       this.fetchSeries({
         filters: { id: dicomId },
         options: {}

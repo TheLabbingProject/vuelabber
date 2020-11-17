@@ -57,7 +57,6 @@
         <v-edit-dialog
           :return-value.sync="item.comments"
           large
-          persistent
           @save="saveComments(item)"
         >
           <div>{{ item.comments }}</div>
@@ -117,6 +116,7 @@ export default {
       { text: 'Subject', value: 'subject', align: 'center' },
       { text: 'Date', value: 'date' },
       { text: 'Time', value: 'time' },
+      { text: 'Measurement', value: 'measurement.title' },
       { text: 'Comments', value: 'comments' }
     ],
     options: {

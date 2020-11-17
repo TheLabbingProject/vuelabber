@@ -35,10 +35,11 @@ import { mapState, mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'CreateGroupCard',
-  props: { study: Object },
-  created() {
-    this.fetchStudies({ filters: {}, options: {} })
-    if (this.study) {
+  props: { study: { type: Object, default: undefined } },
+  mounted() {
+    let studyQuery = { filters: {}, options: {} }
+    this.fetchStudies(studyQuery)
+    if (this.study != undefined) {
       this.selectedStudy = this.study
     }
   },
@@ -48,7 +49,7 @@ export default {
   }),
   computed: {
     ...mapState('research', ['studies', 'groups']),
-    ...mapGetters('research', ['getGroupByUrl'])
+    ...mapGetters('research', ['getGroupById'])
   },
   methods: {
     closeDialog: function() {
@@ -56,9 +57,9 @@ export default {
       this.$emit('close-group-dialog')
     },
     createNewGroup: function() {
-      this.group.study = this.selectedStudy.url
+      this.group.study = this.selectedStudy.id
       this.createGroup(this.group)
-        .then(({ url }) => this.getGroupByUrl(url))
+        .then(({ id }) => this.getGroupById(id))
         .then(group => this.$emit('created-group', group))
         .then(() => this.closeDialog())
     },

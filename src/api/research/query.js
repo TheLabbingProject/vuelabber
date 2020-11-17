@@ -1,4 +1,6 @@
-const parseOrdering = ({ sortBy, sortDesc }) => {
+const parseOrdering = options => {
+  let sortBy = options.sortBy ? options.sortBy : []
+  let sortDesc = options.sortDesc ? options.sortDesc : []
   return sortBy
     .map((value, index) => {
       return sortDesc[index] ? '-' + value : value
