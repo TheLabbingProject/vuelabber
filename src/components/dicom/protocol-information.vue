@@ -17,13 +17,13 @@
           <v-col class="text-center">
             <div
               v-for="(definition, index) in sequenceType.sequenceDefinitions"
-              :key="index"
+              :key="`definition-${index}`"
             >
               <v-subheader class="justify-left">Scanning Sequence</v-subheader>
               <div
                 class="py-1"
                 v-for="(sequence, index2) in definition.scanningSequence"
-                :key="index2"
+                :key="`sequence-${index2}`"
               >
                 <v-chip small>
                   <v-avatar :color="getScanningSequenceColor(sequence)">{{
@@ -36,7 +36,7 @@
               <div
                 class="py-1"
                 v-for="(variant, index2) in definition.sequenceVariant"
-                :key="index2"
+                :key="`variant-${index2}`"
               >
                 <v-chip small>
                   <v-avatar :color="getSequenceVariantColor(variant)">

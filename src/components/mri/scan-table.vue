@@ -133,13 +133,13 @@
 
       <!-- Study Groups -->
       <template v-slot:item.studyGroups="{ item }">
-        <div v-for="groupUrl in item.studyGroups" :key="groupUrl" class="py-1">
+        <div v-for="groupId in item.studyGroups" :key="groupId" class="py-1">
           <v-chip
             small
             close
-            @click:close="disassociateFromGroup(item, groupUrl)"
+            @click:close="disassociateFromGroup(item, groupId)"
           >
-            {{ stringifyGroup(getGroupByUrl(groupUrl)) }}
+            {{ stringifyGroup(getGroupById(groupId)) }}
           </v-chip>
         </div>
       </template>
@@ -168,8 +168,8 @@ import VueScript2 from 'vue-script2'
 export default {
   name: 'ScanTable',
   props: {
-    subject: { type: Object, default: null },
-    session: { type: Object, default: null }
+    subject: { type: Object, default: undefined },
+    session: { type: Object, default: undefined }
   },
   components: {
     EditSequenceType,
@@ -181,8 +181,9 @@ export default {
   },
   mounted() {
     this.fetchSequenceTypes()
-    this.fetchGroups({ filters: {}, options: {} })
-    if (this.subject) {
+    let groupQuery = { filters: {}, options: {} }
+    this.fetchGroups(groupQuery)
+    if (this.subject != undefined) {
       this.headers.splice(0, 1)
     }
   },
@@ -226,12 +227,16 @@ export default {
     },
     ...mapState('auth', { currentUser: 'user' }),
     ...mapState('mri', ['scans', 'totalScanCount', 'scanPreviewLoader']),
-    ...mapGetters('research', ['getGroupByUrl'])
+    ...mapGetters('research', ['getGroupById'])
   },
   methods: {
-    disassociateFromGroup(scan, groupUrl) {
-      scan.studyGroups = scan.studyGroups.filter(url => url != groupUrl)
-      this.updateScan(scan)
+    disassociateFromGroup(scan, groupId) {
+      const index = scan.studyGroups.indexOf(groupId)
+      if (index > -1) {
+        scan.studyGroups.splice(index, 1)
+      }
+      let data = { scanId: scan.id, studyGroups: scan.studyGroups }
+      this.updateScan(data)
     },
     formatSpatialResolution(floatArray) {
       return floatArray

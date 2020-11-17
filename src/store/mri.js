@@ -219,14 +219,17 @@ const actions = {
       .catch(console.error)
   },
   deleteScan({ commit }, scan) {
+    let URL = `${SCANS}/${scan.id}/`
     return session
-      .delete(`${SCANS}/${scan.id}/`)
+      .delete(URL)
       .then(() => commit('removeScanFromState', scan))
       .catch(console.error)
   },
-  updateScan({ commit }, scan) {
+  updateScan({ commit }, data) {
+    let { scanId, ...dataWithoutId } = data
+    let URL = `${SCANS}/${scanId}/`
     return session
-      .patch(`${SCANS}/${scan.id}/`, scan)
+      .patch(URL, dataWithoutId)
       .then(({ data }) => {
         commit('updateScanState', data)
       })

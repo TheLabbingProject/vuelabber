@@ -54,9 +54,9 @@
 
       <!-- Select button -->
       <v-col cols="2">
-        <v-btn @click="addSelection" :disabled="!validStudyGroupSelection"
-          >Select Group</v-btn
-        >
+        <v-btn @click="addSelection" :disabled="!validStudyGroupSelection">
+          Select Group
+        </v-btn>
       </v-col>
     </v-row>
 
@@ -82,8 +82,9 @@
           @click="associateSelectedScansToStudyGroups"
           color="success"
           :disabled="!readyToAssociate"
-          >Associate</v-btn
         >
+          Associate
+        </v-btn>
       </v-col>
     </v-row>
   </v-col>
@@ -101,8 +102,10 @@ export default {
   },
   components: { StudyInfoCard, CreateGroupCard },
   created() {
-    this.fetchStudies()
-    this.fetchGroups({ filters: {}, options: {} })
+    let studyQuery = { filters: {}, options: {} }
+    this.fetchStudies(studyQuery)
+    let groupQuery = { filters: {}, options: {} }
+    this.fetchGroups(groupQuery)
   },
   data: () => ({
     createStudyDialog: false,
@@ -150,19 +153,15 @@ export default {
         group => group.id != removedGroup.id
       )
     },
-    getStudyTitle: function(studyUrl) {
-      return this.studies.find(study => study.url === studyUrl).title
-    },
     associateSelectedScansToStudyGroups() {
       this.selectedScans.forEach(scan => {
-        this.selectedGroups
-          .map(group => group.url)
-          .forEach(url => {
-            if (!arrayContains(url, scan.studyGroups)) {
-              scan.studyGroups.push(url)
-            }
-          })
-        this.updateScan(scan)
+        this.selectedGroups.forEach(group => {
+          if (!arrayContains(group.id, scan.studyGroups)) {
+            scan.studyGroups.push(group.id)
+          }
+        })
+        let data = { scanId: scan.id, studyGroups: scan.studyGroups }
+        this.updateScan(data)
       })
     },
     ...mapActions('mri', ['updateScan']),

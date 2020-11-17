@@ -33,8 +33,8 @@ const state = {
 }
 
 const getters = {
-  getGroupByUrl(state) {
-    return url => state.groups.find(group => group.url === url)
+  getGroupById(state) {
+    return groupId => state.groups.find(group => group.id === groupId)
   },
   getSubjectById(state) {
     return id => state.subjects.find(subject => subject.id === id)
