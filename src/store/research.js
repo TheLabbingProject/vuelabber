@@ -115,13 +115,13 @@ const mutations = {
     state.groups.push(group)
   },
   updateSubjectState(state, updatedSubject) {
-    // Remove the old version
-    let subjects = state.subjects.filter(
-      subject => subject.id != updatedSubject.id
+    let index = state.subjects.indexOf(
+      state.subjects.find(subject => subject.id === updatedSubject.id)
     )
-    // Add the updated version
-    subjects.push(updatedSubject)
-    state.subjects = subjects
+    // Mutating an array directly causes reactivity problems
+    let newSubjects = state.subjects.slice()
+    newSubjects[index] = updatedSubject
+    state.subjects = newSubjects
   },
   removeSubjectFromState(state, subject) {
     state.subjects = state.subjects.filter(
@@ -326,8 +326,20 @@ const actions = {
       .catch(console.error)
   },
   updateSubject({ commit }, subject) {
+    let URL = `${SUBJECTS}/${subject.id}/`
     return session
-      .patch(`${SUBJECTS}/${subject.id}/`, camelToSnakeCase(subject))
+      .patch(URL, subject)
+      .then(({ data }) => {
+        commit('updateSubjectState', data)
+        return data
+      })
+      .catch(console.error)
+  },
+  updateSubjectPartial({ commit }, data) {
+    let { subjectId, ...dataWithoutId } = data
+    let URL = `${SUBJECTS}/${subjectId}/`
+    return session
+      .patch(URL, dataWithoutId)
       .then(({ data }) => {
         commit('updateSubjectState', data)
         return data

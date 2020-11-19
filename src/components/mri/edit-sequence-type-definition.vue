@@ -71,7 +71,7 @@ export default {
         this.existingSequenceTypeDefinition
       )
     } else if (this.fromScan && this.fromScan.dicom) {
-      this.setSequenceDefinitionFromDicomUrl(this.fromScan.dicom)
+      this.setSequenceDefinitionFromDicom(this.fromScan.dicom)
     }
   },
   data: () => ({
@@ -87,7 +87,7 @@ export default {
     ...mapState('dicom', ['seriesList'])
   },
   methods: {
-    setSequenceDefinitionFromDicomUrl(dicomId) {
+    setSequenceDefinitionFromDicom(dicomId) {
       this.fetchSeries({
         filters: { id: dicomId },
         options: {}

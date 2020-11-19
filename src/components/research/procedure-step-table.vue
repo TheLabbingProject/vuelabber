@@ -103,7 +103,7 @@ export default {
       this.updateEvent(event)
     },
     getTypeDisplay(type) {
-      return type == 'MeasurementDefinition' ? 'Measurement' : type
+      return type == 'MeasurementDefinition' ? 'Data Acquisition' : type
     },
     ...mapActions('research', ['updateEvent'])
   }
