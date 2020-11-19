@@ -40,16 +40,166 @@
           @fetch-subjects-end="loading = false"
         />
       </template>
-      <template v-slot:item.dateOfBirth="{ item }">
+
+      <!-- ID Number -->
+      <template v-slot:item.idNumber="{ item }" v-if="currentUser.isStaff">
+        <v-edit-dialog
+          :return-value.sync="item.idNumber"
+          large
+          @save="saveSubject(item, 'idNumber')"
+        >
+          <div>{{ item.idNumber }}</div>
+          <template v-slot:input>
+            <v-text-field
+              v-model="item.idNumber"
+              label="Edit"
+              single-line
+              autofocus
+            ></v-text-field>
+          </template>
+        </v-edit-dialog>
+      </template>
+
+      <!-- First Name -->
+      <template v-slot:item.firstName="{ item }" v-if="currentUser.isStaff">
+        <v-edit-dialog
+          :return-value.sync="item.firstName"
+          large
+          @save="saveSubject(item, 'firstName')"
+        >
+          <div>{{ item.firstName }}</div>
+          <template v-slot:input>
+            <v-text-field
+              v-model="item.firstName"
+              label="Edit"
+              single-line
+              autofocus
+            ></v-text-field>
+          </template>
+        </v-edit-dialog>
+      </template>
+
+      <!-- Last Name -->
+      <template v-slot:item.lastName="{ item }" v-if="currentUser.isStaff">
+        <v-edit-dialog
+          :return-value.sync="item.lastName"
+          large
+          @save="saveSubject(item, 'lastName')"
+        >
+          <div>{{ item.lastName }}</div>
+          <template v-slot:input>
+            <v-text-field
+              v-model="item.lastName"
+              label="Edit"
+              single-line
+              autofocus
+            ></v-text-field>
+          </template>
+        </v-edit-dialog>
+      </template>
+
+      <!-- Date of Birth -->
+      <template v-slot:item.dateOfBirth="{ item }" v-if="currentUser.isStaff">
+        <v-edit-dialog
+          :return-value.sync="item.dateOfBirth"
+          large
+          @save="saveSubject(item, 'dateOfBirth')"
+        >
+          <div>
+            {{ item.dateOfBirth | formatDate }}
+          </div>
+          <template v-slot:input>
+            <v-date-picker
+              v-model="item.dateOfBirth"
+              @input="dateOfBirthMenu = false"
+              scrollable
+            >
+              <template v-slot:default>
+                <v-btn color="orange" @click="item.dateOfBirth = null">
+                  Clear
+                </v-btn>
+              </template>
+            </v-date-picker>
+          </template>
+        </v-edit-dialog>
+      </template>
+      <template v-slot:item.dateOfBirth="{ item }" v-else>
         {{ item.dateOfBirth | formatDate }}
       </template>
-      <template v-slot:item.sex="{ item }">{{ sexOptions[item.sex] }}</template>
-      <template v-slot:item.gender="{ item }">
-        {{ genderOptions[item.gender] }}
+
+      <!-- Sex -->
+      <template v-if="currentUser.isStaff" v-slot:item.sex="{ item }">
+        <v-edit-dialog
+          :return-value.sync="item.sex"
+          large
+          @save="saveSubject(item, 'sex')"
+        >
+          <div>
+            {{ getDisplay(item.sex, sexOptions) }}
+          </div>
+          <template v-slot:input>
+            <v-select
+              clearable
+              label="Edit"
+              v-model="item.sex"
+              :items="sexItems"
+            />
+          </template>
+        </v-edit-dialog>
       </template>
-      <template v-slot:item.dominantHand="{ item }">
-        {{ dominantHandOptions[item.dominantHand] }}
+      <template v-else v-slot:item.sex="{ item }">
+        {{ getDisplay(item.sex, sexOptions) }}
       </template>
+
+      <!-- Gender -->
+      <template v-if="currentUser.isStaff" v-slot:item.gender="{ item }">
+        <v-edit-dialog
+          :return-value.sync="item.gender"
+          large
+          @save="saveSubject(item, 'gender')"
+        >
+          <div>
+            {{ getDisplay(item.gender, genderOptions) }}
+          </div>
+          <template v-slot:input>
+            <v-select
+              clearable
+              label="Edit"
+              v-model="item.gender"
+              :items="genderItems"
+            />
+          </template>
+        </v-edit-dialog>
+      </template>
+      <template v-else v-slot:item.gender="{ item }">
+        {{ getDisplay(item.gender, genderOptions) }}
+      </template>
+
+      <!-- Dominant Hand -->
+      <template v-if="currentUser.isStaff" v-slot:item.dominantHand="{ item }">
+        <v-edit-dialog
+          :return-value.sync="item.dominantHand"
+          large
+          @save="saveSubject(item, 'dominantHand')"
+        >
+          <div>
+            {{ getDisplay(item.dominantHand, dominantHandOptions) }}
+          </div>
+          <template v-slot:input>
+            <v-select
+              clearable
+              label="Edit"
+              v-model="item.dominantHand"
+              :items="dominantHandItems"
+            />
+          </template>
+        </v-edit-dialog>
+      </template>
+      <template v-else v-slot:item.dominantHand="{ item }">
+        {{ getDisplay(item.dominantHand, dominantHandOptions) }}
+      </template>
+
+      <!-- Edit dialog -->
       <template v-slot:item.edit="{ item }" v-if="currentUser.isStaff">
         <v-dialog v-model="editSubjectDialog[item.id]" width="600px">
           <template v-slot:activator="{ on }">
@@ -78,6 +228,7 @@ import SubjectInfoCard from '@/components/research/subject-info-card.vue'
 import SubjectTableControls from '@/components/research/subject-table-controls.vue'
 import { sexOptions, genderOptions, dominantHandOptions } from './choices.js'
 import { mapActions, mapState } from 'vuex'
+import { createSelectItems } from '@/components/utils'
 
 export default {
   name: 'SubjectTable',
@@ -86,11 +237,6 @@ export default {
     SubjectInfoCard,
     SubjectTableControls
   },
-  created() {
-    // Add edit column for staff users
-    let query = { filters: {}, options: {} }
-    this.fetchUsers(query).then(() => this.appendEditColumn())
-  },
   data: () => ({
     headers: [
       { text: 'ID', value: 'id', align: 'left', width: 1 },
@@ -98,15 +244,15 @@ export default {
       { text: 'First Name', value: 'firstName' },
       { text: 'Last Name', value: 'lastName' },
       { text: 'Date of Birth', value: 'dateOfBirth' },
-      { text: 'Sex', value: 'sex' },
-      { text: 'Gender', value: 'gender' },
-      { text: 'Dominant Hand', value: 'dominantHand' }
+      { text: 'Sex', value: 'sex', sortable: false },
+      { text: 'Gender', value: 'gender', sortable: false },
+      { text: 'Dominant Hand', value: 'dominantHand', sortable: false }
     ],
     options: {
       itemsPerPage: 25,
       page: 1,
       sortBy: ['id'],
-      descending: true
+      sortDesc: [false]
     },
     editHeader: { text: 'Edit', value: 'edit' },
     itemsPerPageOptions: [10, 25, 50, -1],
@@ -118,7 +264,11 @@ export default {
     genderOptions,
     dominantHandOptions,
     subjectDialog: false,
-    createSubjectDialog: false
+    createSubjectDialog: false,
+    dateOfBirthMenu: false,
+    sexItems: createSelectItems(sexOptions),
+    genderItems: createSelectItems(genderOptions),
+    dominantHandItems: createSelectItems(dominantHandOptions)
   }),
   computed: {
     ...mapState('research', ['subjects', 'subjectCount']),
@@ -135,7 +285,17 @@ export default {
         this.headers.push(this.editHeader)
       }
     },
-    ...mapActions('accounts', ['fetchUsers'])
+    saveSubject(subject, field) {
+      let value = subject[field] == 'null' ? '' : subject[field] || ''
+      let data = { subjectId: subject.id, [field]: value }
+      this.updateSubjectPartial(data)
+    },
+    getDisplay(value, options) {
+      let display = options[value]
+      return display == 'Unknown' ? '' : display
+    },
+    ...mapActions('accounts', ['fetchUsers']),
+    ...mapActions('research', ['updateSubjectPartial'])
   }
 }
 </script>

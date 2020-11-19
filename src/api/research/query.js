@@ -56,9 +56,7 @@ const getGroupQueryString = ({ filters, options }) => {
         ? options.itemsPerPage
         : 1000
       : 100
-  }&page=${options.page || 1}&ordering=${
-    options.descending ? '-' + options.sortBy : options.sortBy
-  }`
+  }&page=${options.page || 1}&ordering=${parseOrdering(options)}`
 }
 
 const getProcedureQueryString = ({ filters, options }) => {
