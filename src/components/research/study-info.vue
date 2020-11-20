@@ -7,7 +7,7 @@
       </v-tab-item>
       <v-tab>Procedures</v-tab>
       <v-tab-item>
-        <procedure-table :study="study" :showControls="false" />
+        <procedure-table :study="study" />
       </v-tab-item>
     </v-tabs>
   </v-col>
