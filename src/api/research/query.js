@@ -64,6 +64,8 @@ const getProcedureQueryString = ({ filters, options }) => {
     ''}&title_lookup=icontains&description=${filters.description ||
     ''}&description_lookup=icontains${
     filters.studyId ? `&study=${filters.studyId}` : ''
+  }${
+    filters.excludeStudy ? `&exclude_study=${filters.excludeStudy}` : ''
   }&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1

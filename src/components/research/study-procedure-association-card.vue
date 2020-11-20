@@ -146,7 +146,6 @@ export default {
     associateSelectedProcedure: function() {
       this.study.procedures.push(this.selectedProcedure)
       let data = { studyId: this.study.id, procedures: this.study.procedures }
-      console.log(data)
       this.patchStudy(data)
         .then(() => {
           this.$emit('existing-procedure-associated')
@@ -161,7 +160,10 @@ export default {
     updateProcedureItems() {
       let value =
         this.existingProcedureQuery == null ? '' : this.existingProcedureQuery
-      let query = { filters: { title: value }, options: {} }
+      let query = {
+        filters: { title: value, excludeStudy: this.study.id },
+        options: {}
+      }
       this.loadingProcedureItems = true
       this.fetchProcedureItems(query).then(
         () => (this.loadingProcedureItems = false)
