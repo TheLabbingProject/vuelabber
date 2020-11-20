@@ -17,6 +17,7 @@
     >
       <template v-slot:top>
         <procedure-table-controls
+          ref="controls"
           :options="options"
           :study="study"
           :showControls="showControls"
@@ -63,6 +64,22 @@
         </v-edit-dialog>
       </template>
 
+      <template v-slot:item.dissociate="{ item }" v-if="user.isStaff">
+        <v-btn small text @click="dissociateProcedure(item)">
+          <v-icon>
+            cancel
+          </v-icon>
+        </v-btn>
+      </template>
+
+      <template v-slot:item.delete="{ item }" v-if="user.isStaff">
+        <v-btn small text @click="deleteProcedure(item)">
+          <v-icon>
+            delete
+          </v-icon>
+        </v-btn>
+      </template>
+
       <!-- Expand procedure events -->
       <template v-slot:expanded-item="{ item, headers }">
         <td :colspan="headers.length" class="pa-0 ma-0">
@@ -81,7 +98,13 @@ import { mapActions, mapState } from 'vuex'
 export default {
   name: 'UserTable',
   components: { ProcedureStepTable, ProcedureTableControls },
-  props: { study: Object, showControls: Boolean },
+  props: { study: Object, showControls: { type: Boolean, default: true } },
+  mounted() {
+    if (this.user.isStaff && this.study) {
+      this.headers.push(this.dissociateColumnHeader)
+      this.headers.push(this.deleteColumnHeader)
+    }
+  },
   data: () => ({
     headers: [
       { text: 'ID', value: 'id', align: 'left', width: 1 },
@@ -99,7 +122,21 @@ export default {
     expanded: [],
     expand: true,
     procedureDialog: false,
-    chosenIndex: -1
+    chosenIndex: -1,
+    dissociateColumnHeader: {
+      text: 'Dissociate',
+      value: 'dissociate',
+      sortable: false,
+      align: 'center',
+      width: 1
+    },
+    deleteColumnHeader: {
+      text: 'Delete',
+      value: 'delete',
+      sortable: false,
+      align: 'center',
+      width: 1
+    }
   }),
   computed: {
     ...mapState('research', ['procedures', 'procedureCount']),
@@ -117,7 +154,20 @@ export default {
       }
       this.patchProcedure(data)
     },
-    ...mapActions('research', ['patchProcedure'])
+    dissociateProcedure(procedure) {
+      let procedures = this.study.procedures.filter(
+        associatedProcedure => associatedProcedure != procedure.id
+      )
+      let data = { studyId: this.study.id, procedures }
+      this.patchStudy(data).then(() => {
+        this.$refs.controls.update()
+      })
+    },
+    ...mapActions('research', [
+      'deleteProcedure',
+      'patchProcedure',
+      'patchStudy'
+    ])
   }
 }
 </script>

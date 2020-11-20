@@ -29,7 +29,8 @@ const state = {
   events: [],
   eventCount: 0,
   procedureSteps: [],
-  procedureStepCount: 0
+  procedureStepCount: 0,
+  procedureItems: []
 }
 
 const getters = {
@@ -51,6 +52,9 @@ const mutations = {
   setProcedures(state, procedures) {
     state.procedures = procedures
   },
+  setProcedureItems(state, procedureItems) {
+    state.procedureItems = procedureItems
+  },
   setProcedureSteps(state, procedureSteps) {
     state.procedureSteps = procedureSteps
   },
@@ -68,6 +72,9 @@ const mutations = {
   },
   addStudy(state, study) {
     state.studies.push(study)
+  },
+  addProcedure(state, procedure) {
+    state.procedures.push(procedure)
   },
   updateStudyState(state, updatedStudy) {
     let index = state.studies.indexOf(
@@ -183,6 +190,17 @@ const actions = {
       })
       .catch(console.error)
   },
+  fetchProcedureItems({ commit }, query) {
+    let queryString = getProcedureQueryString(query)
+    let URL = `${PROCEDURES}/items/${queryString}`
+    console.log(URL)
+    return session
+      .get(URL)
+      .then(({ data }) => {
+        commit('setProcedureItems', data.results)
+      })
+      .catch(console.error)
+  },
   fetchProcedureSteps({ commit }, query) {
     let queryString = getProcedureStepQueryString(query)
     let URL = `${PROCEDURE_STEPS}/${queryString}`
@@ -257,7 +275,7 @@ const actions = {
       .patch(`${STUDIES}/${studyId}/`, dataWithoutId)
       .then(({ data }) => {
         commit('updateStudyState', data)
-        return true
+        return data
       })
       .catch(console.error)
   },
@@ -265,6 +283,16 @@ const actions = {
     return session
       .delete(`${STUDIES}/${study.id}/`)
       .then(() => commit('removeStudyFromState', study))
+      .catch(console.error)
+  },
+  createProcedure({ commit }, procedure) {
+    let URL = `${PROCEDURES}/`
+    return session
+      .post(URL, procedure)
+      .then(({ data }) => {
+        commit('addProcedure', data)
+        return data
+      })
       .catch(console.error)
   },
   patchProcedure({ commit }, data) {
