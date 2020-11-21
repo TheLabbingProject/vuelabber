@@ -28,6 +28,7 @@ const state = {
   procedureCount: 0,
   events: [],
   eventCount: 0,
+  eventItems: [],
   procedureSteps: [],
   procedureStepCount: 0,
   procedureItems: []
@@ -55,6 +56,9 @@ const mutations = {
   setProcedureItems(state, procedureItems) {
     state.procedureItems = procedureItems
   },
+  setEventItems(state, eventItems) {
+    state.eventItems = eventItems
+  },
   setProcedureSteps(state, procedureSteps) {
     state.procedureSteps = procedureSteps
   },
@@ -67,6 +71,9 @@ const mutations = {
   addSubject(state, subject) {
     state.subjects.push(subject)
   },
+  addEvent(state, event) {
+    state.events.push(event)
+  },
   setGroups(state, groups) {
     state.groups = groups
   },
@@ -75,6 +82,9 @@ const mutations = {
   },
   addProcedure(state, procedure) {
     state.procedures.push(procedure)
+  },
+  addProcedureStep(state, procedureStep) {
+    state.procedureSteps.push(procedureStep)
   },
   updateStudyState(state, updatedStudy) {
     let index = state.studies.indexOf(
@@ -108,15 +118,24 @@ const mutations = {
   updateEventState(state, updatedEvent) {
     let index = state.procedureSteps.indexOf(
       state.procedureSteps.find(
-        procedureStep => procedureStep.event.id === updatedEvent.id
+        procedureStep => procedureStep.event === updatedEvent.id
       )
     )
     // Mutating an array directly causes reactivity problems
     let newProcedureSteps = state.procedureSteps.slice()
     newProcedureSteps[index] = Object.assign(state.procedureSteps[index], {
-      event: updatedEvent
+      event: updatedEvent.id,
+      eventInfo: updatedEvent
     })
     state.procedureSteps = newProcedureSteps
+
+    let eventIndex = state.events.indexOf(
+      state.events.find(event => event.id === updatedEvent.id)
+    )
+    // Mutating an array directly causes reactivity problems
+    let newEvents = state.events.slice()
+    newEvents[eventIndex] = updatedEvent
+    state.events = newEvents
   },
   addGroup(state, group) {
     state.groups.push(group)
@@ -143,6 +162,16 @@ const mutations = {
   removeProcedureFromState(state, procedure) {
     state.procedures = state.procedures.filter(
       existingProcedure => existingProcedure.id != procedure.id
+    )
+  },
+  removeProcedureStepFromState(state, procedureStep) {
+    state.procedureSteps = state.procedureSteps.filter(
+      existingProcedureStep => existingProcedureStep.id != procedureStep.id
+    )
+  },
+  removeEventFromState(state, event) {
+    state.events = state.events.filter(
+      existingEvent => existingEvent.id != event.id
     )
   },
   setSubjectDateOfBirthPlot(state, script) {
@@ -193,11 +222,20 @@ const actions = {
   fetchProcedureItems({ commit }, query) {
     let queryString = getProcedureQueryString(query)
     let URL = `${PROCEDURES}/items/${queryString}`
-    console.log(URL)
     return session
       .get(URL)
       .then(({ data }) => {
         commit('setProcedureItems', data.results)
+      })
+      .catch(console.error)
+  },
+  fetchEventItems({ commit }, query) {
+    let queryString = getEventQueryString(query)
+    let URL = `${EVENTS}/items/${queryString}`
+    return session
+      .get(URL)
+      .then(({ data }) => {
+        commit('setEventItems', data.results)
       })
       .catch(console.error)
   },
@@ -295,6 +333,16 @@ const actions = {
       })
       .catch(console.error)
   },
+  createProcedureStep({ commit }, procedureStep) {
+    let URL = `${PROCEDURE_STEPS}/`
+    return session
+      .post(URL, procedureStep)
+      .then(({ data }) => {
+        commit('addProcedureStep', data)
+        return data
+      })
+      .catch(console.error)
+  },
   patchProcedure({ commit }, data) {
     let { procedureId, ...dataWithoutId } = data
     let URL = `${PROCEDURES}/${procedureId}/`
@@ -333,6 +381,20 @@ const actions = {
       .then(() => commit('removeProcedureFromState', procedure))
       .catch(console.error)
   },
+  deleteProcedureStep({ commit }, procedureStep) {
+    let URL = `${PROCEDURE_STEPS}/${procedureStep.id}/`
+    return session
+      .delete(URL)
+      .then(() => commit('removeProcedureStepFromState', procedureStep))
+      .catch(console.error)
+  },
+  deleteEvent({ commit }, event) {
+    let URL = `${EVENTS}/${event.id}/`
+    return session
+      .delete(URL)
+      .then(() => commit('removeEventFromState', event))
+      .catch(console.error)
+  },
   createGroup({ dispatch }, group) {
     return (
       session
@@ -349,6 +411,16 @@ const actions = {
       .post(SUBJECTS + '/', subject)
       .then(({ data }) => {
         commit('addSubject', data)
+        return data
+      })
+      .catch(console.error)
+  },
+  createEvent({ commit }, event) {
+    let URL = `${EVENTS}/`
+    return session
+      .post(URL, event)
+      .then(({ data }) => {
+        commit('addEvent', data)
         return data
       })
       .catch(console.error)

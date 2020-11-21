@@ -83,7 +83,7 @@
       <!-- Expand procedure events -->
       <template v-slot:expanded-item="{ item, headers }">
         <td :colspan="headers.length" class="pa-0 ma-0">
-          <procedure-step-table :procedure="item" :showControls="false" />
+          <procedure-step-table :procedure="item" />
         </td>
       </template>
     </v-data-table>

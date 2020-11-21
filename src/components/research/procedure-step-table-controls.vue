@@ -17,11 +17,32 @@
         :disabled="Boolean(filters.id)"
       />
     </v-col>
+    <v-spacer />
+    <div class="pr-2">
+      <v-dialog
+        v-model="eventAssociationDialog"
+        width="600px"
+        v-if="user.isStaff"
+      >
+        <template v-slot:activator="{ on }">
+          <v-btn small color="orange lighten-2" v-on="on">
+            Add Event
+          </v-btn>
+        </template>
+        <event-association-card
+          @close-event-association-dialog="eventAssociationDialog = false"
+          @new-event-created="update"
+          @existing-event-associated="update"
+          :procedure="procedure"
+        />
+      </v-dialog>
+    </div>
   </v-row>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
+import EventAssociationCard from '@/components/research/event-association-card.vue'
 
 export default {
   name: 'ProcedureStepTableControls',
@@ -30,6 +51,7 @@ export default {
     procedure: Object,
     showControls: { type: Boolean, default: true }
   },
+  components: { EventAssociationCard },
   created() {
     if (this.procedure) {
       this.filters.procedure = this.procedure.id
@@ -43,12 +65,14 @@ export default {
       title: '',
       description: '',
       procedure: ''
-    }
+    },
+    eventAssociationDialog: false
   }),
   computed: {
     query: function() {
       return { filters: this.filters, options: this.options }
-    }
+    },
+    ...mapState('auth', ['user'])
   },
   methods: {
     update() {
