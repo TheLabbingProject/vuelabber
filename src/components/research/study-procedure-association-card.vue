@@ -36,7 +36,7 @@
           </v-btn>
 
           <!-- Cancel procedure creation/update -->
-          <v-btn color="error" @click="$emit('close-procedure-dialog')">
+          <v-btn color="error" @click="closeDialog">
             Cancel
           </v-btn>
         </v-card-actions>
