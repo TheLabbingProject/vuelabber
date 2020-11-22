@@ -65,7 +65,8 @@
                   :items="eventItems"
                   :loading="loadingEventItems"
                   :search-input.sync="existingEventQuery"
-                  @update:search-input="updateEventItems"
+                  @focus="updateEventItems"
+                  @update:list-index="updateEventItems"
                 />
               </v-col>
             </v-form>

@@ -2,6 +2,7 @@ import session from '@/api/session'
 import {
   EVENTS,
   GROUPS,
+  MEASUREMENT_DEFINITIONS,
   PROCEDURE_STEPS,
   PROCEDURES,
   STUDIES,
@@ -31,7 +32,8 @@ const state = {
   eventItems: [],
   procedureSteps: [],
   procedureStepCount: 0,
-  procedureItems: []
+  procedureItems: [],
+  measurementDefinitionItems: []
 }
 
 const getters = {
@@ -55,6 +57,9 @@ const mutations = {
   },
   setProcedureItems(state, procedureItems) {
     state.procedureItems = procedureItems
+  },
+  setMeasurementDefinitionItems(state, measurementDefinitionItems) {
+    state.measurementDefinitionItems = measurementDefinitionItems
   },
   setEventItems(state, eventItems) {
     state.eventItems = eventItems
@@ -226,6 +231,16 @@ const actions = {
       .get(URL)
       .then(({ data }) => {
         commit('setProcedureItems', data.results)
+      })
+      .catch(console.error)
+  },
+  fetchMeasurementDefinitionItems({ commit }, query) {
+    let queryString = getEventQueryString(query)
+    let URL = `${MEASUREMENT_DEFINITIONS}/items/${queryString}`
+    return session
+      .get(URL)
+      .then(({ data }) => {
+        commit('setMeasurementDefinitionItems', data.results)
       })
       .catch(console.error)
   },
