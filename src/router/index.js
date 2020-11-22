@@ -13,6 +13,7 @@ import SequenceTypes from '../views/SequenceTypes.vue'
 import StudyBrowser from '../views/StudyBrowser.vue'
 import SubjectBrowser from '../views/SubjectBrowser.vue'
 import BrainBrowserView from '../views/BrainBrowser.vue'
+import ScanTypes from '../views/ScanTypes.vue'
 import store from '../store'
 
 const requireAuthenticated = (to, from, next) => {
@@ -133,9 +134,15 @@ export default new Router({
       beforeEnter: requireAuthenticated
     },
     {
-      path: "/brain-browser",
-      name: "brainBrowser",
+      path: '/brain-browser',
+      name: 'brainBrowser',
       component: BrainBrowserView,
+      beforeEnter: requireAuthenticated
+    },
+    {
+      path: '/scan-types',
+      name: 'scanTypes',
+      component: ScanTypes,
       beforeEnter: requireAuthenticated
     }
   ]

@@ -7,5 +7,6 @@ const SEQUENCE_TYPE_DEFINITIONS = `${MRI_BASE}/sequence_type_definition`
 const SESSIONS = `${MRI_BASE}/session`
 const scanPreviewScript = (scanId, elementId) =>
   `${SCANS}/${scanId}/preview_script?elementId=${elementId}`
+const scansToCSV = `${SCANS}/get_csv/`
 
-export { SCANS, SEQUENCE_TYPES, SEQUENCE_TYPE_DEFINITIONS, SESSIONS, scanPreviewScript }
+export { SCANS, SEQUENCE_TYPES, SEQUENCE_TYPE_DEFINITIONS, SESSIONS, scanPreviewScript, scansToCSV }
