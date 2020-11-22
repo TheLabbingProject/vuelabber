@@ -2,14 +2,14 @@
   <v-card>
     <v-card-title class="success darken-2 justify-center">
       <div class="headline">
-        <span
-          v-if="! existingSequenceTypeDefinition"
-          class="white--text"
-        >Create Sequence Type Definition</span>
-        <span
-          v-else
-          class="white--text"
-        >Edit Existing Sequence Type Definition #{{ sequenceTypeDefinition.id }}</span>
+        <span v-if="!existingSequenceTypeDefinition" class="white--text"
+          >Create Sequence Type Definition</span
+        >
+        <span v-else class="white--text"
+          >Edit Existing Sequence Type Definition #{{
+            sequenceTypeDefinition.id
+          }}</span
+        >
       </div>
     </v-card-title>
     <v-card-text>
@@ -39,10 +39,14 @@
       <v-spacer />
       <div v-if="existingSequenceTypeDefinition">
         <v-btn text class="warning" @click="closeDialog">Cancel</v-btn>
-        <v-btn text class="success" @click="updateSequenceTypeDefinitionCaller">Update</v-btn>
+        <v-btn text class="success" @click="updateSequenceTypeDefinitionCaller"
+          >Update</v-btn
+        >
       </div>
       <div v-else>
-        <v-btn text class="success" @click="createSequenceTypeDefinitionCaller">Create</v-btn>
+        <v-btn text class="success" @click="createSequenceTypeDefinitionCaller"
+          >Create</v-btn
+        >
       </div>
     </v-card-actions>
   </v-card>
@@ -67,7 +71,7 @@ export default {
         this.existingSequenceTypeDefinition
       )
     } else if (this.fromScan && this.fromScan.dicom) {
-      this.setSequenceDefinitionFromDicomUrl(this.fromScan.dicom)
+      this.setSequenceDefinitionFromDicom(this.fromScan.dicom)
     }
   },
   data: () => ({
@@ -83,9 +87,7 @@ export default {
     ...mapState('dicom', ['seriesList'])
   },
   methods: {
-    setSequenceDefinitionFromDicomUrl(dicomUrl) {
-      let splitUrl = dicomUrl.split('/')
-      let dicomId = Number(splitUrl[splitUrl.length - 2])
+    setSequenceDefinitionFromDicom(dicomId) {
       this.fetchSeries({
         filters: { id: dicomId },
         options: {}

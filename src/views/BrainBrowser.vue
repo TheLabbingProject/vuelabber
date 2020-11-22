@@ -43,13 +43,13 @@ export default {
   //   // this.$loadScript(
   //   //   '../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js'
   //   // ).then(() => {
-  //   //   // window.dispatchEvent(event)
+  //   //   // window.disupdateEvent(event)
   //   // })
   //   // this.$loadScript(
   //   //   '../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js'
   //   // ).then(() => {
   //   //   require('../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js')
-  //   //   // window.dispatchEvent(event)
+  //   //   // window.disupdateEvent(event)
   //   // })
   // },
   // created() {}
@@ -97,7 +97,8 @@ export default {
   },
   mounted() {
     let display = null
-    let elem = $('#app').find('#brainDisplay')[0]
+    // let elem = $('#app').find('#brainDisplay')[0]
+    let elem = null
     axios
       .get(
         'https://brainbrowser.cbrain.mcgill.ca/surface-viewer-widget?' +

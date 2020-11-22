@@ -17,19 +17,19 @@
         class="nav-link"
         :to="{
           name: 'analysisInformation',
-          params: { analysisId: getRunAnalysis(item).id }
+          params: { analysisId: item.analysisVersion.analysis.id }
         }"
       >
-        {{ getRunAnalysis(item).title }}
+        {{ item.analysisVersion.analysis.title }}
       </router-link>
     </template>
 
     <template v-slot:item.analysisVersion="{ item }">
-      {{ getRunAnalysisVersion(item).title }}
+      {{ item.analysisVersion.title }}
     </template>
 
     <template v-slot:item.user="{ item }">
-      {{ item.user ? getUserByUrl(item.user).username : '' }}
+      {{ item.user ? item.user.username : '' }}
     </template>
 
     <template v-slot:expanded-item="{ item, headers }">
@@ -56,12 +56,13 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex'
+import { mapState } from 'vuex'
 import RunInputInformation from '@/components/analysis/run-input-information.vue'
 import RunOutputInformation from '@/components/analysis/run-output-information.vue'
 
 export default {
   name: 'RunTable',
+  props: { loading: Boolean },
   components: { RunInputInformation, RunOutputInformation },
   data: () => ({
     expanded: [],
@@ -71,12 +72,9 @@ export default {
       { text: 'Analysis', value: 'analysis' },
       { text: 'Version', value: 'analysisVersion' },
       { text: 'User', value: 'user' }
-    ],
-    loading: false
+    ]
   }),
   computed: {
-    ...mapGetters('accounts', ['getUserByUrl']),
-    ...mapGetters('analysis', ['getRunAnalysis', 'getRunAnalysisVersion']),
     ...mapState('analysis', ['runs'])
   }
 }

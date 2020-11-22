@@ -2,7 +2,9 @@
   <v-card>
     <v-card-title class="success darken-2">
       <div class="headline">
-        <span v-if="! existingSequenceType" class="white--text">Create Sequence Type</span>
+        <span v-if="!existingSequenceType" class="white--text"
+          >Create Sequence Type</span
+        >
         <span v-else class="white--text">Edit Existing Sequence Type</span>
       </div>
     </v-card-title>
@@ -46,10 +48,14 @@
       <v-spacer />
       <div v-if="existingSequenceType">
         <v-btn text class="warning" @click="closeDialog">Cancel</v-btn>
-        <v-btn text class="success" @click="updateSequenceTypeCaller">Update</v-btn>
+        <v-btn text class="success" @click="updateSequenceTypeCaller"
+          >Update</v-btn
+        >
       </div>
       <div v-else>
-        <v-btn text class="success" @click="createSequenceTypeCaller">Create</v-btn>
+        <v-btn text class="success" @click="createSequenceTypeCaller"
+          >Create</v-btn
+        >
       </div>
     </v-card-actions>
   </v-card>
@@ -70,7 +76,7 @@ export default {
     if (this.existingSequenceType) {
       this.sequenceType = Object.assign({}, this.existingSequenceType)
     } else if (this.fromScan && this.fromScan.dicom) {
-      this.setSequenceDefinitionFromDicomUrl(this.fromScan.dicom)
+      this.setSequenceDefinitionFromDicom(this.fromScan.dicom)
     }
   },
   data: () => ({
@@ -96,6 +102,15 @@ export default {
     },
     updateSequenceTypeCaller() {
       this.updateSequenceType(this.sequenceType).then(this.closeDialog())
+    },
+    setSequenceDefinitionFromDicom(dicomId) {
+      this.fetchSeries({
+        filters: { id: dicomId },
+        options: {}
+      }).then(({ scanningSequence, sequenceVariant }) => {
+        this.sequenceType['scanningSequence'] = scanningSequence
+        this.sequenceType['sequenceVariant'] = sequenceVariant
+      })
     },
     ...mapActions('dicom', ['fetchSeries']),
     ...mapActions('mri', ['createSequenceType', 'updateSequenceType'])

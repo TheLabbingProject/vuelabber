@@ -1,6 +1,11 @@
 <template>
   <v-col>
-    <v-data-table item-key="id" :headers="headers" :items="sequenceTypes" :loading="loading">
+    <v-data-table
+      item-key="id"
+      :headers="headers"
+      :items="sequenceTypes"
+      :loading="loading"
+    >
       <!-- Title and Create button -->
       <template v-slot:top>
         <v-row class="px-3 pb-3">
@@ -10,7 +15,9 @@
             <template v-slot:activator="{ on }">
               <v-btn class="success" v-on="on">Create</v-btn>
             </template>
-            <edit-sequence-type @close-dialog="createSequenceTypeDialog = false" />
+            <edit-sequence-type
+              @close-dialog="createSequenceTypeDialog = false"
+            />
           </v-dialog>
         </v-row>
       </template>
@@ -18,7 +25,11 @@
       <!-- Scanning Sequence & Sequence Variant -->
       <template v-slot:item.sequenceDefinitions="{ item }">
         <v-col>
-          <div class="py-1" v-for="(definition, index) in item.sequenceDefinitions" :key="index">
+          <div
+            class="py-1"
+            v-for="(definition, index) in item.sequenceDefinitions"
+            :key="index"
+          >
             <v-row>
               <v-col>
                 <v-chip
@@ -26,60 +37,89 @@
                   v-for="(sequence, index2) in definition.scanningSequence"
                   :key="index2"
                 >
-                  <v-avatar :color="scanningSequences[sequence].color">{{ sequence }}</v-avatar>
+                  <v-avatar :color="scanningSequences[sequence].color">{{
+                    sequence
+                  }}</v-avatar>
                   {{ scanningSequences[sequence].name }}
                 </v-chip>
               </v-col>
               <v-divider vertical></v-divider>
               <v-col>
-                <v-chip small v-for="(variant, index2) in definition.sequenceVariant" :key="index2">
-                  <v-avatar
-                    :color="sequenceVariants[variant].color"
-                  >{{ variant != "NONE" ? variant : "NO" }}</v-avatar>
+                <v-chip
+                  small
+                  v-for="(variant, index2) in definition.sequenceVariant"
+                  :key="index2"
+                >
+                  <v-avatar :color="sequenceVariants[variant].color">{{
+                    variant != 'NONE' ? variant : 'NO'
+                  }}</v-avatar>
                   {{ sequenceVariants[variant].name }}
                 </v-chip>
               </v-col>
               <!-- Edit Definition -->
               <v-col>
-                <v-dialog v-model="editSequenceTypeDefinitionDialog[definition.id]" width="550px">
+                <v-dialog
+                  v-model="editSequenceTypeDefinitionDialog[definition.id]"
+                  width="550px"
+                >
                   <template v-slot:activator="{ on }">
                     <v-icon v-on="on">edit</v-icon>
                   </template>
                   <edit-sequence-type-definition
                     :existingSequenceTypeDefinition="definition"
-                    @close-dialog="updatingSequenceTypes(editSequenceTypeDefinitionDialog, definition)"
+                    @close-dialog="
+                      updatingSequenceTypes(
+                        editSequenceTypeDefinitionDialog,
+                        definition
+                      )
+                    "
                   />
                 </v-dialog>
               </v-col>
               <!-- Delete Definition -->
               <v-col>
-                <v-dialog v-model="deleteSequenceTypeDefinitionDialog[definition.id]" width="550px">
+                <v-dialog
+                  v-model="deleteSequenceTypeDefinitionDialog[definition.id]"
+                  width="550px"
+                >
                   <template v-slot:activator="{ on }">
                     <v-icon v-on="on">delete</v-icon>
                   </template>
                   <delete-dialog
                     :action="deleteSequenceTypeDefinition"
                     :input="definition"
-                    @close-dialog="updatingSequenceTypes(deleteSequenceTypeDefinitionDialog, definition)"
+                    @close-dialog="
+                      updatingSequenceTypes(
+                        deleteSequenceTypeDefinitionDialog,
+                        definition
+                      )
+                    "
                   />
                 </v-dialog>
               </v-col>
             </v-row>
             <div class="py-1"></div>
-            <v-divider v-if="index < item.sequenceDefinitions.length - 1"></v-divider>
+            <v-divider
+              v-if="index < item.sequenceDefinitions.length - 1"
+            ></v-divider>
           </div>
         </v-col>
       </template>
 
       <!-- Add Definition -->
       <template v-slot:item.add="{ item }">
-        <v-dialog v-model="createSequenceTypeDefinitionDialog[item.id]" width="400px">
+        <v-dialog
+          v-model="createSequenceTypeDefinitionDialog[item.id]"
+          width="400px"
+        >
           <template v-slot:activator="{ on }">
             <v-icon v-on="on">mdi-plus</v-icon>
           </template>
           <edit-sequence-type-definition
             :sequenceType="item"
-            @close-dialog="updatingSequenceTypes(createSequenceTypeDefinitionDialog, item)"
+            @close-dialog="
+              updatingSequenceTypes(createSequenceTypeDefinitionDialog, item)
+            "
           />
         </v-dialog>
       </template>
@@ -106,7 +146,9 @@
           <delete-dialog
             :action="deleteSequenceType"
             :input="item"
-            @close-dialog="updatingSequenceTypes(deleteSequenceTypeDialog, item)"
+            @close-dialog="
+              updatingSequenceTypes(deleteSequenceTypeDialog, item)
+            "
           />
         </v-dialog>
       </template>

@@ -13,13 +13,13 @@ export function createSelectItemFromObject(object, key, nestedKey) {
 export function createSelectItemFromArray(array, textKey, valueKey) {
   return valueKey
     ? array.map(element => ({
-      text: element[textKey],
-      value: element[valueKey]
-    }))
+        text: element[textKey],
+        value: element[valueKey]
+      }))
     : array.map(element => ({
-      text: element[textKey],
-      value: element
-    }))
+        text: element[textKey],
+        value: element
+      }))
 }
 
 export function createSelectItems(from, textKey, valueKey) {

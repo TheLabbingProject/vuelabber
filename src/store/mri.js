@@ -69,6 +69,15 @@ const mutations = {
     newScans[index] = updatedScan
     state.scans = newScans
   },
+  updateSessionState(state, updatedSession) {
+    let index = state.sessions.indexOf(
+      state.sessions.find(session => session.id === updatedSession.id)
+    )
+    // Mutating an array directly causes reactivity problems
+    let newSessions = state.sessions.slice()
+    newSessions[index] = updatedSession
+    state.sessionn = newSessions
+  },
   createSequenceType(state, sequenceType, sequenceTypeDefinition) {
     state.sequenceTypes.push(sequenceType)
   },
@@ -141,6 +150,7 @@ const mutations = {
 
 const actions = {
   fetchScans({ commit }, { filters, options }) {
+    commit('setScans', [])
     let queryString = getScanQueryString({ filters, options })
     return session
       .get(`${SCANS}/${queryString}`)
@@ -156,8 +166,9 @@ const actions = {
       .then(({ data }) => commit('setSequenceTypes', data.results))
       .catch(console.error)
   },
-  fetchSessions({ commit }, { filters, options }) {
-    let queryString = getSessionQueryString({ filters, options })
+  fetchSessions({ commit }, query) {
+    commit('setSessions', [])
+    let queryString = getSessionQueryString(query)
     return session
       .get(`${SESSIONS}/${queryString}`)
       .then(({ data }) => {
@@ -206,16 +217,29 @@ const actions = {
       .catch(console.error)
   },
   deleteScan({ commit }, scan) {
+    let URL = `${SCANS}/${scan.id}/`
     return session
-      .delete(`${SCANS}/${scan.id}/`)
+      .delete(URL)
       .then(() => commit('removeScanFromState', scan))
       .catch(console.error)
   },
-  updateScan({ commit }, scan) {
+  updateScan({ commit }, data) {
+    let { scanId, ...dataWithoutId } = data
+    let URL = `${SCANS}/${scanId}/`
     return session
-      .patch(`${SCANS}/${scan.id}/`, scan)
+      .patch(URL, dataWithoutId)
       .then(({ data }) => {
         commit('updateScanState', data)
+      })
+      .catch(console.error)
+  },
+  patchSession({ commit }, data) {
+    let { sessionId, ...dataWithoutId } = data
+    return session
+      .patch(`${SESSIONS}/${sessionId}/`, dataWithoutId)
+      .then(({ data }) => {
+        commit('updateSessionState', data)
+        return true
       })
       .catch(console.error)
   },

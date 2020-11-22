@@ -13,7 +13,11 @@
           :items="studies"
           @click:append-outer.stop="createStudyDialog = true"
         />
-        <v-dialog v-model="createStudyDialog" width="600px" :key="createStudyDialog">
+        <v-dialog
+          v-model="createStudyDialog"
+          width="600px"
+          :key="createStudyDialog"
+        >
           <study-info-card
             @close-study-dialog="createStudyDialog = false"
             @created-study="selectedStudy = arguments[0]"
@@ -34,7 +38,11 @@
           :items="studyGroups"
           @click:append-outer.stop="createGroupDialog = true"
         />
-        <v-dialog v-model="createGroupDialog" width="600px" :key="createGroupDialog">
+        <v-dialog
+          v-model="createGroupDialog"
+          width="600px"
+          :key="createGroupDialog"
+        >
           <create-group-card
             :study="selectedStudy"
             @close-group-dialog="createGroupDialog = false"
@@ -46,7 +54,9 @@
 
       <!-- Select button -->
       <v-col cols="2">
-        <v-btn @click="addSelection" :disabled="!validStudyGroupSelection">Select Group</v-btn>
+        <v-btn @click="addSelection" :disabled="!validStudyGroupSelection">
+          Select Group
+        </v-btn>
       </v-col>
     </v-row>
 
@@ -60,7 +70,8 @@
               close
               v-model="selectionChips[group.id]"
               @click:close="removeSelection(group)"
-            >{{ `${group.study.title} | ${group.title}` }}</v-chip>
+              >{{ `${group.study.title} | ${group.title}` }}</v-chip
+            >
           </div>
         </v-row>
       </v-col>
@@ -71,7 +82,9 @@
           @click="associateSelectedScansToStudyGroups"
           color="success"
           :disabled="!readyToAssociate"
-        >Associate</v-btn>
+        >
+          Associate
+        </v-btn>
       </v-col>
     </v-row>
   </v-col>
@@ -89,8 +102,10 @@ export default {
   },
   components: { StudyInfoCard, CreateGroupCard },
   created() {
-    this.fetchStudies()
-    this.fetchGroups({ filters: {}, options: {} })
+    let studyQuery = { filters: {}, options: {} }
+    this.fetchStudies(studyQuery)
+    let groupQuery = { filters: {}, options: {} }
+    this.fetchGroups(groupQuery)
   },
   data: () => ({
     createStudyDialog: false,
@@ -138,19 +153,15 @@ export default {
         group => group.id != removedGroup.id
       )
     },
-    getStudyTitle: function(studyUrl) {
-      return this.studies.find(study => study.url === studyUrl).title
-    },
     associateSelectedScansToStudyGroups() {
       this.selectedScans.forEach(scan => {
-        this.selectedGroups
-          .map(group => group.url)
-          .forEach(url => {
-            if (!arrayContains(url, scan.studyGroups)) {
-              scan.studyGroups.push(url)
-            }
-          })
-        this.updateScan(scan)
+        this.selectedGroups.forEach(group => {
+          if (!arrayContains(group.id, scan.studyGroups)) {
+            scan.studyGroups.push(group.id)
+          }
+        })
+        let data = { scanId: scan.id, studyGroups: scan.studyGroups }
+        this.updateScan(data)
       })
     },
     ...mapActions('mri', ['updateScan']),

@@ -5,7 +5,9 @@
         <span class="white--text">Confirm Delete</span>
       </div>
     </v-card-title>
-    <v-card-text>Are you completely sure you would like to remove this item?</v-card-text>
+    <v-card-text
+      >Are you completely sure you would like to remove this item?</v-card-text
+    >
     <v-card-actions>
       <v-spacer />
       <v-btn text color="info" @click="closeDialog">Cancel</v-btn>

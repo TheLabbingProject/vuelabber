@@ -52,25 +52,9 @@ const getters = {
         category => category.parent === parentCategory.url
       )
   },
-  categoryAnalyses(state) {
-    return category =>
-      state.analyses.filter(analysis => analysis.category === category.url)
-  },
   getAnalysisById(state) {
     return analysisId =>
       state.analyses.find(analysis => analysis.id === analysisId)
-  },
-  getRunAnalysisVersion(state) {
-    return run =>
-      state.analysisVersions.find(
-        analysisVersion => analysisVersion.url === run.analysisVersion
-      )
-  },
-  getRunAnalysis(state, getters) {
-    return run => {
-      let analysisVersion = getters['getRunAnalysisVersion'](run)
-      return analysisVersion.analysis
-    }
   }
 }
 

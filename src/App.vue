@@ -50,6 +50,14 @@
               </v-list-item>
             </template>
 
+            <!-- Browser -->
+            <v-list-item to="/mri-browser" class="drawer-link">
+              <v-list-item-title>Browser</v-list-item-title>
+              <v-list-item-icon>
+                <v-icon>search</v-icon>
+              </v-list-item-icon>
+            </v-list-item>
+
             <!-- Sequence Types -->
             <v-list-item to="/mri-sequence-types" class="drawer-link">
               <v-list-item-title>Sequence Types</v-list-item-title>
@@ -124,7 +132,10 @@
           <template v-slot:activator="{ on }">
             <v-btn text v-on="on">
               <v-avatar size="36px" class="user-avatar">
-                <img v-if="user.profile && user.profile['image']" :src="user.profile['image']" />
+                <img
+                  v-if="user.profile && user.profile['image']"
+                  :src="user.profile['image']"
+                />
                 <img v-else src="/user.png" />
               </v-avatar>
               &nbsp; {{ user.username }}

@@ -1,17 +1,29 @@
 <template>
-  <v-data-table hide-default-footer :headers="headers" :items="entries" :no-data-text="noDataText">
+  <v-data-table
+    hide-default-footer
+    :headers="headers"
+    :items="entries"
+    :no-data-text="noDataText"
+  >
     <template v-slot:top>
       <v-row class="px-4 align-center">
         <span class="text-xs-left grey--text">{{ title }}</span>
         <v-spacer />
-        <v-btn small color="success" v-if="editable" @click="createEntry">Add</v-btn>
+        <v-btn small color="success" v-if="editable" @click="createEntry"
+          >Add</v-btn
+        >
       </v-row>
     </template>
     <template v-if="editable" v-slot:item.key="{ item }">
       <v-edit-dialog :return-value.sync="item.key" @save="updateKeys">
         {{ item.key }}
         <template v-slot:input>
-          <v-text-field v-model="item.key" label="Edit" single-line counter></v-text-field>
+          <v-text-field
+            v-model="item.key"
+            label="Edit"
+            single-line
+            counter
+          ></v-text-field>
         </template>
       </v-edit-dialog>
     </template>
@@ -48,7 +60,13 @@
       >
         {{ item.value }}
         <template v-slot:input>
-          <v-text-field type="number" v-model="item.value" label="Edit" single-line counter />
+          <v-text-field
+            type="number"
+            v-model="item.value"
+            label="Edit"
+            single-line
+            counter
+          />
         </template>
       </v-edit-dialog>
 

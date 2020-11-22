@@ -1,9 +1,35 @@
-const parseOrdering = ({ sortBy, sortDesc }) => {
+const parseOrdering = options => {
+  let sortBy = options.sortBy ? options.sortBy : []
+  let sortDesc = options.sortDesc ? options.sortDesc : []
   return sortBy
     .map((value, index) => {
       return sortDesc[index] ? '-' + value : value
     })
     .join(',')
+}
+
+const getStudyQueryString = ({ filters, options }) => {
+  return `?id=${filters.id || ''}&title=${filters.title ||
+    ''}&title_lookup=icontains&description=${filters.description ||
+    ''}&description_lookup=icontains&page_size=${
+    options.itemsPerPage
+      ? options.itemsPerPage != -1
+        ? options.itemsPerPage
+        : 1000
+      : 100
+  }&page=${options.page || 1}&ordering=${parseOrdering(options)}`
+}
+
+const getEventQueryString = ({ filters, options }) => {
+  return `?id=${filters.id || ''}&title=${filters.title ||
+    ''}&title_lookup=icontains&description=${filters.description ||
+    ''}&description_lookup=icontains&page_size=${
+    options.itemsPerPage
+      ? options.itemsPerPage != -1
+        ? options.itemsPerPage
+        : 1000
+      : 100
+  }&page=${options.page || 1}&ordering=${parseOrdering(options)}`
 }
 
 const getSubjectQueryString = ({ filters, options }) => {
@@ -30,9 +56,41 @@ const getGroupQueryString = ({ filters, options }) => {
         ? options.itemsPerPage
         : 1000
       : 100
-  }&page=${options.page || 1}&ordering=${
-    options.descending ? '-' + options.sortBy : options.sortBy
-  }`
+  }&page=${options.page || 1}&ordering=${parseOrdering(options)}`
 }
 
-export { getGroupQueryString, getSubjectQueryString }
+const getProcedureQueryString = ({ filters, options }) => {
+  return `?id=${filters.id || ''}&title=${filters.title ||
+    ''}&title_lookup=icontains&description=${filters.description ||
+    ''}&description_lookup=icontains${
+    filters.studyId ? `&study=${filters.studyId}` : ''
+  }${
+    filters.excludeStudy ? `&exclude_study=${filters.excludeStudy}` : ''
+  }&page_size=${
+    options.itemsPerPage
+      ? options.itemsPerPage != -1
+        ? options.itemsPerPage
+        : 1000
+      : 100
+  }&page=${options.page || 1}&ordering=${parseOrdering(options)}`
+}
+
+const getProcedureStepQueryString = ({ filters, options }) => {
+  return `?id=${filters.id || ''}&index=${filters.index ||
+    ''}&procedure=${filters.procedure || ''}&page_size=${
+    options.itemsPerPage
+      ? options.itemsPerPage != -1
+        ? options.itemsPerPage
+        : 1000
+      : 100
+  }&page=${options.page || 1}&ordering=${parseOrdering(options)}`
+}
+
+export {
+  getEventQueryString,
+  getGroupQueryString,
+  getProcedureQueryString,
+  getProcedureStepQueryString,
+  getStudyQueryString,
+  getSubjectQueryString
+}

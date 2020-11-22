@@ -1,11 +1,11 @@
 <template>
   <div>
     <v-col v-if="currentUser.isStaff">
-      <hr />
-      <br />
+      <!-- <hr />
+      <br /> -->
       <v-expansion-panels>
         <!-- Scan Upload -->
-        <v-expansion-panel>
+        <!-- <v-expansion-panel>
           <v-expansion-panel-header>
             <div class="text-center">Upload</div>
           </v-expansion-panel-header>
@@ -19,7 +19,7 @@
               </v-card-text>
             </v-card>
           </v-expansion-panel-content>
-        </v-expansion-panel>
+        </v-expansion-panel> -->
 
         <!-- Study Group Association -->
         <v-expansion-panel>
@@ -36,8 +36,8 @@
         </v-expansion-panel>
       </v-expansion-panels>
 
-      <br />
-      <hr />
+      <!-- <br />
+      <hr /> -->
     </v-col>
 
     <!-- Scan Preview -->
@@ -50,6 +50,7 @@
       v-model="selected"
       item-key="id"
       show-select
+      multi-sort
       :footer-props="{
         'items-per-page-options': itemsPerPageOptions
       }"
@@ -70,15 +71,36 @@
         />
       </template>
 
+      <!-- Subject ID button opening subject info dialog -->
+      <template v-slot:item.subject="{ item }">
+        <div class="py-1">
+          <v-dialog v-model="editSubjectDialog[item.subject.id]" width="600px">
+            <template v-slot:activator="{ on }">
+              <v-btn small color="info" v-on="on">
+                {{ item.subject.idNumber }}
+              </v-btn>
+            </template>
+            <subject-info-card
+              :subjectId="item.subject.id"
+              @close-subject-dialog="editSubjectDialog[item.subject.id] = false"
+            />
+          </v-dialog>
+        </div>
+      </template>
+
+      <!-- Date -->
       <template v-slot:item.date="{ item }">{{
         formatDate(item.time)
       }}</template>
 
+      <!-- Time -->
       <template v-slot:item.time="{ item }">{{
         formatTime(item.time)
       }}</template>
 
+      <!-- Sequence Type -->
       <template v-slot:item.sequenceType="{ item }">
+        <!-- Existing -->
         <div v-if="item.sequenceType" class="py-1">
           <v-dialog v-model="sequenceTypeDialog[item.id]" width="800px">
             <template v-slot:activator="{ on }">
@@ -89,6 +111,7 @@
             <protocol-information :scan="item" />
           </v-dialog>
         </div>
+        <!-- Create -->
         <div v-else class="py-1">
           <v-dialog v-model="sequenceTypeDialog[item.id]" width="400px">
             <template v-slot:activator="{ on }">
@@ -104,27 +127,28 @@
       </template>
 
       <!-- Spatial Resolution -->
-      <template v-slot:item.spatialResolution="{ item }">{{
-        formatSpatialResolution(item.spatialResolution)
-      }}</template>
+      <template v-slot:item.spatialResolution="{ item }">
+        {{ formatSpatialResolution(item.spatialResolution) }}
+      </template>
 
       <!-- Study Groups -->
       <template v-slot:item.studyGroups="{ item }">
-        <div v-for="groupUrl in item.studyGroups" :key="groupUrl" class="py-1">
+        <div v-for="groupId in item.studyGroups" :key="groupId" class="py-1">
           <v-chip
             small
             close
-            @click:close="disassociateFromGroup(item, groupUrl)"
-            >{{ stringifyGroup(getGroupByUrl(groupUrl)) }}</v-chip
+            @click:close="disassociateFromGroup(item, groupId)"
           >
+            {{ stringifyGroup(getGroupById(groupId)) }}
+          </v-chip>
         </div>
       </template>
 
       <!-- Preview -->
       <template v-slot:item.preview="{ item }">
-        <v-btn small class="warning" @click="loadPreview(item.id)"
-          >Preview</v-btn
-        >
+        <v-btn small class="warning" @click="loadPreview(item.id)">
+          Preview
+        </v-btn>
       </template>
     </v-data-table>
   </div>
@@ -136,32 +160,39 @@ import { scanPreviewScript } from '@/api/mri/endpoints'
 import EditSequenceType from '@/components/mri/edit-sequence-type.vue'
 import GroupAssociation from '@/components/mri/group-association.vue'
 import ProtocolInformation from '@/components/dicom/protocol-information.vue'
-import ScanUpload from '@/components/mri/scan-upload.vue'
+import SubjectInfoCard from '@/components/research/subject-info-card.vue'
+// import ScanUpload from '@/components/mri/scan-upload.vue'
 import ScanTableControls from '@/components/mri/scan-table-controls.vue'
 import VueScript2 from 'vue-script2'
 
 export default {
   name: 'ScanTable',
   props: {
-    subject: Object,
-    session: Object
+    subject: { type: Object, default: undefined },
+    session: { type: Object, default: undefined }
   },
   components: {
     EditSequenceType,
     GroupAssociation,
     ProtocolInformation,
     ScanTableControls,
-    ScanUpload
+    SubjectInfoCard
+    // ScanUpload
   },
-  created() {
+  mounted() {
     this.fetchSequenceTypes()
-    this.fetchGroups({ filters: {}, options: {} })
+    let groupQuery = { filters: {}, options: {} }
+    this.fetchGroups(groupQuery)
+    if (this.subject != undefined) {
+      this.headers.splice(0, 1)
+    }
   },
   data: () => ({
     sequenceTypeDialog: {},
     headers: [
-      { text: 'Date', value: 'date', sortable: false },
-      { text: 'Time', value: 'time', sortable: false },
+      { text: 'Subject', value: 'subject' },
+      { text: 'Date', value: 'date' },
+      { text: 'Time', value: 'time' },
       { text: 'Number', value: 'number' },
       { text: 'Description', value: 'description' },
       {
@@ -181,13 +212,14 @@ export default {
     selected: [],
     options: {
       page: 1,
-      sortBy: ['-date', 'time'],
-      descending: false,
+      sortBy: ['date', 'time'],
+      sortDesc: [true, false],
       itemsPerPage: 25
     },
     itemsPerPageOptions: [10, 25, 50, -1],
     loading: false,
-    scanPreviewKey: 0
+    scanPreviewKey: 0,
+    editSubjectDialog: {}
   }),
   computed: {
     scanPreviewId: function() {
@@ -195,12 +227,16 @@ export default {
     },
     ...mapState('auth', { currentUser: 'user' }),
     ...mapState('mri', ['scans', 'totalScanCount', 'scanPreviewLoader']),
-    ...mapGetters('research', ['getGroupByUrl'])
+    ...mapGetters('research', ['getGroupById'])
   },
   methods: {
-    disassociateFromGroup(scan, groupUrl) {
-      scan.studyGroups = scan.studyGroups.filter(url => url != groupUrl)
-      this.updateScan(scan)
+    disassociateFromGroup(scan, groupId) {
+      const index = scan.studyGroups.indexOf(groupId)
+      if (index > -1) {
+        scan.studyGroups.splice(index, 1)
+      }
+      let data = { scanId: scan.id, studyGroups: scan.studyGroups }
+      this.updateScan(data)
     },
     formatSpatialResolution(floatArray) {
       return floatArray

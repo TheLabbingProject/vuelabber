@@ -41,9 +41,9 @@ export default {
   name: 'PipelineBrowser',
   components: { PipelineFlowchart },
   created() {
-    this.fetchAnalyses({})
-    this.fetchPipelines()
-    this.fetchedPipelines = true
+    this.fetchPipelines().then(() => {
+      this.fetchedPipelines = true
+    })
   },
   data: () => ({
     expanded: [],
@@ -60,14 +60,7 @@ export default {
     ...mapState('analysis', ['pipelines'])
   },
   methods: {
-    ...mapActions('analysis', [
-      'fetchAnalyses',
-      'fetchAnalysisVersions',
-      'fetchInputDefinitions',
-      'fetchNodes',
-      'fetchOutputDefinitions',
-      'fetchPipelines'
-    ])
+    ...mapActions('analysis', ['fetchPipelines'])
   }
 }
 </script>

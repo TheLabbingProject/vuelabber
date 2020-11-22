@@ -1,6 +1,8 @@
 <template>
   <v-card>
-    <v-card-title class="headline cyan darken-3 white--text">Create New Group</v-card-title>
+    <v-card-title class="headline cyan darken-3 white--text"
+      >Create New Group</v-card-title
+    >
 
     <v-card-text>
       <v-col>
@@ -21,7 +23,9 @@
     <v-card-actions>
       <v-spacer />
       <v-btn color="success" text @click="createNewGroup">Submit</v-btn>
-      <v-btn color="error" text @click="$emit('close-group-dialog')">Cancel</v-btn>
+      <v-btn color="error" text @click="$emit('close-group-dialog')"
+        >Cancel</v-btn
+      >
     </v-card-actions>
   </v-card>
 </template>
@@ -31,10 +35,11 @@ import { mapState, mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'CreateGroupCard',
-  props: { study: Object },
-  created() {
-    this.fetchStudies()
-    if (this.study) {
+  props: { study: { type: Object, default: undefined } },
+  mounted() {
+    let studyQuery = { filters: {}, options: {} }
+    this.fetchStudies(studyQuery)
+    if (this.study != undefined) {
       this.selectedStudy = this.study
     }
   },
@@ -44,7 +49,7 @@ export default {
   }),
   computed: {
     ...mapState('research', ['studies', 'groups']),
-    ...mapGetters('research', ['getGroupByUrl'])
+    ...mapGetters('research', ['getGroupById'])
   },
   methods: {
     closeDialog: function() {
@@ -52,9 +57,9 @@ export default {
       this.$emit('close-group-dialog')
     },
     createNewGroup: function() {
-      this.group.study = this.selectedStudy.url
+      this.group.study = this.selectedStudy.id
       this.createGroup(this.group)
-        .then(({ url }) => this.getGroupByUrl(url))
+        .then(({ id }) => this.getGroupById(id))
         .then(group => this.$emit('created-group', group))
         .then(() => this.closeDialog())
     },

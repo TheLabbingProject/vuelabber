@@ -35,9 +35,10 @@
             <v-date-picker
               v-model="filters.bornAfter"
               @input="bornAfterMenu = false"
+              scrollable
             ></v-date-picker>
-          </v-menu> </v-col
-        >-
+          </v-menu>
+        </v-col>
         <v-col>
           <v-menu v-model="bornBeforeMenu" :close-on-content-click="false">
             <template v-slot:activator="{ on }">
@@ -53,6 +54,7 @@
             <v-date-picker
               v-model="filters.bornBefore"
               @input="bornBeforeMenu = false"
+              scrollable
             ></v-date-picker>
           </v-menu>
         </v-col>
@@ -98,7 +100,7 @@ export default {
   name: 'SubjectTableControls',
   props: { options: Object },
   created() {
-    this.fetchSubjects({ filters: this.filters, options: this.options })
+    this.update()
   },
   data: () => ({
     bornAfterMenu: false,
@@ -115,13 +117,25 @@ export default {
     },
     sexItems: createSelectItems(sexOptions),
     genderItems: createSelectItems(genderOptions),
-    dominantHandItems: createSelectItems(dominantHandOptions)
+    dominantHandItems: createSelectItems(dominantHandOptions),
+    snakeCaseNames: {
+      idNumber: 'id_number',
+      firstName: 'first_name',
+      lastName: 'last_name',
+      dateOfBirth: 'date_of_birth'
+    }
   }),
   methods: {
     update() {
       this.$emit('fetch-subjects-start')
-      this.fetchSubjects({ filters: this.filters, options: this.options })
-      this.$emit('fetch-subjects-end')
+      let options = Object.assign({}, this.options)
+      options['sortBy'] = options['sortBy'].map(
+        key => this.snakeCaseNames[key] || key
+      )
+      let query = { filters: this.filters, options: options }
+      this.fetchSubjects(query).then(() => {
+        this.$emit('fetch-subjects-end')
+      })
     },
     ...mapActions('research', ['fetchSubjects'])
   },
