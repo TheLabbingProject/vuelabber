@@ -1,11 +1,41 @@
 <template>
   <div>
+    <v-expansion-panels>
+      <v-expansion-panel>
+        <v-expansion-panel-header>
+          <div class="text-center">Event Association</div>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <v-card>
+            <v-card-text>
+              <v-row>
+                <v-autocomplete
+                  clearable
+                  label="Data Acquisition Definition"
+                  v-model="selectedMeasurementDefinition"
+                  :items="measurementDefinitionItems"
+                  :loading="loadingMeasurementDefinitionItems"
+                  :search-input.sync="existingMeasurementDefinitionQuery"
+                  @focus="updateMeasurementDefinitionItems"
+                  @update:list-index="updateMeasurementDefinitionItems"
+                />
+                <v-btn class="pl-5" color="success" @click="updateMeasurements"
+                  >Update</v-btn
+                >
+              </v-row>
+            </v-card-text>
+          </v-card>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+    </v-expansion-panels>
     <v-data-table
+      v-model="selected"
       dense
       item-key="id"
       show-expand
       single-expand
       multi-sort
+      show-select
       :expanded.sync="expanded"
       :headers="headers"
       :items="sessions"
@@ -80,14 +110,6 @@
         </td>
       </template>
     </v-data-table>
-    <v-snackbar v-model="snack" :timeout="3000" :color="snackColor">
-      {{ snackText }}
-      <template v-slot:action="{ attrs }">
-        <v-btn v-bind="attrs" text @click="snack = false">
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
   </div>
 </template>
 
@@ -129,12 +151,14 @@ export default {
     loading: false,
     expanded: [],
     editSubjectDialog: {},
-    snack: false,
-    snackColor: '',
-    snackText: ''
+    loadingMeasurementDefinitionItems: false,
+    existingMeasurementDefinitionQuery: null,
+    selectedMeasurementDefinition: null,
+    selected: []
   }),
   computed: {
     ...mapState('mri', ['sessions', 'sessionCount']),
+    ...mapState('research', ['measurementDefinitionItems']),
     ...mapState('auth', { currentUser: 'user' })
   },
   methods: {
@@ -152,7 +176,31 @@ export default {
       let data = { sessionId: session.id, comments: session.comments }
       this.patchSession(data)
     },
-    ...mapActions('mri', ['patchSession'])
+    updateMeasurements() {
+      this.selected.forEach(session => {
+        let data = {
+          sessionId: session.id,
+          measurement: this.selectedMeasurementDefinition
+        }
+        this.patchSession(data).then(() => this.$refs.controls.update())
+      })
+    },
+    updateMeasurementDefinitionItems() {
+      let value =
+        this.existingMeasurementDefinitionQuery == null
+          ? ''
+          : this.existingMeasurementDefinitionQuery
+      let query = {
+        filters: { title: value },
+        options: {}
+      }
+      this.loadingMeasurementDefinitionItems = true
+      this.fetchMeasurementDefinitionItems(query).then(
+        () => (this.loadingMeasurementDefinitionItems = false)
+      )
+    },
+    ...mapActions('mri', ['patchSession']),
+    ...mapActions('research', ['fetchMeasurementDefinitionItems'])
   }
 }
 </script>

@@ -56,7 +56,8 @@
                   :items="procedureItems"
                   :loading="loadingProcedureItems"
                   :search-input.sync="existingProcedureQuery"
-                  @update:search-input="updateProcedureItems"
+                  @focus="updateProcedureItems"
+                  @update:list-index="updateProcedureItems"
                 />
               </v-col>
             </v-form>
