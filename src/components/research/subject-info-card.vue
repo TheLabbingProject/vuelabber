@@ -170,12 +170,19 @@ export default {
   components: { ObjectTable, deleteDialog },
   props: {
     existingSubject: Object,
-    createMode: { type: Boolean, default: false }
+    createMode: { type: Boolean, default: false },
+    subjectId: Number
   },
   created() {
     if (this.existingSubject) {
       this.subject = Object.assign({}, this.existingSubject)
       this.editable = false
+    } else if (this.subjectId) {
+      let filters = { id: this.subjectId }
+      let query = { filters: filters, options: this.options }
+      this.fetchSubjects(query).then(() => {
+        this.subject = Object.assign({}, this.subjects[0])
+      })
     }
   },
   data: () => ({
@@ -187,7 +194,13 @@ export default {
     sexItems: createSelectItems(sexOptions),
     genderItems: createSelectItems(genderOptions),
     dominantHandItems: createSelectItems(dominantHandOptions),
-    deleteWanted: false
+    deleteWanted: false,
+    options: {
+      page: 1,
+      sortBy: ['date', 'time'],
+      sortDesc: [true, false],
+      itemsPerPage: 25
+    }
   }),
   computed: {
     formattedDate: function() {
@@ -242,6 +255,7 @@ export default {
       this.deleteWanted = true
     },
     ...mapActions('research', [
+      'fetchSubjects',
       'createSubject',
       'updateSubject',
       'deleteSubject'

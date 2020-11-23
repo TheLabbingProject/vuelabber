@@ -4,15 +4,16 @@ import Login from '../views/Login.vue'
 import Lost from '../views/Lost.vue'
 import Home from '../views/Home.vue'
 import User from '../views/User.vue'
-import DicomBrowser from '../views/DicomBrowser.vue'
 import AnalysisBrowser from '../views/AnalysisBrowser.vue'
 import AnalysisInformation from '../components/analysis/analysis-information.vue'
+import BrainBrowserView from '../views/BrainBrowser.vue'
+import DicomBrowser from '../views/DicomBrowser.vue'
+import MriBrowser from '../views/MriBrowser.vue'
 import PipelineBrowser from '../views/PipelineBrowser.vue'
 import RunBrowser from '../views/RunBrowser.vue'
 import SequenceTypes from '../views/SequenceTypes.vue'
 import StudyBrowser from '../views/StudyBrowser.vue'
 import SubjectBrowser from '../views/SubjectBrowser.vue'
-import BrainBrowserView from '../views/BrainBrowser.vue'
 import ScanTypes from '../views/ScanTypes.vue'
 import store from '../store'
 
@@ -88,6 +89,12 @@ export default new Router({
       path: '/mri-sequence-types',
       name: 'sequenceTypes',
       component: SequenceTypes,
+      beforeEnter: requireAuthenticated
+    },
+    {
+      path: '/mri-browser',
+      name: 'mriBrowser',
+      component: MriBrowser,
       beforeEnter: requireAuthenticated
     },
     {
