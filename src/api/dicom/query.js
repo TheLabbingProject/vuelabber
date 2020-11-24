@@ -6,15 +6,15 @@ const getPatientQueryString = ({ filters, options }) => {
     ''}&given_name_lookup=icontains&middle_name=&middle_name_lookup=&family_name=${filters.lastName ||
     ''}&family_name_lookup=icontains&name_suffix=&sex=${
     filters.sex ? filters.sex[0] : ''
-    }&study__id=${filters.studyId || ''}&page_size=${
+  }&study__id=${filters.studyId || ''}&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage
         : 10000
       : 100
-    }&page=${options.page || 1}&ordering=${
+  }&page=${options.page || 1}&ordering=${
     options.descending ? '-' + options.sortBy : options.sortBy
-    }`
+  }`
 }
 
 const getSeriesQueryString = ({ filters, options }) => {
@@ -33,18 +33,22 @@ const getSeriesQueryString = ({ filters, options }) => {
     ''}&flip_angle=${filters.flipAngle ||
     ''}&manufacturer=${filters.manufacturer ||
     ''}&manufacturer_model_name=${filters.manufacturersModelName ||
+    ''}&pixel_spacing=${filters.pixelSpacing ||
+    ''}&slice_thickness=${filters.sliceThickness ||
     ''}&magnetic_field_strength=${filters.magneticFieldStrength ||
     ''}&device_serial_number=${filters.deviceSerialNumber ||
     ''}&institution_name=${filters.institutionName ||
-    ''}&patient__id=${filters.patientId || ''}&page_size=${
+    ''}&patient__id=${filters.patientId || ''}&header_fields=${JSON.stringify(
+    filters.headerFields
+  ) || ''}&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage
         : 10000
       : 100
-    }&page=${options.page || 1}&ordering=${
+  }&page=${options.page || 1}&ordering=${
     options.descending ? '-' + options.sortBy : options.sortBy
-    }`
+  }`
 }
 
 const getStudyQueryString = ({ filters, options }) => {
@@ -59,9 +63,9 @@ const getStudyQueryString = ({ filters, options }) => {
         ? options.itemsPerPage
         : 10000
       : 100
-    }&page=${options.page || 1}&ordering=${
+  }&page=${options.page || 1}&ordering=${
     options.descending ? '-' + options.sortBy : options.sortBy
-    }`
+  }`
 }
 
 export { getPatientQueryString, getSeriesQueryString, getStudyQueryString }
