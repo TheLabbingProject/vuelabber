@@ -33,14 +33,16 @@ const getSeriesQueryString = ({ filters, options }) => {
     ''}&flip_angle=${filters.flipAngle ||
     ''}&manufacturer=${filters.manufacturer ||
     ''}&manufacturer_model_name=${filters.manufacturersModelName ||
-    ''}&pixel_spacing=${filters.pixelSpacing ||
-    ''}&slice_thickness=${filters.sliceThickness ||
+    ''}&pixel_spacing=${
+    filters.pixelSpacing == null || filters.pixelSpacing == ''
+      ? ''
+      : JSON.parse(filters.pixelSpacing)
+  }&slice_thickness=${filters.sliceThickness ||
     ''}&magnetic_field_strength=${filters.magneticFieldStrength ||
     ''}&device_serial_number=${filters.deviceSerialNumber ||
     ''}&institution_name=${filters.institutionName ||
-    ''}&patient__id=${filters.patientId || ''}&header_fields=${JSON.stringify(
-    filters.headerFields
-  ) || ''}&page_size=${
+    ''}&patient__id=${filters.patientId ||
+    ''}&header_fields=${filters.headerFields || ''}&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage

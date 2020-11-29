@@ -29,11 +29,11 @@ const getters = {
       state.sequenceTypes.find(
         item =>
           arraysEqual(
-            item.sequenceTypeDefinitions.scanningSequence,
+            item.sequenceDefinitions.scanningSequence,
             series.scanningSequence
           ) &&
           arraysEqual(
-            item.sequenceTypeDefinitions.sequenceVariant,
+            item.sequenceDefinitions.sequenceVariant,
             series.sequenceVariant
           )
       )
@@ -328,14 +328,14 @@ const actions = {
       .catch(console.error)
   },
   getCSV({ commit }, ids) {
-    let args = { "pks": ids }
+    let args = { pks: ids }
     return session
-      .post(scansToCSV, args, { "Content-Type": "multipart/form-data" })
-      .then((response) => {
-        var blob = new Blob([response.data], { type: "text/csv" })
+      .post(scansToCSV, args, { 'Content-Type': 'multipart/form-data' })
+      .then(response => {
+        var blob = new Blob([response.data], { type: 'text/csv' })
         var link = document.createElement('a')
         link.href = window.URL.createObjectURL(blob)
-        link.download = "filtered_scans.csv"
+        link.download = 'filtered_scans.csv'
         link.click()
         session.get(removeTmpCSV)
       })

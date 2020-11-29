@@ -1,9 +1,19 @@
 <template>
   <div>
     <v-row class="px-5 align-center justify-space-between">
-      <!-- Number -->
+      <!-- Lab -->
       <v-col cols="1">
-        <v-text-field label="Number" type="number" v-model="filters.number" />
+        <v-text-field
+          label="Lab"
+          type="text"
+          v-model="headerFieldsSplitData['StudyDescription']"
+          @blur="
+            searchHeaderField(
+              'StudyDescription',
+              headerFieldsSplitData['StudyDescription']
+            )
+          "
+        />
       </v-col>
 
       <!-- Description -->
@@ -108,11 +118,89 @@
       </v-col>
       <v-col>
         <v-text-field
+          label="Pixel Spacing"
+          v-model="pixelSpacingData"
+          @blur="filters.pixelSpacing = pixelSpacingData"
+          cols="2"
+        />
+      </v-col>
+      <v-col>
+        <v-text-field
           label="Maunfacturer"
-          type="choice"
           v-model="filters.manufacturer"
           cols="2"
         />
+      </v-col>
+      <v-col>
+        <!-- Scanning Sequence -->
+        <v-select
+          chips
+          multiple
+          label="Scanning Sequence"
+          v-model="filters.scanningSequence"
+          :items="scanningSequenceItems"
+        />
+      </v-col>
+      <v-col>
+        <!-- Sequence Variants -->
+        <v-select
+          chips
+          multiple
+          label="Sequence Variants"
+          v-model="filters.sequenceVariant"
+          :items="sequenceVariantItems"
+        />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-text-field
+          label="Header Fields"
+          v-model="headerFieldsData"
+          @keyup.enter="filters.headerFields = headerFieldsData"
+          cols="2"
+        />
+      </v-col>
+      <!-- <v-col>
+        <v-autocomplete
+          label="Header Fields"
+          v-model="headerFieldsSelect"
+          :items="[
+            'PulseSequenceName',
+            'InternalPulseSequenceName',
+            'StudyDate',
+            'StudyTime',
+            'Other'
+          ]"
+          placeholder=""
+          @select="addNewField()"
+        ></v-autocomplete>
+      </v-col>
+      <v-col v-if="headerFieldsSelect == 'Other'">
+        <v-col v-for="i in [...Array(headerFieldCount).keys()]" :key="`${i}`">
+          <v-text-field label="Field Name"></v-text-field>
+        </v-col>
+        <v-col>
+          <v-text-field label="Field Value"></v-text-field>
+        </v-col>
+        <v-col>
+          <v-icon @click="addToHeaderField(i)">add</v-icon>
+        </v-col>
+      </v-col> -->
+      <v-col cols="1">
+        <v-btn
+          class="ma-2 success"
+          :loading="loadingCSV"
+          :disabled="loadingCSV"
+          @click="getCSVWrapper()"
+        >
+          To CSV
+          <template v-slot:loader>
+            <span class="custom-loader">
+              <v-icon light>mdi-cached</v-icon>
+            </span>
+          </template>
+        </v-btn>
       </v-col>
     </v-row>
   </div>
@@ -120,6 +208,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import { scanningSequences, sequenceVariants } from '@/components/mri/utils'
 
 export default {
   name: 'SeriesTableControls',
@@ -143,17 +232,29 @@ export default {
       manufacturer: null,
       sliceThickess: null,
       pixelSpacing: null,
-      headerFields: null
+      headerFields: null,
+      sequenceVariant: null,
+      scanningSequence: null
     },
+    headerFieldsData: null,
+    headerFieldsSplitData: {},
+    pixelSpacingData: null,
+    counter: 0,
+    loadingCSV: false,
     afterDateMenu: false,
     beforeDateMenu: false,
     afterTimeMenu: false,
-    beforeTimeMenu: false
+    beforeTimeMenu: false,
+    scanningSequenceItems: Object.keys(scanningSequences),
+    sequenceVariantItems: Object.keys(sequenceVariants)
   }),
   computed: {
     dates: function() {
       let rawDates = [...new Set(this.seriesList.map(series => series.date))]
       return rawDates.map(date => this.$options.filters.formatDate(date))
+    },
+    headerFieldCount() {
+      return this.counter
     },
     ...mapState('dicom', ['seriesList'])
   },
@@ -171,8 +272,26 @@ export default {
       )
       this.$emit('fetch-series-end')
     },
+    // addNewField() {
+    //   if (this.headerFieldsSelect == 'Other') {
+    //     this.headerFieldCount += 1
+    //   }
+    // },
+    getCSVWrapper() {
+      this.loadingCSV = true
+      var dicomIds = this.seriesList.map(series => series.id)
+      this.getCSV(dicomIds).then(() => (this.loadingCSV = false))
+    },
+    searchHeaderField(field, value) {
+      if (this.filters.headerFields == null) this.filters.headerFields = {}
+      if (!(field in this.filters.headerFields)) {
+        this.filters.headerFields[field] = [value]
+      } else {
+        this.filters.headerFields[field].append(value)
+      }
+    },
     ...mapActions('dicom', ['fetchSeries']),
-    ...mapActions('mri', ['fetchSequenceTypes', 'fetchScans'])
+    ...mapActions('mri', ['fetchSequenceTypes', 'fetchScans', 'getCSV'])
   },
   watch: {
     filters: {
