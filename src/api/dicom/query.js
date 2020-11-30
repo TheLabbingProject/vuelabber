@@ -36,7 +36,7 @@ const getSeriesQueryString = ({ filters, options }) => {
     ''}&pixel_spacing=${
     filters.pixelSpacing == null || filters.pixelSpacing == ''
       ? ''
-      : JSON.parse(filters.pixelSpacing)
+      : JSON.stringify(filters.pixelSpacing)
   }&slice_thickness=${filters.sliceThickness ||
     ''}&magnetic_field_strength=${filters.magneticFieldStrength ||
     ''}&device_serial_number=${filters.deviceSerialNumber ||

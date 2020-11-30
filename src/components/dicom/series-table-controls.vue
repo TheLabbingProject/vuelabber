@@ -161,32 +161,6 @@
           cols="2"
         />
       </v-col>
-      <!-- <v-col>
-        <v-autocomplete
-          label="Header Fields"
-          v-model="headerFieldsSelect"
-          :items="[
-            'PulseSequenceName',
-            'InternalPulseSequenceName',
-            'StudyDate',
-            'StudyTime',
-            'Other'
-          ]"
-          placeholder=""
-          @select="addNewField()"
-        ></v-autocomplete>
-      </v-col>
-      <v-col v-if="headerFieldsSelect == 'Other'">
-        <v-col v-for="i in [...Array(headerFieldCount).keys()]" :key="`${i}`">
-          <v-text-field label="Field Name"></v-text-field>
-        </v-col>
-        <v-col>
-          <v-text-field label="Field Value"></v-text-field>
-        </v-col>
-        <v-col>
-          <v-icon @click="addToHeaderField(i)">add</v-icon>
-        </v-col>
-      </v-col> -->
       <v-col cols="1">
         <v-btn
           class="ma-2 success"
@@ -272,11 +246,6 @@ export default {
       )
       this.$emit('fetch-series-end')
     },
-    // addNewField() {
-    //   if (this.headerFieldsSelect == 'Other') {
-    //     this.headerFieldCount += 1
-    //   }
-    // },
     getCSVWrapper() {
       this.loadingCSV = true
       var dicomIds = this.seriesList.map(series => series.id)
