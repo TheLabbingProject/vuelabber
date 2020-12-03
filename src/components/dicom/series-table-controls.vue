@@ -1,24 +1,34 @@
 <template>
   <div>
-    <v-row class="px-5 align-center justify-space-between">
+    <v-row class="px-5 align-center">
       <!-- Lab -->
       <v-col cols="1">
         <v-text-field
           label="Lab"
           type="text"
-          v-model="headerFieldsSplitData['StudyDescription']"
+          v-model="headerFieldsSplitData['LabName']"
           @blur="
             searchHeaderField(
               'StudyDescription',
-              headerFieldsSplitData['StudyDescription']
+              headerFieldsSplitData['LabName']
             )
           "
         />
       </v-col>
 
-      <!-- Description -->
-      <v-col cols="2">
-        <v-text-field label="Description" v-model="filters.description" />
+      <!-- Researcher Name -->
+      <v-col cols="1">
+        <v-text-field
+          label="Researcher"
+          type="text"
+          v-model="headerFieldsSplitData['ResearcherName']"
+          @blur="
+            searchHeaderField(
+              'StudyDescription',
+              headerFieldsSplitData['ResearcherName']
+            )
+          "
+        />
       </v-col>
 
       <!-- Date -->
@@ -253,10 +263,17 @@ export default {
     },
     searchHeaderField(field, value) {
       if (this.filters.headerFields == null) this.filters.headerFields = {}
-      if (!(field in this.filters.headerFields)) {
-        this.filters.headerFields[field] = [value]
+      if (value == '' && this.filters.headerFields[field]) {
+        this.filters.headerFields[field].pop()
+        if (this.filters.headerFields[field].length == 0) {
+          delete this.filters.headerFields[field]
+        }
+        return
+      }
+      if (field in this.filters.headerFields) {
+        this.filters.headerFields[field].push(value)
       } else {
-        this.filters.headerFields[field].append(value)
+        this.filters.headerFields[field] = [value]
       }
     },
     ...mapActions('dicom', ['fetchSeries']),
@@ -270,6 +287,12 @@ export default {
       deep: true
     },
     options: {
+      handler() {
+        this.update()
+      },
+      deep: true
+    },
+    headerFieldsSplitData: {
       handler() {
         this.update()
       },

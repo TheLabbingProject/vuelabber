@@ -41,8 +41,11 @@ const getSeriesQueryString = ({ filters, options }) => {
     ''}&magnetic_field_strength=${filters.magneticFieldStrength ||
     ''}&device_serial_number=${filters.deviceSerialNumber ||
     ''}&institution_name=${filters.institutionName ||
-    ''}&patient__id=${filters.patientId ||
-    ''}&header_fields=${filters.headerFields || ''}&page_size=${
+    ''}&patient__id=${filters.patientId || ''}&header_fields=${
+    filters.headerFields == null || filters.headerFields == {}
+      ? ''
+      : JSON.stringify(filters.headerFields)
+  }&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage
