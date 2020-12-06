@@ -1,13 +1,13 @@
 <template>
   <div>
-    <v-row class="px-5 align-center">
+    <v-row class="px-5 align-center justify-center">
       <!-- Lab -->
       <v-col cols="1">
         <v-text-field
           label="Lab"
           type="text"
           v-model="headerFieldsSplitData['LabName']"
-          @blur="
+          @change="
             searchHeaderField(
               'StudyDescription',
               headerFieldsSplitData['LabName']
@@ -22,7 +22,7 @@
           label="Researcher"
           type="text"
           v-model="headerFieldsSplitData['ResearcherName']"
-          @blur="
+          @change="
             searchHeaderField(
               'StudyDescription',
               headerFieldsSplitData['ResearcherName']
@@ -135,10 +135,12 @@
         />
       </v-col>
       <v-col>
-        <v-text-field
+        <v-select
+          chips
+          multiple
           label="Maunfacturer"
           v-model="filters.manufacturer"
-          cols="2"
+          :items="manufacturerItems"
         />
       </v-col>
       <v-col>
@@ -239,6 +241,9 @@ export default {
     },
     headerFieldCount() {
       return this.counter
+    },
+    manufacturerItems() {
+      return [...new Set(this.seriesList.map(series => series.manufacturer))]
     },
     ...mapState('dicom', ['seriesList'])
   },
