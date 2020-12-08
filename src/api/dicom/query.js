@@ -26,10 +26,13 @@ const getSeriesQueryString = ({ filters, options }) => {
     ''}&created_after_date=${filters.afterDate ||
     ''}&created_before_date=${filters.beforeDate || ''}&date=${filters.date ||
     ''}&created_after_time=${filters.afterTime ||
-    ''}&created_before_time=${filters.beforeTime ||
-    ''}&echo_time=${filters.echoTime ||
-    ''}&inversion_time=${filters.inversionTime ||
-    ''}&repetition_time=${filters.repetitionTime ||
+    ''}&created_before_time=${filters.beforeTime || ''}&echo_time_lookup=${
+    filters.operators ? filters.operators.echoTime || 'exact' : ''
+  }&echo_time=${filters.echoTime || ''}&inversion_time_lookup=${
+    filters.operators ? filters.operators.inversionTime || 'exact' : ''
+  }&inversion_time=${filters.inversionTime || ''}&repetition_time_lookup=${
+    filters.operators ? filters.operators.repetitionTime || 'exact' : ''
+  }&repetition_time=${filters.repetitionTime ||
     ''}&flip_angle=${filters.flipAngle ||
     ''}&manufacturer=${filters.manufacturer ||
     ''}&manufacturer_model_name=${filters.manufacturersModelName ||
@@ -37,15 +40,14 @@ const getSeriesQueryString = ({ filters, options }) => {
     filters.pixelSpacing == null || filters.pixelSpacing == ''
       ? ''
       : JSON.stringify(filters.pixelSpacing)
+  }&slice_thickness_lookup=${
+    filters.operators ? filters.operators.sliceThickness || 'exact' : ''
   }&slice_thickness=${filters.sliceThickness ||
     ''}&magnetic_field_strength=${filters.magneticFieldStrength ||
     ''}&device_serial_number=${filters.deviceSerialNumber ||
     ''}&institution_name=${filters.institutionName ||
-    ''}&patient__id=${filters.patientId || ''}&header_fields=${
-    filters.headerFields == null || filters.headerFields == {}
-      ? ''
-      : JSON.stringify(filters.headerFields)
-  }&page_size=${
+    ''}&patient__id=${filters.patientId ||
+    ''}&header_fields=${filters.headerFields || ''}&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage
