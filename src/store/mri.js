@@ -1,11 +1,16 @@
 /* eslint-disable */
 import {
+  IRB_APPROVALS,
   SCANS,
   SEQUENCE_TYPES,
   SEQUENCE_TYPE_DEFINITIONS,
   SESSIONS
 } from '@/api/mri/endpoints'
-import { getScanQueryString, getSessionQueryString } from '@/api/mri/query'
+import {
+  getIrbApprovalQueryString,
+  getScanQueryString,
+  getSessionQueryString
+} from '@/api/mri/query'
 import { arraysEqual, camelToSnakeCase } from '@/utils'
 import session from '@/api/session'
 
@@ -15,7 +20,9 @@ const state = {
   sessions: [],
   totalScanCount: 0,
   sessionCount: 0,
-  scanPreviewLoader: ''
+  scanPreviewLoader: '',
+  irbApprovals: [],
+  irbApprovalsCount: 0
 }
 
 const getters = {
@@ -51,6 +58,12 @@ const mutations = {
   setSessions(state, sessions) {
     state.sessions = sessions
   },
+  setIrbApprovals(state, irbApprovals) {
+    state.irbApprovals = irbApprovals
+  },
+  setIrbApprovalsCount(state, count) {
+    state.irbApprovalsCount = count
+  },
   setSessionCount(state, count) {
     state.sessionCount = count
   },
@@ -76,7 +89,7 @@ const mutations = {
     // Mutating an array directly causes reactivity problems
     let newSessions = state.sessions.slice()
     newSessions[index] = updatedSession
-    state.sessionn = newSessions
+    state.sessions = newSessions
   },
   createSequenceType(state, sequenceType, sequenceTypeDefinition) {
     state.sequenceTypes.push(sequenceType)
@@ -166,9 +179,21 @@ const actions = {
       .then(({ data }) => commit('setSequenceTypes', data.results))
       .catch(console.error)
   },
+  fetchIrbApprovals({ commit }, query) {
+    commit('setIrbApprovals', [])
+    let queryString = getIrbApprovalQueryString(query)
+    let URL = `${IRB_APPROVALS}/${queryString}`
+    return session
+      .get(URL)
+      .then(({ data }) => {
+        commit('setIrbApprovals', data.results)
+        commit('setIrbApprovalsCount', data.count)
+      })
+      .catch(console.error)
+  },
   fetchSessions({ commit }, query) {
     commit('setSessions', [])
-    let queryString = getSessionQueryString(query)
+    let queryString = getIrbApprovalQueryString(query)
     return session
       .get(`${SESSIONS}/${queryString}`)
       .then(({ data }) => {
@@ -235,8 +260,9 @@ const actions = {
   },
   patchSession({ commit }, data) {
     let { sessionId, ...dataWithoutId } = data
+    let URL = `${SESSIONS}/${sessionId}/`
     return session
-      .patch(`${SESSIONS}/${sessionId}/`, dataWithoutId)
+      .patch(URL, dataWithoutId)
       .then(({ data }) => {
         commit('updateSessionState', data)
         return true

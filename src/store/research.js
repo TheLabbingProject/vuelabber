@@ -305,8 +305,9 @@ const actions = {
       .catch(console.error)
   },
   createStudy({ commit }, study) {
+    let URL = `${STUDIES}/`
     return session
-      .post(STUDIES + '/', study)
+      .post(URL, study)
       .then(({ data }) => {
         commit('addStudy', data)
         return data

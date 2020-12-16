@@ -1,9 +1,11 @@
-const parseOrdering = ({ sortBy, sortDesc }) => {
-  return sortBy
-    .map((value, index) => {
-      return sortDesc[index] ? '-' + value : value
-    })
-    .join(',')
+const parseOrdering = options => {
+  return options.sortBy && options.sortDesc
+    ? options.sortBy
+        .map((value, index) => {
+          return options.sortDesc[index] ? '-' + value : value
+        })
+        .join(',')
+    : ''
 }
 
 const getScanQueryString = ({ filters, options }) => {
@@ -25,7 +27,9 @@ const getScanQueryString = ({ filters, options }) => {
 }
 
 const getSessionQueryString = ({ filters, options }) => {
-  return `?subject_id_in=${filters.subject ||
+  return `?id_in=${
+    filters.idIn ? filters.idIn.join(',') : ''
+  }&subject_id_in=${filters.subject ||
     ''}&created_after=&created_before=&session_date_after=${filters.afterDate ||
     ''}&session_date_before=${filters.beforeDate || ''}&page_size=${
     options.itemsPerPage
@@ -36,4 +40,16 @@ const getSessionQueryString = ({ filters, options }) => {
   }&page=${options.page || 1}&ordering=${parseOrdering(options)}`
 }
 
-export { getScanQueryString, getSessionQueryString }
+const getIrbApprovalQueryString = ({ filters, options }) => {
+  return `?id=${filters.id || ''}&institution=${filters.institution ||
+    ''}&institution_lookup=icontains&number=${filters.number ||
+    ''}&number_lookup=icontains&page_size=${
+    options.itemsPerPage
+      ? options.itemsPerPage != -1
+        ? options.itemsPerPage
+        : 10000
+      : 100
+  }&page=${options.page || 1}&ordering=${parseOrdering(options)}`
+}
+
+export { getIrbApprovalQueryString, getScanQueryString, getSessionQueryString }

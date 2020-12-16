@@ -102,6 +102,54 @@
         </v-edit-dialog>
       </template>
 
+      <template v-slot:item.irb="{ item }">
+        <v-edit-dialog
+          :return-value.sync="item.irb"
+          large
+          @save="saveIrb(item)"
+        >
+          <div>{{ getIrbDisplay(item.irb) }}</div>
+          <template v-lazy v-slot:input v-if="item.irb">
+            <v-row>
+              <v-combobox
+                v-model="item.irb.institution"
+                label="Institution"
+                :items="irbApprovalInstitutions"
+                :loading="loadingIrbApprovalInstitutions"
+                :search-input.sync="irbApprovalInstitution"
+                autofocus
+              ></v-combobox>
+              <v-combobox
+                v-model="item.irb.number"
+                label="IRB Number"
+                :items="irbApprovalNumbers"
+                :loading="loadingIrbApprovalNumbers"
+                :search-input.sync="irbApprovalNumber"
+              ></v-combobox>
+            </v-row>
+          </template>
+          <template v-lazy v-slot:input v-else>
+            <v-row>
+              <v-combobox
+                v-model="newIrbApproval.institution"
+                label="Institution"
+                :items="irbApprovalInstitutions"
+                :loading="loadingIrbApprovalInstitutions"
+                :search-input.sync="irbApprovalInstitution"
+                autofocus
+              ></v-combobox>
+              <v-combobox
+                v-model="newIrbApproval.number"
+                label="IRB Number"
+                :items="irbApprovalNumbers"
+                :loading="loadingIrbApprovalNumbers"
+                :search-input.sync="irbApprovalNumber"
+              ></v-combobox>
+            </v-row>
+          </template>
+        </v-edit-dialog>
+      </template>
+
       <!-- Show scan table when expanded -->
       <template v-slot:expanded-item="{ item, headers }">
         <td :colspan="headers.length" class="subject-data pa-0 ma-0">
@@ -139,6 +187,7 @@ export default {
       { text: 'Date', value: 'date' },
       { text: 'Time', value: 'time' },
       { text: 'Measurement', value: 'measurement.title' },
+      { text: 'IRB', value: 'irb' },
       { text: 'Comments', value: 'comments' }
     ],
     options: {
@@ -154,10 +203,21 @@ export default {
     loadingMeasurementDefinitionItems: false,
     existingMeasurementDefinitionQuery: null,
     selectedMeasurementDefinition: null,
-    selected: []
+    selected: [],
+    loadingIrbApprovalNumbers: false,
+    loadingIrbApprovalInstitutions: false,
+    irbApprovalInstitution: '',
+    irbApprovalNumber: '',
+    newIrbApproval: { institution: '', number: '' }
   }),
   computed: {
-    ...mapState('mri', ['sessions', 'sessionCount']),
+    irbApprovalInstitutions: function() {
+      return this.irbApprovals.map(irb => irb.institution)
+    },
+    irbApprovalNumbers: function() {
+      return this.irbApprovals.map(irb => irb.number)
+    },
+    ...mapState('mri', ['irbApprovals', 'sessions', 'sessionCount']),
     ...mapState('research', ['measurementDefinitionItems']),
     ...mapState('auth', { currentUser: 'user' })
   },
@@ -180,7 +240,7 @@ export default {
       this.selected.forEach(session => {
         let data = {
           sessionId: session.id,
-          measurement: this.selectedMeasurementDefinition
+          measurementId: this.selectedMeasurementDefinition
         }
         this.patchSession(data).then(() => this.$refs.controls.update())
       })
@@ -199,8 +259,47 @@ export default {
         () => (this.loadingMeasurementDefinitionItems = false)
       )
     },
-    ...mapActions('mri', ['patchSession']),
+    getIrbDisplay(irb) {
+      return irb ? `${irb.institution || ''}/${irb.number || ''}` : ''
+    },
+    filterIrbApprovals() {
+      this.loadingIrbApprovalInstitutions = true
+      this.loadingIrbApprovalNumbers = true
+      let filters = {
+        number: this.irbApprovalNumber,
+        institution: this.irbApprovalInstitution
+      }
+      this.fetchIrbApprovals({
+        filters,
+        options: {
+          page: 1,
+          itemsPerPage: 50,
+          sortBy: undefined,
+          sortDesc: undefined
+        }
+      }).then(() => {
+        this.loadingIrbApprovalInstitutions = false
+        this.loadingIrbApprovalNumbers = false
+      })
+    },
+    saveIrb(session) {
+      let irb = session.irb || this.newIrbApproval
+      let patch = {
+        sessionId: session.id,
+        irb
+      }
+      this.patchSession(patch)
+    },
+    ...mapActions('mri', ['fetchIrbApprovals', 'patchSession']),
     ...mapActions('research', ['fetchMeasurementDefinitionItems'])
+  },
+  watch: {
+    irbApprovalNumber: function() {
+      this.filterIrbApprovals()
+    },
+    irbApprovalInstitution: function() {
+      this.filterIrbApprovals()
+    }
   }
 }
 </script>
