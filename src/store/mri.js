@@ -4,8 +4,7 @@ import {
   SEQUENCE_TYPES,
   SEQUENCE_TYPE_DEFINITIONS,
   SESSIONS,
-  scansToCSV,
-  removeTmpCSV
+  scansToCSV
 } from '@/api/mri/endpoints'
 import { getScanQueryString, getSessionQueryString } from '@/api/mri/query'
 import { arraysEqual, camelToSnakeCase } from '@/utils'
@@ -337,7 +336,6 @@ const actions = {
         link.href = window.URL.createObjectURL(blob)
         link.download = 'filtered_scans.csv'
         link.click()
-        session.get(removeTmpCSV)
       })
       .catch(console.error)
   }

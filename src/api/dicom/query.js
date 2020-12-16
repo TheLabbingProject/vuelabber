@@ -20,32 +20,55 @@ const getPatientQueryString = ({ filters, options }) => {
 const getSeriesQueryString = ({ filters, options }) => {
   return `?id=${filters.id || ''}&uid=${filters.uid ||
     ''}&study_uid=${filters.studyUid ||
-    ''}&study_description=${filters.study_description ||
+    ''}&study_description=${filters.studyDescription ||
     ''}&modality=${filters.modality || ''}&description=${filters.description ||
     ''}&description_lookup=icontains&protocol_name=&number=${filters.number ||
     ''}&created_after_date=${filters.afterDate ||
     ''}&created_before_date=${filters.beforeDate || ''}&date=${filters.date ||
     ''}&created_after_time=${filters.afterTime ||
-    ''}&created_before_time=${filters.beforeTime || ''}&echo_time_lookup=${
-    filters.operators ? filters.operators.echoTime || 'exact' : ''
-  }&echo_time=${filters.echoTime || ''}&inversion_time_lookup=${
-    filters.operators ? filters.operators.inversionTime || 'exact' : ''
-  }&inversion_time=${filters.inversionTime || ''}&repetition_time_lookup=${
-    filters.operators ? filters.operators.repetitionTime || 'exact' : ''
-  }&repetition_time=${filters.repetitionTime ||
-    ''}&flip_angle=${filters.flipAngle ||
-    ''}&manufacturer=${filters.manufacturer ||
+    ''}&created_before_time=${filters.beforeTime || ''}&echo_time_min=${
+    filters.echoTime && 'min' in filters.echoTime ? filters.echoTime.min : ''
+  }&echo_time_max=${
+    filters.echoTime && 'max' in filters.echoTime ? filters.echoTime.max : ''
+  }&inversion_time_min=${
+    filters.inversionTime && 'min' in filters.inversionTime
+      ? filters.inversionTime.min
+      : ''
+  }&inversion_time_max=${
+    filters.inversionTime && 'max' in filters.inversionTime
+      ? filters.inversionTime.max
+      : ''
+  }&repetition_time_min=${
+    filters.repetitionTime && 'min' in filters.repetitionTime
+      ? filters.repetitionTime.min
+      : ''
+  }&repetition_time_max=${
+    filters.repetitionTime && 'max' in filters.repetitionTime
+      ? filters.repetitionTime.max
+      : ''
+  }&flip_angle=${filters.flipAngle || ''}&manufacturer=${filters.manufacturer ||
     ''}&manufacturer_model_name=${filters.manufacturersModelName ||
-    ''}&pixel_spacing=${
-    filters.pixelSpacing == null || filters.pixelSpacing == ''
-      ? ''
-      : JSON.stringify(filters.pixelSpacing)
-  }&slice_thickness_lookup=${
-    filters.operators ? filters.operators.sliceThickness || 'exact' : ''
-  }&slice_thickness=${filters.sliceThickness ||
-    ''}&magnetic_field_strength=${filters.magneticFieldStrength ||
+    ''}&pixel_spacing_min=${
+    filters.pixelSpacing && 'min' in filters.pixelSpacing
+      ? filters.pixelSpacing.min
+      : ''
+  }&pixel_spacing_max=${
+    filters.pixelSpacing && 'max' in filters.pixelSpacing
+      ? filters.pixelSpacing.max
+      : ''
+  }&slice_thickness_min=${
+    filters.sliceThickness && 'min' in filters.sliceThickness
+      ? filters.sliceThickness.min
+      : ''
+  }&slice_thickness_max=${
+    filters.sliceThickness && 'max' in filters.sliceThickness
+      ? filters.sliceThickness.max
+      : ''
+  }&magnetic_field_strength=${filters.magneticFieldStrength ||
     ''}&device_serial_number=${filters.deviceSerialNumber ||
     ''}&institution_name=${filters.institutionName ||
+    ''}&pulse_sequence_name=${filters.pulseSequenceName ||
+    ''}&sequence_name=${filters.sequenceName ||
     ''}&patient__id=${filters.patientId ||
     ''}&header_fields=${filters.headerFields || ''}&page_size=${
     options.itemsPerPage

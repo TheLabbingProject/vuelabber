@@ -1,26 +1,14 @@
 <template>
   <div>
-    <v-row class="px-5 align-center">
-      <!-- Lab -->
-      <v-col cols="2">
+    <v-row class="align-center">
+      <!-- Study Description -->
+      <v-col>
         <v-text-field
-          label="Lab"
+          label="Study Description"
           type="text"
-          v-model="headerFieldsSplitData['LabName']"
-          @change="addToHeaderField('StudyDescription', 'LabName')"
+          v-model="filters.studyDescription"
         />
       </v-col>
-
-      <!-- Researcher Name -->
-      <v-col cols="2">
-        <v-text-field
-          label="Researcher"
-          type="text"
-          v-model="headerFieldsSplitData['ResearcherName']"
-          @change="addToHeaderField('StudyDescription', 'ResearcherName')"
-        />
-      </v-col>
-
       <!-- Date -->
       <v-col cols="4">
         <v-row class="align-center">
@@ -109,21 +97,19 @@
     </v-row>
     <v-row>
       <v-col>
-        <!-- SequenceName -->
+        <!-- Sequence Name -->
         <v-text-field
           label="Sequence Name"
           type="text"
-          v-model="headerFieldsSplitData['SequenceName']"
-          @change="addToHeaderField('(0018, 0024)', 'SequenceName')"
+          v-model="filters.sequenceName"
         />
       </v-col>
       <v-col>
-        <!-- PulseSequenceName -->
+        <!-- Pulse Sequence Name -->
         <v-text-field
           label="Pulse Sequence Name"
           type="text"
-          v-model="headerFieldsSplitData['PulseSequenceName']"
-          @change="addToHeaderField('(0019, 109E)', 'PulseSequenceName')"
+          v-model="filters.pulseSequenceName"
         />
       </v-col>
       <v-col>
@@ -133,7 +119,7 @@
           multiple
           label="Maunfacturer"
           v-model="filters.manufacturer"
-          :items="manufacturerItems"
+          :items="manufacturersList"
         />
       </v-col>
       <v-col>
@@ -158,88 +144,101 @@
       </v-col>
     </v-row>
     <v-row>
+      <!-- Echo Time -->
       <v-col>
-        <!-- Echo Time -->
         <v-text-field
-          label="Echo Time"
+          label="Echo Time Min"
           type="number"
-          v-model="filters.echoTime"
+          v-model="filters.echoTime.min"
+          @change="updateCounter()"
           cols="1"
         />
       </v-col>
       <v-col>
-        <v-select
-          label="Op"
-          v-model="filters.operators.echoTime"
-          :items="numberOperatorsItems"
-          cols="1"
-        />
-      </v-col>
-      <v-col>
-        <!-- Slice Thickness -->
         <v-text-field
-          label="Slice Thickness"
+          label="Echo Time Max"
           type="number"
-          v-model="filters.sliceThickess"
+          v-model="filters.echoTime.max"
+          @change="updateCounter()"
+          cols="1"
+        />
+      </v-col>
+      <!-- Slice Thickness -->
+      <v-col>
+        <v-text-field
+          label="Slice Thickness Min"
+          type="number"
+          v-model="filters.sliceThickness.min"
+          @change="updateCounter()"
           cols="1"
         />
       </v-col>
       <v-col>
-        <v-select
-          label="Op"
-          v-model="filters.operators.sliceThickness"
-          :items="numberOperatorsItems"
+        <v-text-field
+          label="Slice Thickness Max"
+          type="number"
+          v-model="filters.sliceThickness.max"
+          @change="updateCounter()"
           cols="1"
         />
       </v-col>
       <v-col>
         <!-- Pixel Spacing -->
         <v-text-field
-          label="Pixel Spacing"
+          label="Pixel Spacing Min"
           type="number"
-          v-model="filters.pixelSpacing"
+          v-model="filters.pixelSpacing.min"
+          @change="updateCounter()"
           cols="1"
         />
       </v-col>
       <v-col>
-        <v-select
-          label="Op"
-          v-model="filters.operators.pixelSpacing"
-          :items="numberOperatorsItems"
-          cols="1"
-        />
-      </v-col>
-      <v-col>
-        <!-- Inversion Time -->
+        <!-- Pixel Spacing -->
         <v-text-field
-          label="Inversion Time"
+          label="Pixel Spacing Max"
           type="number"
-          v-model="filters.inversionTime"
+          v-model="filters.pixelSpacing.max"
+          @change="updateCounter()"
           cols="1"
         />
       </v-col>
+    </v-row>
+    <v-row>
+      <!-- Inversion Time -->
       <v-col>
-        <v-select
-          label="Op"
-          v-model="filters.operators.inversionTime"
-          :items="numberOperatorsItems"
-          cols="1"
-        />
-      </v-col>
-      <v-col>
-        <!-- Repetition Time -->
         <v-text-field
-          label="Repetition Time"
+          label="Inversion Time Min"
           type="number"
-          v-model="filters.repetitionTime"
+          v-model="filters.inversionTime.min"
+          @change="updateCounter()"
           cols="1"
         />
       </v-col>
       <v-col>
-        <v-select
-          label="Op"
-          v-model="filters.operators.repetitionTime"
-          :items="numberOperatorsItems"
+        <v-text-field
+          label="Inversion Time Max"
+          type="number"
+          v-model="filters.inversionTime.max"
+          @change="updateCounter()"
+          cols="1"
+        />
+      </v-col>
+      <!-- Repetition Time -->
+      <v-col>
+        <v-text-field
+          label="Repetition Time Min"
+          type="number"
+          v-model="filters.repetitionTime.min"
+          @change="updateCounter()"
+          cols="1"
+        />
+      </v-col>
+      <v-col>
+        <v-text-field
+          label="Repetition Time Max"
+          type="number"
+          v-model="filters.repetitionTime.max"
+          @change="updateCounter()"
           cols="1"
         />
       </v-col>
@@ -276,13 +275,13 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import { scanningSequences, sequenceVariants } from '@/components/mri/utils'
-import { numberOperators } from '@/utils'
 
 export default {
   name: 'SeriesTableControls',
   props: { options: Object, patient: Object },
   created() {
     this.fetchSequenceTypes()
+    this.fetchManufacturers()
     if (this.patient) this.filters.patientId = this.patient.id
     this.update()
   },
@@ -292,6 +291,7 @@ export default {
       uid: null,
       number: null,
       description: null,
+      studyDescription: null,
       afterDate: null,
       beforeDate: null,
       afterTime: null,
@@ -299,17 +299,17 @@ export default {
       patientId: null,
       headerFields: null,
       manufacturer: null,
-      echoTime: null,
-      pixelSpacing: null,
-      sliceThickess: null,
-      inversionTime: null,
-      repetitionTime: null,
+      pulseSequenceName: null,
+      sequenceName: null,
+      echoTime: {},
+      pixelSpacing: {},
+      sliceThickness: {},
+      inversionTime: {},
+      repetitionTime: {},
       sequenceVariant: null,
-      scanningSequence: null,
-      operators: {}
+      scanningSequence: null
     },
     headerFieldsData: null,
-    headerFieldsSplitData: {},
     counter: 0,
     loadingCSV: false,
     afterDateMenu: false,
@@ -317,18 +317,14 @@ export default {
     afterTimeMenu: false,
     beforeTimeMenu: false,
     scanningSequenceItems: Object.keys(scanningSequences),
-    sequenceVariantItems: Object.keys(sequenceVariants),
-    numberOperatorsItems: numberOperators
+    sequenceVariantItems: Object.keys(sequenceVariants)
   }),
   computed: {
     dates: function() {
       let rawDates = [...new Set(this.seriesList.map(series => series.date))]
       return rawDates.map(date => this.$options.filters.formatDate(date))
     },
-    manufacturerItems() {
-      return [...new Set(this.seriesList.map(series => series.manufacturer))]
-    },
-    ...mapState('dicom', ['seriesList'])
+    ...mapState('dicom', ['seriesList', 'manufacturersList'])
   },
   methods: {
     update() {
@@ -350,27 +346,10 @@ export default {
       var dicomIds = this.seriesList.map(series => series.id)
       this.getCSV(dicomIds).then(() => (this.loadingCSV = false))
     },
-    addToHeaderField(to_field, from_field) {
-      if (this.headerFieldsData == null) this.headerFieldsData = '{}'
-      var header = JSON.parse(this.headerFieldsData)
-      var value = this.headerFieldsSplitData[from_field]
-      if (value.includes(',')) value = [...new Set(value.split(','))]
-      if (value == '') {
-        delete this.headerFieldsSplitData[from_field]
-      } else if (to_field in header) {
-        if (!(value in Object.values(header))) {
-          header[to_field].push(value)
-        }
-      } else {
-        header[to_field] = [value]
-      }
-      this.headerFieldsData = JSON.stringify(header)
+    updateCounter() {
       this.counter++
     },
-    updateHeaderFields() {
-      this.counter++
-    },
-    ...mapActions('dicom', ['fetchSeries']),
+    ...mapActions('dicom', ['fetchSeries', 'fetchManufacturers']),
     ...mapActions('mri', ['fetchSequenceTypes', 'fetchScans', 'getCSV'])
   },
   watch: {
