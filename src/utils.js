@@ -42,3 +42,11 @@ export const titlesDictionary = {
   PHD: 'Ph.D.',
   PROF: 'Prof.'
 }
+
+export const numberOperators = [
+  { text: 'Greater than', value: 'gt' },
+  { text: 'Greater Equal than', value: 'gte' },
+  { text: 'Lower than', value: 'lt' },
+  { text: 'Lower Equal than', value: 'lte' },
+  { text: 'Equal', value: 'exact' }
+]

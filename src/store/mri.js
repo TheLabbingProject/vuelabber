@@ -3,7 +3,8 @@ import {
   SCANS,
   SEQUENCE_TYPES,
   SEQUENCE_TYPE_DEFINITIONS,
-  SESSIONS
+  SESSIONS,
+  scansToCSV
 } from '@/api/mri/endpoints'
 import { getScanQueryString, getSessionQueryString } from '@/api/mri/query'
 import { arraysEqual, camelToSnakeCase } from '@/utils'
@@ -27,11 +28,11 @@ const getters = {
       state.sequenceTypes.find(
         item =>
           arraysEqual(
-            item.sequenceTypeDefinitions.scanningSequence,
+            item.sequenceDefinitions.scanningSequence,
             series.scanningSequence
           ) &&
           arraysEqual(
-            item.sequenceTypeDefinitions.sequenceVariant,
+            item.sequenceDefinitions.sequenceVariant,
             series.sequenceVariant
           )
       )
@@ -322,6 +323,19 @@ const actions = {
       .get(`${SCANS}/${scanId}/plot`)
       .then(({ data }) => {
         commit('setScanPreviewLoader', data)
+      })
+      .catch(console.error)
+  },
+  getCSV({ commit }, ids) {
+    let args = { pks: ids }
+    return session
+      .post(scansToCSV, args, { 'Content-Type': 'multipart/form-data' })
+      .then(response => {
+        var blob = new Blob([response.data], { type: 'text/csv' })
+        var link = document.createElement('a')
+        link.href = window.URL.createObjectURL(blob)
+        link.download = 'filtered_scans.csv'
+        link.click()
       })
       .catch(console.error)
   }
