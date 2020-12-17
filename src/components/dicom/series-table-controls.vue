@@ -343,14 +343,16 @@ export default {
     },
     getCSVWrapper() {
       this.loadingCSV = true
-      var dicomIds = this.seriesList.map(series => series.id)
-      this.getCSV(dicomIds).then(() => (this.loadingCSV = false))
+      this.getCSV({
+        filters: this.filters,
+        options: this.options
+      }).then(() => (this.loadingCSV = false))
     },
     updateCounter() {
       this.counter++
     },
-    ...mapActions('dicom', ['fetchSeries', 'fetchManufacturers']),
-    ...mapActions('mri', ['fetchSequenceTypes', 'fetchScans', 'getCSV'])
+    ...mapActions('dicom', ['fetchSeries', 'fetchManufacturers', 'getCSV']),
+    ...mapActions('mri', ['fetchSequenceTypes', 'fetchScans'])
   },
   watch: {
     filters: {

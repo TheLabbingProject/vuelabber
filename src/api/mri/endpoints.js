@@ -8,7 +8,6 @@ const SESSIONS = `${MRI_BASE}/session`
 const IRB_APPROVALS = `${MRI_BASE}/irb_approval`
 const scanPreviewScript = (scanId, elementId) =>
   `${SCANS}/${scanId}/preview_script?elementId=${elementId}`
-const scansToCSV = `${SCANS}/get_csv/`
 
 export {
   IRB_APPROVALS,
@@ -16,6 +15,5 @@ export {
   SEQUENCE_TYPES,
   SEQUENCE_TYPE_DEFINITIONS,
   SESSIONS,
-  scanPreviewScript,
-  scansToCSV
+  scanPreviewScript
 }
