@@ -1,5 +1,5 @@
 import session from '@/api/session'
-import { PATIENTS, SERIES, STUDIES } from '@/api/dicom/endpoints'
+import { PATIENTS, SERIES, STUDIES, MANUFACTURERS } from '@/api/dicom/endpoints'
 import {
   getPatientQueryString,
   getSeriesQueryString,
@@ -14,7 +14,8 @@ const state = {
   seriesCount: 0,
   studies: [],
   studyCount: 0,
-  selectedStudyId: null
+  selectedStudyId: null,
+  manufacturersList: []
 }
 
 const getters = {
@@ -50,6 +51,11 @@ const mutations = {
   },
   setSelectedStudyId(state, selectedStudyId) {
     state.selectedStudyId = selectedStudyId
+  },
+  setManufacturers(state, manufacturers) {
+    state.manufacturersList = manufacturers.map(name =>
+      name == undefined ? '' : name
+    )
   }
 }
 
@@ -82,6 +88,14 @@ const actions = {
       .then(({ data }) => {
         commit('setStudies', data.results)
         commit('setStudyCount', data.count)
+      })
+      .catch(console.error)
+  },
+  fetchManufacturers({ commit }) {
+    return session
+      .get(MANUFACTURERS)
+      .then(({ data }) => {
+        commit('setManufacturers', data.results)
       })
       .catch(console.error)
   }
