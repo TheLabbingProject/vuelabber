@@ -1,5 +1,11 @@
 import session from '@/api/session'
-import { PATIENTS, SERIES, STUDIES, MANUFACTURERS } from '@/api/dicom/endpoints'
+import {
+  PATIENTS,
+  SERIES,
+  STUDIES,
+  MANUFACTURERS,
+  seriesToCSV
+} from '@/api/dicom/endpoints'
 import {
   getPatientQueryString,
   getSeriesQueryString,
@@ -96,6 +102,20 @@ const actions = {
       .get(MANUFACTURERS)
       .then(({ data }) => {
         commit('setManufacturers', data.results)
+      })
+      .catch(console.error)
+  },
+  getCSV(actions, { filters, options }) {
+    let queryString = getSeriesQueryString({ filters, options })
+    let url = `${seriesToCSV}/${queryString}`
+    return session
+      .get(url, { 'Content-Type': 'multipart/form-data' })
+      .then(response => {
+        var blob = new Blob([response.data], { type: 'text/csv' })
+        var link = document.createElement('a')
+        link.href = window.URL.createObjectURL(blob)
+        link.download = 'filtered_scans.csv'
+        link.click()
       })
       .catch(console.error)
   }

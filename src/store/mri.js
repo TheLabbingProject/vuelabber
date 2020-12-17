@@ -4,8 +4,7 @@ import {
   SCANS,
   SEQUENCE_TYPES,
   SEQUENCE_TYPE_DEFINITIONS,
-  SESSIONS,
-  scansToCSV
+  SESSIONS
 } from '@/api/mri/endpoints'
 import {
   getIrbApprovalQueryString,
@@ -349,19 +348,6 @@ const actions = {
       .get(`${SCANS}/${scanId}/plot`)
       .then(({ data }) => {
         commit('setScanPreviewLoader', data)
-      })
-      .catch(console.error)
-  },
-  getCSV({ commit }, ids) {
-    let args = { pks: ids }
-    return session
-      .post(scansToCSV, args, { 'Content-Type': 'multipart/form-data' })
-      .then(response => {
-        var blob = new Blob([response.data], { type: 'text/csv' })
-        var link = document.createElement('a')
-        link.href = window.URL.createObjectURL(blob)
-        link.download = 'filtered_scans.csv'
-        link.click()
       })
       .catch(console.error)
   }

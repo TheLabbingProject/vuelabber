@@ -6,5 +6,6 @@ const PATIENTS = `${DICOM_BASE}/patient`
 const SERIES = `${DICOM_BASE}/series`
 const STUDIES = `${DICOM_BASE}/study`
 const MANUFACTURERS = `${DICOM_BASE}/manufacturersList`
+const seriesToCSV = `${SERIES}/get_csv`
 
-export { IMAGES, PATIENTS, SERIES, STUDIES, MANUFACTURERS }
+export { IMAGES, PATIENTS, SERIES, STUDIES, MANUFACTURERS, seriesToCSV }
