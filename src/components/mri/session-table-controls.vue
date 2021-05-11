@@ -58,10 +58,10 @@ import { mapActions } from 'vuex'
 
 export default {
   name: 'SessionTableControls',
-  props: ['subject', 'options', 'bus'],
+  props: ['subject', 'options'],
   mounted() {
     // eslint-disable-next-line
-    EventBus.$on('fetch-sessions', this.update)
+    // EventBus.$on('fetch-sessions', this.update)
     if (this.subject) {
       this.$set(this.filters, 'subject', this.subject.id)
     }

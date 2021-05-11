@@ -49,7 +49,6 @@
       <template v-slot:top>
         <session-table-controls
           ref="controls"
-          :bus="bus"
           :subject="subject"
           :options="options"
           @fetch-sessions-start="loading = true"
@@ -169,7 +168,7 @@ import { mapActions, mapState } from 'vuex'
 
 export default {
   name: 'SessionTable',
-  props: ['subject', 'bus'],
+  props: ['subject'],
   components: {
     ScanTable,
     SessionTableControls,
@@ -177,12 +176,11 @@ export default {
   },
   mounted() {
     if (this.subject) {
-      this.headers.splice(1, 1)
+      this.headers.splice(0, 1)
     }
   },
   data: () => ({
     headers: [
-      { text: 'ID', value: 'id', align: 'left', width: 1 },
       { text: 'Subject', value: 'subject', align: 'center' },
       { text: 'Date', value: 'date' },
       { text: 'Time', value: 'time' },
