@@ -49,7 +49,6 @@
       <template v-slot:top>
         <session-table-controls
           ref="controls"
-          :bus="bus"
           :subject="subject"
           :options="options"
           @fetch-sessions-start="loading = true"
@@ -126,6 +125,9 @@
                 :loading="loadingIrbApprovalNumbers"
                 :search-input.sync="irbApprovalNumber"
               ></v-combobox>
+              <v-icon @click="removeIrb(item)">
+                cancel
+              </v-icon>
             </v-row>
           </template>
           <template v-lazy v-slot:input v-else>
@@ -150,6 +152,31 @@
         </v-edit-dialog>
       </template>
 
+      <template v-slot:item.download="{ item }">
+        <div class="py-1">
+          <span class="px-1">
+            <v-btn
+              small
+              rounded
+              color="indigo lighten-3"
+              :href="getDicomZip(item)"
+            >
+              DICOM
+            </v-btn>
+          </span>
+          <span class="px-1">
+            <v-btn
+              small
+              rounded
+              color="indigo lighten-3"
+              :href="getNiftiZip(item)"
+            >
+              NIfTI
+            </v-btn>
+          </span>
+        </div>
+      </template>
+
       <!-- Show scan table when expanded -->
       <template v-slot:expanded-item="{ item, headers }">
         <td :colspan="headers.length" class="subject-data pa-0 ma-0">
@@ -166,10 +193,11 @@ import ScanTable from '@/components/mri/scan-table.vue'
 import SessionTableControls from '@/components/mri/session-table-controls.vue'
 import SubjectInfoCard from '@/components/research/subject-info-card.vue'
 import { mapActions, mapState } from 'vuex'
+import BASE_URL from '@/api/base_url.js'
 
 export default {
   name: 'SessionTable',
-  props: ['subject', 'bus'],
+  props: ['subject'],
   components: {
     ScanTable,
     SessionTableControls,
@@ -177,24 +205,24 @@ export default {
   },
   mounted() {
     if (this.subject) {
-      this.headers.splice(1, 1)
+      this.headers.splice(0, 1)
     }
   },
   data: () => ({
     headers: [
-      { text: 'ID', value: 'id', align: 'left', width: 1 },
       { text: 'Subject', value: 'subject', align: 'center' },
       { text: 'Date', value: 'date' },
       { text: 'Time', value: 'time' },
       { text: 'Measurement', value: 'measurement.title' },
       { text: 'IRB', value: 'irb' },
-      { text: 'Comments', value: 'comments' }
+      { text: 'Comments', value: 'comments' },
+      { text: 'Download', value: 'download', align: 'center', sortable: false }
     ],
     options: {
       itemsPerPage: 25,
       page: 1,
       sortBy: ['date', 'time'],
-      sortDesc: [true, true]
+      sortDesc: [true, false]
     },
     itemsPerPageOptions: [10, 25, 50, -1],
     loading: false,
@@ -208,7 +236,8 @@ export default {
     loadingIrbApprovalInstitutions: false,
     irbApprovalInstitution: '',
     irbApprovalNumber: '',
-    newIrbApproval: { institution: '', number: '' }
+    newIrbApproval: { institution: '', number: '' },
+    gettingDicomZip: false
   }),
   computed: {
     irbApprovalInstitutions: function() {
@@ -288,7 +317,24 @@ export default {
         sessionId: session.id,
         irb
       }
-      this.patchSession(patch)
+      this.patchSession(patch).then(() => {
+        this.$refs.controls.update()
+      })
+    },
+    removeIrb(session) {
+      let patch = {
+        sessionId: session.id,
+        irbId: null
+      }
+      this.patchSession(patch).then(() => {
+        this.$refs.controls.update()
+      })
+    },
+    getDicomZip(session) {
+      return `${BASE_URL}/${session.dicomZip.substring(5)}`
+    },
+    getNiftiZip(session) {
+      return `${BASE_URL}/${session.niftiZip.substring(5)}`
     },
     ...mapActions('mri', ['fetchIrbApprovals', 'patchSession']),
     ...mapActions('research', ['fetchMeasurementDefinitionItems'])

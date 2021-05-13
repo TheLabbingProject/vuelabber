@@ -193,7 +193,7 @@ const actions = {
   },
   fetchSessions({ commit }, query) {
     commit('setSessions', [])
-    let queryString = getIrbApprovalQueryString(query)
+    let queryString = getSessionQueryString(query)
     return session
       .get(`${SESSIONS}/${queryString}`)
       .then(({ data }) => {

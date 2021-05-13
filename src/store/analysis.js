@@ -34,6 +34,7 @@ const state = {
   inputDefinitions: [],
   outputSpecifications: [],
   outputDefinitions: [],
+  totalOutputCount: 0,
   runs: [],
   inputs: [],
   outputs: [],
@@ -91,6 +92,7 @@ const mutations = {
   },
   setOutputs(state, outputs) {
     state.outputs = outputs
+    state.totalOutputCount = outputs.length
   },
   setPipelines(state, pipelines) {
     state.pipelines = pipelines

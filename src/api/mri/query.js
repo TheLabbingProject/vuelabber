@@ -29,7 +29,7 @@ const getScanQueryString = ({ filters, options }) => {
 const getSessionQueryString = ({ filters, options }) => {
   return `?id_in=${
     filters.idIn ? filters.idIn.join(',') : ''
-  }&subject_id_in=${filters.subject ||
+  }&subject_id_in=${filters.subjects || ''}&subject=${filters.subject ||
     ''}&created_after=&created_before=&session_date_after=${filters.afterDate ||
     ''}&session_date_before=${filters.beforeDate || ''}&page_size=${
     options.itemsPerPage

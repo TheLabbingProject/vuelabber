@@ -6,9 +6,11 @@ const ANALYSIS_VERSIONS = `${ANALYSIS_BASE}/analysis_version`
 const CATEGORIES = `${ANALYSIS_BASE}/category`
 const INPUTS = `${ANALYSIS_BASE}/input`
 const INPUT_DEFINITIONS = `${ANALYSIS_BASE}/input_definition`
+const INPUT_REPR = `${ANALYSIS_BASE}/input/html_repr`
 const INPUT_SPECIFICATIONS = `${ANALYSIS_BASE}/input_specification`
 const NODES = `${ANALYSIS_BASE}/node`
 const OUTPUTS = `${ANALYSIS_BASE}/output`
+const OUTPUT_REPR = `${ANALYSIS_BASE}/output/html_repr`
 const OUTPUT_DEFINITIONS = `${ANALYSIS_BASE}/output_definition`
 const OUTPUT_SPECIFICATIONS = `${ANALYSIS_BASE}/output_specification`
 const PIPES = `${ANALYSIS_BASE}/pipe`
@@ -21,9 +23,11 @@ export {
   CATEGORIES,
   INPUTS,
   INPUT_DEFINITIONS,
+  INPUT_REPR,
   INPUT_SPECIFICATIONS,
   NODES,
   OUTPUTS,
+  OUTPUT_REPR,
   OUTPUT_DEFINITIONS,
   OUTPUT_SPECIFICATIONS,
   PIPES,

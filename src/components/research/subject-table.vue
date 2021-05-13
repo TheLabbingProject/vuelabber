@@ -199,6 +199,10 @@
         {{ getDisplay(item.dominantHand, dominantHandOptions) }}
       </template>
 
+      <template v-slot:item.latestMriSessionTime="{ item }">
+        {{ item.latestMriSessionTime | formatDateTime }}
+      </template>
+
       <!-- Edit dialog -->
       <template v-slot:item.edit="{ item }" v-if="currentUser.isStaff">
         <v-dialog v-model="editSubjectDialog[item.id]" width="600px">
@@ -239,20 +243,25 @@ export default {
   },
   data: () => ({
     headers: [
-      { text: 'ID', value: 'id', align: 'left', width: 1 },
-      { text: 'ID Number', value: 'idNumber', align: 'center' },
+      { text: 'ID', value: 'idNumber', align: 'center', width: 75 },
       { text: 'First Name', value: 'firstName' },
       { text: 'Last Name', value: 'lastName' },
       { text: 'Date of Birth', value: 'dateOfBirth' },
       { text: 'Sex', value: 'sex', sortable: false },
-      { text: 'Gender', value: 'gender', sortable: false },
-      { text: 'Dominant Hand', value: 'dominantHand', sortable: false }
+      // { text: 'Gender', value: 'gender', sortable: false },
+      { text: 'Dominant Hand', value: 'dominantHand', sortable: false },
+      {
+        text: 'Latest Session',
+        value: 'latestMriSessionTime',
+        sortable: false
+      },
+      { text: 'Session Count', value: 'mriSessionCount', sortable: false }
     ],
     options: {
       itemsPerPage: 25,
-      page: 1,
-      sortBy: ['id'],
-      sortDesc: [false]
+      page: 1
+      // sortBy: ['idNumber'],
+      // sortDesc: [false]
     },
     editHeader: { text: 'Edit', value: 'edit' },
     itemsPerPageOptions: [10, 25, 50, -1],

@@ -41,8 +41,16 @@
     </v-col>
 
     <!-- Scan Preview -->
-    <div :key="scanPreviewKey">
-      <script :id="scanPreviewId" type="application/javascript"></script>
+    <div :key="scanPreviewKey" :hidden="!showPreview">
+      <div>
+        {{ previewMessage }}
+      </div>
+      <div>
+        <script :id="scanPreviewId" type="application/javascript"></script>
+        <v-icon @click="showPreview = false">
+          cancel
+        </v-icon>
+      </div>
     </div>
 
     <!-- Scan Table -->
@@ -66,6 +74,7 @@
           :options="options"
           :subject="subject"
           :session="session"
+          :selected="selected"
           @fetch-scans-start="loading = true"
           @fetch-scans-end="loading = false"
         />
@@ -146,9 +155,9 @@
 
       <!-- Preview -->
       <template v-slot:item.preview="{ item }">
-        <v-btn small class="warning" @click="loadPreview(item.id)">
-          Preview
-        </v-btn>
+        <v-icon @click="loadPreview(item.id)">
+          search
+        </v-icon>
       </template>
     </v-data-table>
   </div>
@@ -219,7 +228,9 @@ export default {
     itemsPerPageOptions: [10, 25, 50, -1],
     loading: false,
     scanPreviewKey: 0,
-    editSubjectDialog: {}
+    editSubjectDialog: {},
+    previewMessage: '',
+    showPreview: false
   }),
   computed: {
     scanPreviewId: function() {
@@ -263,9 +274,13 @@ export default {
       this.$refs.tableController.update()
     },
     loadPreview(scanId) {
+      this.showPreview = true
       this.scanPreviewKey += 1
+      this.previewMessage = 'Loading preview...'
       let src = scanPreviewScript(scanId, this.scanPreviewId)
-      VueScript2.load(src)
+      VueScript2.load(src).then(() => {
+        this.previewMessage = ''
+      })
     },
     ...mapActions('mri', ['fetchSequenceTypes', 'updateScan']),
     ...mapActions('research', ['fetchGroups'])
