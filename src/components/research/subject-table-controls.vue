@@ -70,7 +70,7 @@
         :items="sexItems"
       />
     </v-col>
-    <v-col :cols="1">
+    <!-- <v-col :cols="1">
       <v-select
         clearable
         label="Gender"
@@ -78,8 +78,8 @@
         :disabled="Boolean(filters.id)"
         :items="genderItems"
       />
-    </v-col>
-    <v-col :cols="1">
+    </v-col> -->
+    <v-col :cols="2">
       <v-select
         clearable
         label="Dominant Hand"
