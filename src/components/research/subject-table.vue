@@ -261,13 +261,11 @@ export default {
       {
         text: 'Latest Session',
         value: 'latestMriSessionTime',
-        sortable: false,
         align: 'center'
       },
       {
         text: 'Session Count',
         value: 'mriSessionCount',
-        sortable: false,
         align: 'center'
       },
       { text: 'Created', value: 'created', align: 'center' },
@@ -276,11 +274,11 @@ export default {
     options: {
       itemsPerPage: 25,
       page: 1,
-      sortBy: [],
-      sortDesc: []
+      sortBy: ['latestMriSessionTime'],
+      sortDesc: [true]
     },
     editHeader: { text: 'Edit', value: 'edit' },
-    itemsPerPageOptions: [10, 25, 50, -1],
+    itemsPerPageOptions: [10, 25, 50, 100],
     loading: false,
     editSubjectDialog: {},
     expanded: [],

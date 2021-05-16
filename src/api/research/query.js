@@ -1,9 +1,14 @@
+const camelToSnakeCase = str =>
+  str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
+
 const parseOrdering = options => {
   let sortBy = options.sortBy ? options.sortBy : []
   let sortDesc = options.sortDesc ? options.sortDesc : []
   return sortBy
     .map((value, index) => {
-      return sortDesc[index] ? '-' + value : value
+      return sortDesc[index]
+        ? '-' + camelToSnakeCase(value)
+        : camelToSnakeCase(value)
     })
     .join(',')
 }
