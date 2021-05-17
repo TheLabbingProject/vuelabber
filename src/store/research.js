@@ -33,7 +33,7 @@ const state = {
   procedureSteps: [],
   procedureStepCount: 0,
   procedureItems: [],
-  measurementDefinitionItems: []
+  measurementDefinitions: []
 }
 
 const getters = {
@@ -58,8 +58,8 @@ const mutations = {
   setProcedureItems(state, procedureItems) {
     state.procedureItems = procedureItems
   },
-  setMeasurementDefinitionItems(state, measurementDefinitionItems) {
-    state.measurementDefinitionItems = measurementDefinitionItems
+  setMeasurementDefinitions(state, measurementDefinitions) {
+    state.measurementDefinitions = measurementDefinitions
   },
   setEventItems(state, eventItems) {
     state.eventItems = eventItems
@@ -234,13 +234,13 @@ const actions = {
       })
       .catch(console.error)
   },
-  fetchMeasurementDefinitionItems({ commit }, query) {
+  fetchMeasurementDefinitions({ commit }, query) {
     let queryString = getEventQueryString(query)
-    let URL = `${MEASUREMENT_DEFINITIONS}/items/${queryString}`
+    let URL = `${MEASUREMENT_DEFINITIONS}/${queryString}`
     return session
       .get(URL)
       .then(({ data }) => {
-        commit('setMeasurementDefinitionItems', data.results)
+        commit('setMeasurementDefinitions', data.results)
       })
       .catch(console.error)
   },
