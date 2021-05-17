@@ -1,9 +1,14 @@
+const camelToSnakeCase = str =>
+  str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
+
 const parseOrdering = options => {
   let sortBy = options.sortBy ? options.sortBy : []
   let sortDesc = options.sortDesc ? options.sortDesc : []
   return sortBy
     .map((value, index) => {
-      return sortDesc[index] ? '-' + value : value
+      return sortDesc[index]
+        ? '-' + camelToSnakeCase(value)
+        : camelToSnakeCase(value)
     })
     .join(',')
 }
@@ -23,7 +28,9 @@ const getStudyQueryString = ({ filters, options }) => {
 const getEventQueryString = ({ filters, options }) => {
   return `?id=${filters.id || ''}&title=${filters.title ||
     ''}&title_lookup=icontains&description=${filters.description ||
-    ''}&description_lookup=icontains&page_size=${
+    ''}&description_lookup=icontains&content_type=${filters.contentType ||
+    ''}&model_name=${filters.modelName || ''}&app_label=${filters.appLabel ||
+    ''}&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage

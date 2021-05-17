@@ -203,6 +203,14 @@
         {{ item.latestMriSessionTime | formatDateTime }}
       </template>
 
+      <template v-slot:item.created="{ item }">
+        {{ item.created | formatDateTime }}
+      </template>
+
+      <template v-slot:item.modified="{ item }">
+        {{ item.modified | formatDateTime }}
+      </template>
+
       <!-- Edit dialog -->
       <template v-slot:item.edit="{ item }" v-if="currentUser.isStaff">
         <v-dialog v-model="editSubjectDialog[item.id]" width="600px">
@@ -246,25 +254,31 @@ export default {
       { text: 'ID', value: 'idNumber', align: 'center', width: 75 },
       { text: 'First Name', value: 'firstName' },
       { text: 'Last Name', value: 'lastName' },
-      { text: 'Date of Birth', value: 'dateOfBirth' },
-      { text: 'Sex', value: 'sex', sortable: false },
+      { text: 'Date of Birth', value: 'dateOfBirth', align: 'center' },
+      { text: 'Sex', value: 'sex', sortable: false, align: 'center' },
       // { text: 'Gender', value: 'gender', sortable: false },
       { text: 'Dominant Hand', value: 'dominantHand', sortable: false },
       {
         text: 'Latest Session',
         value: 'latestMriSessionTime',
-        sortable: false
+        align: 'center'
       },
-      { text: 'Session Count', value: 'mriSessionCount', sortable: false }
+      {
+        text: 'Session Count',
+        value: 'mriSessionCount',
+        align: 'center'
+      },
+      { text: 'Created', value: 'created', align: 'center' },
+      { text: 'Modified', value: 'modified', align: 'center' }
     ],
     options: {
       itemsPerPage: 25,
-      page: 1
-      // sortBy: ['idNumber'],
-      // sortDesc: [false]
+      page: 1,
+      sortBy: ['latestMriSessionTime'],
+      sortDesc: [true]
     },
     editHeader: { text: 'Edit', value: 'edit' },
-    itemsPerPageOptions: [10, 25, 50, -1],
+    itemsPerPageOptions: [10, 25, 50, 100],
     loading: false,
     editSubjectDialog: {},
     expanded: [],

@@ -13,11 +13,13 @@
                   clearable
                   label="Data Acquisition Definition"
                   v-model="selectedMeasurementDefinition"
-                  :items="measurementDefinitionItems"
+                  item-text="title"
+                  item-value="id"
+                  :items="measurementDefinitions"
                   :loading="loadingMeasurementDefinitionItems"
-                  :search-input.sync="existingMeasurementDefinitionQuery"
-                  @focus="updateMeasurementDefinitionItems"
-                  @update:list-index="updateMeasurementDefinitionItems"
+                  :search-input.sync="measurementDefinitionQuery"
+                  @focus="updateMeasurementDefinitions"
+                  @update:list-index="updateMeasurementDefinitions"
                 />
                 <v-btn class="pl-5" color="success" @click="updateMeasurements"
                   >Update</v-btn
@@ -73,12 +75,39 @@
         </div>
       </template>
 
-      <!-- Date and time -->
+      <!-- Date -->
       <template v-slot:item.date="{ item }">
-        {{ formatDate(item.time) }}
+        {{ item.time | formatDate }}
       </template>
+
+      <!-- Time -->
       <template v-slot:item.time="{ item }">
-        {{ formatTime(item.time) }}
+        {{ item.time ? item.time.slice(11, 19) : '' }}
+      </template>
+
+      <!-- Measurement -->
+      <template v-slot:item.measurement="{ item }">
+        <v-edit-dialog
+          :return-value.sync="item.measurement"
+          large
+          @save="saveMeasurement(item)"
+        >
+          <div>{{ item.measurement ? item.measurement.title : '' }}</div>
+          <template v-slot:input>
+            <v-autocomplete
+              clearable
+              label="Data Acquisition Definition"
+              v-model="item.measurement"
+              item-text="title"
+              item-value="id"
+              :items="measurementDefinitions"
+              :loading="loadingMeasurementDefinitionItems"
+              :search-input.sync="measurementDefinitionQuery"
+              @focus="updateMeasurementDefinitions"
+              @update:list-index="updateMeasurementDefinitions"
+            />
+          </template>
+        </v-edit-dialog>
       </template>
 
       <!-- Comments -->
@@ -213,7 +242,7 @@ export default {
       { text: 'Subject', value: 'subject', align: 'center' },
       { text: 'Date', value: 'date' },
       { text: 'Time', value: 'time' },
-      { text: 'Measurement', value: 'measurement.title' },
+      { text: 'Measurement', value: 'measurement' },
       { text: 'IRB', value: 'irb' },
       { text: 'Comments', value: 'comments' },
       { text: 'Download', value: 'download', align: 'center', sortable: false }
@@ -229,7 +258,7 @@ export default {
     expanded: [],
     editSubjectDialog: {},
     loadingMeasurementDefinitionItems: false,
-    existingMeasurementDefinitionQuery: null,
+    measurementDefinitionQuery: '',
     selectedMeasurementDefinition: null,
     selected: [],
     loadingIrbApprovalNumbers: false,
@@ -247,23 +276,17 @@ export default {
       return this.irbApprovals.map(irb => irb.number)
     },
     ...mapState('mri', ['irbApprovals', 'sessions', 'sessionCount']),
-    ...mapState('research', ['measurementDefinitionItems']),
+    ...mapState('research', ['measurementDefinitions']),
     ...mapState('auth', { currentUser: 'user' })
   },
   methods: {
-    formatDate(sessionTime) {
-      if (!sessionTime) return null
-      let [year, month, day] = sessionTime.slice(0, 10).split('-')
-      return `${day}/${month}/${year}`
-    },
-    formatTime(sessionTime) {
-      if (!sessionTime) return null
-      let time = sessionTime.slice(11, 23)
-      return time
-    },
     saveComments(session) {
       let data = { sessionId: session.id, comments: session.comments }
       this.patchSession(data)
+    },
+    saveMeasurement(session) {
+      let data = { sessionId: session.id, measurementId: session.measurement }
+      this.patchSession(data).then(() => this.$refs.controls.update())
     },
     updateMeasurements() {
       this.selected.forEach(session => {
@@ -274,17 +297,17 @@ export default {
         this.patchSession(data).then(() => this.$refs.controls.update())
       })
     },
-    updateMeasurementDefinitionItems() {
-      let value =
-        this.existingMeasurementDefinitionQuery == null
-          ? ''
-          : this.existingMeasurementDefinitionQuery
+    updateMeasurementDefinitions() {
       let query = {
-        filters: { title: value },
+        filters: {
+          title: this.measurementDefinitionQuery,
+          modelName: 'session',
+          appLabel: 'django_mri'
+        },
         options: {}
       }
       this.loadingMeasurementDefinitionItems = true
-      this.fetchMeasurementDefinitionItems(query).then(
+      this.fetchMeasurementDefinitions(query).then(
         () => (this.loadingMeasurementDefinitionItems = false)
       )
     },
@@ -337,7 +360,7 @@ export default {
       return `${BASE_URL}/${session.niftiZip.substring(5)}`
     },
     ...mapActions('mri', ['fetchIrbApprovals', 'patchSession']),
-    ...mapActions('research', ['fetchMeasurementDefinitionItems'])
+    ...mapActions('research', ['fetchMeasurementDefinitions'])
   },
   watch: {
     irbApprovalNumber: function() {
