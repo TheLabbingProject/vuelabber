@@ -57,12 +57,6 @@ const mutations = {
   },
   setSessions(state, sessions) {
     state.sessions = sessions
-    // state.sessions = sessions.map(session => {
-    //   if (session.measurement === null) {
-    //     session.measurement = { id: null, title: '' }
-    //   }
-    //   return session
-    // })
   },
   setIrbApprovals(state, irbApprovals) {
     state.irbApprovals = irbApprovals

@@ -299,7 +299,11 @@ export default {
     },
     updateMeasurementDefinitions() {
       let query = {
-        filters: { title: this.measurementDefinitionQuery },
+        filters: {
+          title: this.measurementDefinitionQuery,
+          modelName: 'session',
+          appLabel: 'django_mri'
+        },
         options: {}
       }
       this.loadingMeasurementDefinitionItems = true
