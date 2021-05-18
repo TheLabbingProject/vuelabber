@@ -59,6 +59,10 @@
       item-key="id"
       show-select
       multi-sort
+      dense
+      show-expand
+      single-expand
+      :expanded.sync="expanded"
       :footer-props="{
         'items-per-page-options': itemsPerPageOptions
       }"
@@ -66,7 +70,7 @@
       :loading="loading"
       :items="scans"
       :options.sync="options"
-      :server-items-length="totalScanCount"
+      :server-items-length="scanCount"
     >
       <template v-slot:top>
         <scan-table-controls
@@ -98,14 +102,14 @@
       </template>
 
       <!-- Date -->
-      <template v-slot:item.date="{ item }">{{
-        formatDate(item.time)
-      }}</template>
+      <template v-slot:item.date="{ item }">
+        {{ item.time | formatDate }}
+      </template>
 
       <!-- Time -->
-      <template v-slot:item.time="{ item }">{{
-        formatTime(item.time)
-      }}</template>
+      <template v-slot:item.time="{ item }">
+        {{ item.time ? item.time.slice(11, 23) : '' }}
+      </template>
 
       <!-- Sequence Type -->
       <template v-slot:item.sequenceType="{ item }">
@@ -159,6 +163,19 @@
           search
         </v-icon>
       </template>
+
+      <!-- Show scan runs when expanded -->
+      <template v-slot:expanded-item="{ item, headers }">
+        <td :colspan="headers.length" class="pa-0 ma-0">
+          <v-tabs v-model="active">
+            <v-tab>Runs</v-tab>
+            <v-tab-item>
+              <br />
+              <run-table :scan="item" />
+            </v-tab-item>
+          </v-tabs>
+        </td>
+      </template>
     </v-data-table>
   </div>
 </template>
@@ -170,6 +187,7 @@ import EditSequenceType from '@/components/mri/edit-sequence-type.vue'
 import GroupAssociation from '@/components/mri/group-association.vue'
 import ProtocolInformation from '@/components/dicom/protocol-information.vue'
 import SubjectInfoCard from '@/components/research/subject-info-card.vue'
+import RunTable from '@/components/analysis/run-table.vue'
 // import ScanUpload from '@/components/mri/scan-upload.vue'
 import ScanTableControls from '@/components/mri/scan-table-controls.vue'
 import VueScript2 from 'vue-script2'
@@ -184,6 +202,7 @@ export default {
     EditSequenceType,
     GroupAssociation,
     ProtocolInformation,
+    RunTable,
     ScanTableControls,
     SubjectInfoCard
     // ScanUpload
@@ -193,7 +212,10 @@ export default {
     let groupQuery = { filters: {}, options: {} }
     this.fetchGroups(groupQuery)
     if (this.subject != undefined) {
-      this.headers.splice(0, 1)
+      this.removeHeader('subject')
+    }
+    if (this.session != undefined) {
+      this.removeHeader('date')
     }
   },
   data: () => ({
@@ -213,12 +235,20 @@ export default {
       {
         text: 'Spatial Resolution (mm)',
         value: 'spatialResolution',
-        sortable: false
+        sortable: false,
+        align: 'center'
       },
-      { text: 'Study Groups', value: 'studyGroups', sortable: false },
+      {
+        text: 'Study Groups',
+        value: 'studyGroups',
+        sortable: false,
+        align: 'center'
+      },
       { text: 'Preview', value: 'preview', sortable: false }
     ],
     selected: [],
+    expanded: [],
+    active: 0,
     options: {
       page: 1,
       sortBy: ['date', 'time'],
@@ -237,7 +267,7 @@ export default {
       return `scan-preview-${this.scanPreviewKey}`
     },
     ...mapState('auth', { currentUser: 'user' }),
-    ...mapState('mri', ['scans', 'totalScanCount', 'scanPreviewLoader']),
+    ...mapState('mri', ['scans', 'scanCount', 'scanPreviewLoader']),
     ...mapGetters('research', ['getGroupById'])
   },
   methods: {
@@ -258,17 +288,16 @@ export default {
             .trim()
         : null
     },
-    formatDate(scanTime) {
-      if (!scanTime) return null
-      let [year, month, day] = scanTime.slice(0, 10).split('-')
-      return `${day}/${month}/${year}`
-    },
-    formatTime(scanTime) {
-      if (!scanTime) return null
-      return scanTime.slice(11, 23)
-    },
     stringifyGroup(group) {
       return group ? `${group.study.title} | ${group.title}` : null
+    },
+    removeHeader(value) {
+      this.headers = this.headers.filter(header => header.value != value)
+      if (this.options.sortBy.includes(value)) {
+        let index = this.options.sortBy.indexOf(value)
+        this.options.sortBy.splice(index, 1)
+        this.options.sortDesc.splice(index, 1)
+      }
     },
     update() {
       this.$refs.tableController.update()

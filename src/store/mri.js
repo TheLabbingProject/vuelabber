@@ -18,7 +18,7 @@ const state = {
   sequenceTypes: [],
   scans: [],
   sessions: [],
-  totalScanCount: 0,
+  scanCount: 0,
   sessionCount: 0,
   scanPreviewLoader: '',
   irbApprovals: [],
@@ -52,8 +52,8 @@ const mutations = {
   setScans(state, scans) {
     state.scans = scans
   },
-  setTotalScanCount(state, count) {
-    state.totalScanCount = count
+  setScanCount(state, count) {
+    state.scanCount = count
   },
   setSessions(state, sessions) {
     state.sessions = sessions
@@ -169,7 +169,7 @@ const actions = {
       .get(`${SCANS}/${queryString}`)
       .then(({ data }) => {
         commit('setScans', data.results)
-        commit('setTotalScanCount', data.count)
+        commit('setScanCount', data.count)
       })
       .catch(console.error)
   },
@@ -348,6 +348,14 @@ const actions = {
       .get(`${SCANS}/${scanId}/plot`)
       .then(({ data }) => {
         commit('setScanPreviewLoader', data)
+      })
+      .catch(console.error)
+  },
+  fetchScanRunSet({ commit }, scanId) {
+    return session
+      .get(`${SCANS}/${scanId}/runs`)
+      .then(({ data }) => {
+        commit('analysis/setRuns', data, { root: true })
       })
       .catch(console.error)
   }
