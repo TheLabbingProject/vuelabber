@@ -2,8 +2,17 @@
   <v-col>
     <v-row>
       <!-- Key -->
-      <v-col :cols="3">
-        <v-text-field clearable v-model="filters.key" label="Key" />
+      <v-col>
+        <v-text-field v-model="filters.key" label="Key" clearable />
+      </v-col>
+      <!-- Type -->
+      <v-col>
+        <v-select
+          v-model="filters.inputType"
+          :items="typeChoices"
+          label="Type"
+          clearable
+        />
       </v-col>
     </v-row>
   </v-col>
@@ -29,8 +38,18 @@ export default {
   },
   data: () => ({
     filters: {
-      key: ''
-    }
+      key: '',
+      inputType: ''
+    },
+    typeChoices: [
+      { value: 'BLN', text: 'Boolean' },
+      { value: 'DIR', text: 'Directory' },
+      { value: 'FLT', text: 'Float' },
+      { value: 'FIL', text: 'File' },
+      { value: 'INT', text: 'Integer' },
+      { value: 'LST', text: 'List' },
+      { value: 'STR', text: 'String' }
+    ]
   }),
   computed: {},
   methods: {

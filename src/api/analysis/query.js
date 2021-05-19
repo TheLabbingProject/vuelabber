@@ -108,7 +108,7 @@ const getOutputDefinitionQueryString = ({ filters, pagination }) => {
 
 const getInputsQueryString = ({ filters, options }) => {
   return `?run=${filters.run || ''}&key=${filters.key ||
-    ''}&page_size=&page_size=${
+    ''}&input_type=${filters.inputType || ''}&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage
@@ -119,7 +119,7 @@ const getInputsQueryString = ({ filters, options }) => {
 
 const getOutputsQueryString = ({ filters, options }) => {
   return `?run=${filters.run || ''}&key=${filters.key ||
-    ''}&page_size=&page_size=${
+    ''}&output_type=${filters.outputType || ''}&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage
