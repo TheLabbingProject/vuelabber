@@ -34,10 +34,11 @@ const state = {
   inputDefinitions: [],
   outputSpecifications: [],
   outputDefinitions: [],
-  totalOutputCount: 0,
   runs: [],
   inputs: [],
+  inputCount: 0,
   outputs: [],
+  outputCount: 0,
   pipelines: [],
   pipes: [],
   nodes: []
@@ -92,7 +93,6 @@ const mutations = {
   },
   setOutputs(state, outputs) {
     state.outputs = outputs
-    state.totalOutputCount = outputs.length
   },
   setPipelines(state, pipelines) {
     state.pipelines = pipelines
@@ -102,6 +102,12 @@ const mutations = {
   },
   setNodes(state, nodes) {
     state.nodes = nodes
+  },
+  setOutputCount(state, count) {
+    state.outputCount = count
+  },
+  setInputCount(state, count) {
+    state.inputCount = count
   }
 }
 
@@ -164,18 +170,24 @@ const actions = {
       .then(({ data }) => commit('setRuns', data.results))
       .catch(console.error)
   },
-  fetchInputs({ commit }, options) {
-    let queryString = getInputsQueryString(options)
+  fetchInputs({ commit }, query) {
+    let queryString = getInputsQueryString(query)
     return session
       .get(`${INPUTS}/${queryString}`)
-      .then(({ data }) => commit('setInputs', data.results))
+      .then(({ data }) => {
+        commit('setInputs', data.results)
+        commit('setInputCount', data.count)
+      })
       .catch(console.error)
   },
-  fetchOutputs({ commit }, options) {
-    let queryString = getOutputsQueryString(options)
+  fetchOutputs({ commit }, query) {
+    let queryString = getOutputsQueryString(query)
     return session
       .get(`${OUTPUTS}/${queryString}`)
-      .then(({ data }) => commit('setOutputs', data.results))
+      .then(({ data }) => {
+        commit('setOutputs', data.results)
+        commit('setOutputCount', data.count)
+      })
       .catch(console.error)
   },
   fetchPipelines({ commit }) {

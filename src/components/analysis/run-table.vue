@@ -80,17 +80,33 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 import RunInputInformation from '@/components/analysis/run-input-information.vue'
 import RunOutputInformation from '@/components/analysis/run-output-information.vue'
 import { RUNS } from '@/api/analysis/endpoints.js'
 
 export default {
   name: 'RunTable',
-  props: { loading: Boolean },
+  props: {
+    scan: { type: Object, default: null }
+  },
   components: { RunInputInformation, RunOutputInformation },
+  mounted() {
+    if (this.scan != null) {
+      this.loading = true
+      this.fetchScanRunSet(this.scan.id).then(() => {
+        this.loading = false
+      })
+    } else {
+      this.loading = true
+      this.fetchRuns().then(() => {
+        this.loading = false
+      })
+    }
+  },
   data: () => ({
     expanded: [],
+    loading: false,
     headers: [
       { text: 'ID', value: 'id', width: 100 },
       { text: 'Analysis', value: 'analysis' },
@@ -121,7 +137,9 @@ export default {
     },
     downloadZip: function(run) {
       return `${RUNS}/${run.id}/to_zip`
-    }
+    },
+    ...mapActions('analysis', ['fetchRuns']),
+    ...mapActions('mri', ['fetchScanRunSet'])
   }
 }
 </script>

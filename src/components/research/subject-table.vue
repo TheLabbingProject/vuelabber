@@ -255,9 +255,9 @@ export default {
       { text: 'First Name', value: 'firstName' },
       { text: 'Last Name', value: 'lastName' },
       { text: 'Date of Birth', value: 'dateOfBirth', align: 'center' },
-      { text: 'Sex', value: 'sex', sortable: false, align: 'center' },
+      { text: 'Sex', value: 'sex', align: 'center' },
       // { text: 'Gender', value: 'gender', sortable: false },
-      { text: 'Dominant Hand', value: 'dominantHand', sortable: false },
+      { text: 'Dominant Hand', value: 'dominantHand' },
       {
         text: 'Latest Session',
         value: 'latestMriSessionTime',

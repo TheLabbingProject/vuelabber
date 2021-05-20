@@ -1,3 +1,13 @@
+const parseOrdering = options => {
+  return options.sortBy && options.sortDesc
+    ? options.sortBy
+        .map((value, index) => {
+          return options.sortDesc[index] ? '-' + value : value
+        })
+        .join(',')
+    : ''
+}
+
 const getCategoryQueryString = ({ filters, pagination }) => {
   return `?id=${filters.id || ''}&title=${filters.title ||
     ''}&title_lookup=icontains&description=${filters.description ||
@@ -96,26 +106,26 @@ const getOutputDefinitionQueryString = ({ filters, pagination }) => {
   }`
 }
 
-const getInputsQueryString = ({ filters, pagination }) => {
-  return `?run=${filters.run || ''}&page_size=${pagination.itemsPerPage ||
-    100}&page=${pagination.page || 1}&ordering=${
-    pagination.sortBy
-      ? pagination.descending
-        ? '-' + pagination.sortBy
-        : pagination.sortBy
-      : ''
-  }`
+const getInputsQueryString = ({ filters, options }) => {
+  return `?run=${filters.run || ''}&key=${filters.key ||
+    ''}&input_type=${filters.inputType || ''}&page_size=${
+    options.itemsPerPage
+      ? options.itemsPerPage != -1
+        ? options.itemsPerPage
+        : 10000
+      : 100
+  }&page=${options.page || 1}&ordering=${parseOrdering(options)}`
 }
 
-const getOutputsQueryString = ({ filters, pagination }) => {
-  return `?run=${filters.run || ''}&page_size=${pagination.itemsPerPage ||
-    100}&page=${pagination.page || 1}&ordering=${
-    pagination.sortBy
-      ? pagination.descending
-        ? '-' + pagination.sortBy
-        : pagination.sortBy
-      : ''
-  }`
+const getOutputsQueryString = ({ filters, options }) => {
+  return `?run=${filters.run || ''}&key=${filters.key ||
+    ''}&output_type=${filters.outputType || ''}&page_size=${
+    options.itemsPerPage
+      ? options.itemsPerPage != -1
+        ? options.itemsPerPage
+        : 10000
+      : 100
+  }&page=${options.page || 1}&ordering=${parseOrdering(options)}`
 }
 
 export {
