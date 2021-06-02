@@ -5,8 +5,8 @@ const getUserQueryString = ({ filters, options }) => {
     ''}&last_name_lookup=icontains&email=${filters.email ||
     ''}&email_lookup=icontains&institute=${filters.institute || ''}${
     filters.study ? `&study=${filters.study}` : ''
-  }&page_size=${options.itemsPerPage || 100}&page=${options.page ||
-    1}&ordering=${
+  }&study_ne=${filters.studyNotEqual || ''}&page_size=${options.itemsPerPage ||
+    100}&page=${options.page || 1}&ordering=${
     options.sortBy
       ? options.sortDesc
         ? '-' + options.sortBy

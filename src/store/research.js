@@ -316,7 +316,7 @@ const actions = {
   },
   updateStudy({ commit }, study) {
     return session
-      .patch(`${STUDIES}/${study.id}/`, camelToSnakeCase(study))
+      .patch(`${STUDIES}/${study.id}/`, study)
       .then(({ data }) => {
         commit('updateStudyState', data)
         return data
@@ -324,9 +324,9 @@ const actions = {
       .catch(console.error)
   },
   patchStudy({ commit }, data) {
-    let { studyId, ...dataWithoutId } = data
+    let { id, ...dataWithoutId } = data
     return session
-      .patch(`${STUDIES}/${studyId}/`, dataWithoutId)
+      .patch(`${STUDIES}/${id}/`, dataWithoutId)
       .then(({ data }) => {
         commit('updateStudyState', data)
         return data

@@ -5,7 +5,8 @@ import { getUserQueryString } from '@/api/accounts/query'
 const state = {
   users: [],
   labs: [],
-  institutionNames: []
+  institutionNames: [],
+  potentialCollaborators: []
 }
 
 const getters = {
@@ -26,6 +27,9 @@ const getters = {
 const mutations = {
   setUsers(state, users) {
     state.users = users
+  },
+  setPotentialCollaborators(state, potentialCollaborators) {
+    state.potentialCollaborators = potentialCollaborators
   },
   updateUserState(state, updatedUser) {
     // Remove the old version
@@ -51,6 +55,15 @@ const actions = {
     return session
       .get(URL)
       .then(({ data }) => commit('setUsers', data.results))
+      .catch(console.error)
+  },
+  fetchPotentialCollaborators({ commit }, studyId) {
+    let query = { filters: { studyNotEqual: studyId }, options: {} }
+    let queryString = getUserQueryString(query)
+    let URL = `${USERS}/${queryString}`
+    return session
+      .get(URL)
+      .then(({ data }) => commit('setPotentialCollaborators', data.results))
       .catch(console.error)
   },
   patchUser({ commit }, data) {
