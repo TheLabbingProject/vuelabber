@@ -1,20 +1,20 @@
 <template>
   <v-row class="px-4 justify-space-between align-center">
     <v-col :cols="1">
-      <v-text-field label="ID" v-model="filters.id" />
+      <v-text-field label="ID" v-model="filters.idNumber" />
     </v-col>
     <v-col :cols="1">
       <v-text-field
         label="First Name"
         v-model="filters.firstName"
-        :disabled="Boolean(filters.id)"
+        :disabled="Boolean(filters.idNumber)"
       />
     </v-col>
     <v-col :cols="1">
       <v-text-field
         label="Last Name"
         v-model="filters.lastName"
-        :disabled="Boolean(filters.id)"
+        :disabled="Boolean(filters.idNumber)"
       />
     </v-col>
     <v-col :cols="3">
@@ -29,7 +29,7 @@
                 prepend-icon="event"
                 v-model="filters.bornAfter"
                 v-on="on"
-                :disabled="Boolean(filters.id)"
+                :disabled="Boolean(filters.idNumber)"
               ></v-text-field>
             </template>
             <v-date-picker
@@ -48,7 +48,7 @@
                 label="Born Before"
                 v-model="filters.bornBefore"
                 v-on="on"
-                :disabled="Boolean(filters.id)"
+                :disabled="Boolean(filters.idNumber)"
               ></v-text-field>
             </template>
             <v-date-picker
@@ -66,7 +66,7 @@
         clearable
         label="Sex"
         v-model="filters.sex"
-        :disabled="Boolean(filters.id)"
+        :disabled="Boolean(filters.idNumber)"
         :items="sexItems"
       />
     </v-col>
@@ -75,7 +75,7 @@
         clearable
         label="Gender"
         v-model="filters.gender"
-        :disabled="Boolean(filters.id)"
+        :disabled="Boolean(filters.idNumber)"
         :items="genderItems"
       />
     </v-col> -->
@@ -84,7 +84,7 @@
         clearable
         label="Dominant Hand"
         v-model="filters.dominantHand"
-        :disabled="Boolean(filters.id)"
+        :disabled="Boolean(filters.idNumber)"
         :items="dominantHandItems"
       />
     </v-col>
@@ -106,7 +106,7 @@ export default {
     bornAfterMenu: false,
     bornBeforeMenu: false,
     filters: {
-      id: '',
+      idNumber: '',
       firstName: '',
       lastName: '',
       bornAfter: '',

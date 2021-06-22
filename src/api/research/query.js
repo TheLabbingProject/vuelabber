@@ -40,7 +40,8 @@ const getEventQueryString = ({ filters, options }) => {
 }
 
 const getSubjectQueryString = ({ filters, options }) => {
-  return `?id=${filters.id || ''}&first_name=${filters.firstName ||
+  return `?id=${filters.id || ''}&id_number=${filters.idNumber ||
+    ''}&id_number_lookup=icontains&first_name=${filters.firstName ||
     ''}&first_name_lookup=icontains&last_name=${filters.lastName ||
     ''}&last_name_lookup=icontains&sex=${filters.sex ||
     ''}&gender=${filters.gender || ''}&born_after_date=${filters.bornAfter ||
