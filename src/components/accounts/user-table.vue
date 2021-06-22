@@ -18,11 +18,12 @@
           :study="study"
           @fetch-users-start="loading = true"
           @fetch-users-end="loading = false"
+          ref="controls"
         />
       </template>
 
       <!-- First Name -->
-      <template v-slot:item.firstName="{ item }" v-if="user.isStaff">
+      <template v-slot:[`item.firstName`]="{ item }" v-if="user.isStaff">
         <v-edit-dialog
           :return-value.sync="item.firstName"
           large
@@ -41,7 +42,7 @@
       </template>
 
       <!-- Last Name -->
-      <template v-slot:item.lastName="{ item }" v-if="user.isStaff">
+      <template v-slot:[`item.lastName`]="{ item }" v-if="user.isStaff">
         <v-edit-dialog
           :return-value.sync="item.lastName"
           large
@@ -60,7 +61,7 @@
       </template>
 
       <!-- Email -->
-      <template v-slot:item.email="{ item }" v-if="user.isStaff">
+      <template v-slot:[`item.email`]="{ item }" v-if="user.isStaff">
         <v-edit-dialog
           :return-value.sync="item.email"
           large
@@ -79,7 +80,10 @@
       </template>
 
       <!-- Institute -->
-      <template v-slot:item.profile.institute="{ item }" v-if="user.isStaff">
+      <template
+        v-slot:[`item.profile.institute`]="{ item }"
+        v-if="user.isStaff"
+      >
         <v-edit-dialog
           :return-value.sync="item.profile.institute"
           large
@@ -96,6 +100,13 @@
           </template>
         </v-edit-dialog>
       </template>
+
+      <!-- Remove -->
+      <template v-slot:[`item.remove`]="{ item }">
+        <v-icon @click="removeCollaborator(item)">
+          delete
+        </v-icon>
+      </template>
     </v-data-table>
   </div>
 </template>
@@ -106,6 +117,11 @@ import { mapActions, mapState } from 'vuex'
 
 export default {
   name: 'UserTable',
+  mounted() {
+    if (this.user.isStaff) {
+      this.headers.push(this.removeHeader)
+    }
+  },
   components: {
     UserTableControls
   },
@@ -129,7 +145,8 @@ export default {
     expanded: [],
     expand: true,
     userDialog: false,
-    chosenIndex: -1
+    chosenIndex: -1,
+    removeHeader: { text: 'Remove', value: 'remove', align: 'center' }
   }),
   computed: {
     ...mapState('accounts', ['users', 'userCount']),
@@ -155,7 +172,17 @@ export default {
       }
       this.patchUser(data)
     },
-    ...mapActions('accounts', ['patchUser'])
+    removeCollaborator(user) {
+      let updatedStudy = Object.assign({}, this.study)
+      updatedStudy.collaborators = updatedStudy.collaborators.filter(
+        collaboratorId => collaboratorId != user.id
+      )
+      this.patchStudy(updatedStudy).then(() => {
+        this.$refs.controls.update()
+      })
+    },
+    ...mapActions('accounts', ['patchUser']),
+    ...mapActions('research', ['patchStudy'])
   }
 }
 </script>
