@@ -4,18 +4,10 @@
       <v-text-field label="ID" v-model="filters.idNumber" />
     </v-col>
     <v-col :cols="1">
-      <v-text-field
-        label="First Name"
-        v-model="filters.firstName"
-        :disabled="Boolean(filters.idNumber)"
-      />
+      <v-text-field label="First Name" v-model="filters.firstName" />
     </v-col>
     <v-col :cols="1">
-      <v-text-field
-        label="Last Name"
-        v-model="filters.lastName"
-        :disabled="Boolean(filters.idNumber)"
-      />
+      <v-text-field label="Last Name" v-model="filters.lastName" />
     </v-col>
     <v-col :cols="3">
       <v-row class="align-center">
@@ -29,7 +21,6 @@
                 prepend-icon="event"
                 v-model="filters.bornAfter"
                 v-on="on"
-                :disabled="Boolean(filters.idNumber)"
               ></v-text-field>
             </template>
             <v-date-picker
@@ -48,7 +39,6 @@
                 label="Born Before"
                 v-model="filters.bornBefore"
                 v-on="on"
-                :disabled="Boolean(filters.idNumber)"
               ></v-text-field>
             </template>
             <v-date-picker
@@ -62,20 +52,13 @@
     </v-col>
 
     <v-col :cols="1">
-      <v-select
-        clearable
-        label="Sex"
-        v-model="filters.sex"
-        :disabled="Boolean(filters.idNumber)"
-        :items="sexItems"
-      />
+      <v-select clearable label="Sex" v-model="filters.sex" :items="sexItems" />
     </v-col>
     <!-- <v-col :cols="1">
       <v-select
         clearable
         label="Gender"
         v-model="filters.gender"
-        :disabled="Boolean(filters.idNumber)"
         :items="genderItems"
       />
     </v-col> -->
@@ -84,7 +67,6 @@
         clearable
         label="Dominant Hand"
         v-model="filters.dominantHand"
-        :disabled="Boolean(filters.idNumber)"
         :items="dominantHandItems"
       />
     </v-col>
