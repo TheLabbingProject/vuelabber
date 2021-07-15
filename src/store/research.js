@@ -16,7 +16,6 @@ import {
   getStudyQueryString,
   getSubjectQueryString
 } from '@/api/research/query'
-import { camelToSnakeCase } from '@/utils'
 
 const state = {
   studies: [],
