@@ -9,8 +9,9 @@
         </template>
         <study-info-card
           :createMode="true"
-          @close-study-dialog="createStudyDialog = false"
           :key="studyDialog"
+          @close-study-dialog="createStudyDialog = false"
+          @created-study="update"
         />
       </v-dialog>
     </v-row>
@@ -32,6 +33,7 @@
       <template v-slot:top>
         <study-table-controls
           :options="options"
+          ref="controls"
           @fetch-studies-start="loading = true"
           @fetch-studies-end="loading = false"
         />
@@ -94,7 +96,7 @@
         </v-edit-dialog>
       </template>
 
-      <template v-if="user.isStaff" v-slot:item.actions="{ item }">
+      <template v-if="actionPermissions" v-slot:item.actions="{ item }">
         <v-icon small @click="showDeleteStudyDialog(item)"> mdi-delete </v-icon>
       </template>
 
@@ -122,7 +124,7 @@ export default {
     StudyTableControls
   },
   mounted() {
-    if (this.user.isStaff) {
+    if (this.actionPermissions) {
       this.headers.push(this.actionsHeader)
     }
   },
@@ -149,10 +151,16 @@ export default {
     chosenIndex: -1
   }),
   computed: {
+    actionPermissions: function() {
+      return this.checkActionsPermissions(this.user)
+    },
     ...mapState('research', ['studies', 'studyCount']),
     ...mapState('auth', ['user'])
   },
   methods: {
+    checkActionsPermissions(user) {
+      return user.isStaff || user.isSuperuser
+    },
     showDeleteStudyDialog(item) {
       this.chosenIndex = this.studies.indexOf(item)
       this.deleteStudyDialog = true
@@ -178,6 +186,9 @@ export default {
     saveDescription(study) {
       let data = { id: study.id, description: study.description }
       this.patchStudy(data)
+    },
+    update() {
+      this.$refs['controls'].update()
     },
     ...mapActions('research', ['deleteStudy', 'patchStudy'])
   }
