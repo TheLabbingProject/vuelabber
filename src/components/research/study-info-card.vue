@@ -102,11 +102,11 @@ export default {
     )
   },
   mixins: [validationMixin],
-  data: function() {
-    return {
-      deleteWanted: false
-    }
-  },
+  data: () => ({
+    deleteWanted: false,
+    newStudyCardTitle: 'Create New Study',
+    existingStudyCardTitle: 'Edit Existing Study'
+  }),
   computed: {
     data: () => ({
       selectedCollaborators: []
@@ -115,10 +115,9 @@ export default {
       return this.users.map(user => this.getCollaboratorName(user))
     },
     cardTitle: function() {
-      if (this.existingStudy) {
-        return 'Edit Existing Study'
-      }
-      return 'Create New Study'
+      return this.existingStudy
+        ? this.existingStudyCardTitle
+        : this.newStudyCardTitle
     },
     titleErrors: function() {
       const errors = []

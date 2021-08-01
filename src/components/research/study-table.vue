@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-row class="px-3">
+    <v-row class="pa-5">
       <div class="title text-left">Studies</div>
       <v-spacer />
       <v-dialog v-model="createStudyDialog" width="600px" v-if="user.isStaff">
@@ -95,9 +95,7 @@
       </template>
 
       <template v-if="user.isStaff" v-slot:item.actions="{ item }">
-        <v-icon small @click="showDeleteStudyDialog(item)">
-          mdi-delete
-        </v-icon>
+        <v-icon small @click="showDeleteStudyDialog(item)"> mdi-delete </v-icon>
       </template>
 
       <template v-slot:expanded-item="{ item, headers }">
@@ -174,11 +172,11 @@ export default {
       })
     },
     saveTitle(study) {
-      let data = { studyId: study.id, title: study.title }
+      let data = { id: study.id, title: study.title }
       this.patchStudy(data)
     },
     saveDescription(study) {
-      let data = { studyId: study.id, description: study.description }
+      let data = { id: study.id, description: study.description }
       this.patchStudy(data)
     },
     ...mapActions('research', ['deleteStudy', 'patchStudy'])
