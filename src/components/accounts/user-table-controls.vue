@@ -48,7 +48,7 @@
               multiple
               v-model="newCollaborators"
               :items="potentialCollaborators"
-              item-value="id"
+              item-value="url"
               item-text="username"
             >
             </v-autocomplete>

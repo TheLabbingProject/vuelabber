@@ -134,7 +134,7 @@ export default {
           if (this.study != undefined) {
             let procedures = this.study.procedures || []
             procedures.push(newProcedure.id)
-            let data = { studyId: this.study.id, procedures }
+            let data = { id: this.study.id, procedures }
             this.patchStudy(data).then(() => {
               this.$emit('new-procedure-created')
             })
@@ -146,7 +146,7 @@ export default {
     },
     associateSelectedProcedure: function() {
       this.study.procedures.push(this.selectedProcedure)
-      let data = { studyId: this.study.id, procedures: this.study.procedures }
+      let data = { id: this.study.id, procedures: this.study.procedures }
       this.patchStudy(data)
         .then(() => {
           this.$emit('existing-procedure-associated')

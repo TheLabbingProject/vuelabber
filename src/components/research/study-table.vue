@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-row class="px-3">
+    <v-row class="pa-5">
       <div class="title text-left">Studies</div>
       <v-spacer />
       <v-dialog v-model="createStudyDialog" width="600px" v-if="user.isStaff">
@@ -9,8 +9,9 @@
         </template>
         <study-info-card
           :createMode="true"
-          @close-study-dialog="createStudyDialog = false"
           :key="studyDialog"
+          @close-study-dialog="createStudyDialog = false"
+          @created-study="update"
         />
       </v-dialog>
     </v-row>
@@ -32,6 +33,7 @@
       <template v-slot:top>
         <study-table-controls
           :options="options"
+          ref="controls"
           @fetch-studies-start="loading = true"
           @fetch-studies-end="loading = false"
         />
@@ -94,10 +96,8 @@
         </v-edit-dialog>
       </template>
 
-      <template v-if="user.isStaff" v-slot:item.actions="{ item }">
-        <v-icon small @click="showDeleteStudyDialog(item)">
-          mdi-delete
-        </v-icon>
+      <template v-if="actionPermissions" v-slot:item.actions="{ item }">
+        <v-icon small @click="showDeleteStudyDialog(item)"> mdi-delete </v-icon>
       </template>
 
       <template v-slot:expanded-item="{ item, headers }">
@@ -124,7 +124,7 @@ export default {
     StudyTableControls
   },
   mounted() {
-    if (this.user.isStaff) {
+    if (this.actionPermissions) {
       this.headers.push(this.actionsHeader)
     }
   },
@@ -151,10 +151,16 @@ export default {
     chosenIndex: -1
   }),
   computed: {
+    actionPermissions: function() {
+      return this.checkActionsPermissions(this.user)
+    },
     ...mapState('research', ['studies', 'studyCount']),
     ...mapState('auth', ['user'])
   },
   methods: {
+    checkActionsPermissions(user) {
+      return user.isStaff || user.isSuperuser
+    },
     showDeleteStudyDialog(item) {
       this.chosenIndex = this.studies.indexOf(item)
       this.deleteStudyDialog = true
@@ -174,12 +180,15 @@ export default {
       })
     },
     saveTitle(study) {
-      let data = { studyId: study.id, title: study.title }
+      let data = { id: study.id, title: study.title }
       this.patchStudy(data)
     },
     saveDescription(study) {
-      let data = { studyId: study.id, description: study.description }
+      let data = { id: study.id, description: study.description }
       this.patchStudy(data)
+    },
+    update() {
+      this.$refs['controls'].update()
     },
     ...mapActions('research', ['deleteStudy', 'patchStudy'])
   }

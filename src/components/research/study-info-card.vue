@@ -8,8 +8,9 @@
         v-if="existingStudy"
         @click="verifyStudyDelete()"
         style="cursor: pointer;"
-        >delete</v-icon
       >
+        delete
+      </v-icon>
     </v-card-title>
 
     <!-- Body -->
@@ -22,7 +23,7 @@
             v-model="study.title"
             :class="{ hasError: $v.study.title.$error }"
             :counter="255"
-            :error-messages="titleErrors"
+            :error-messages="studyTitleErrors"
             @blur="checkIfValid()"
           />
 
@@ -51,8 +52,9 @@
         v-if="!existingStudy"
         :disabled="$v.study.$error"
         @click="createNewStudy"
-        >Create</v-btn
       >
+        Create
+      </v-btn>
 
       <!-- Update existing study -->
       <v-btn
@@ -61,13 +63,14 @@
         v-else
         :disabled="$v.study.$error"
         @click="updateExistingStudy"
-        >Update</v-btn
       >
+        Update
+      </v-btn>
 
       <!-- Cancel study creation/update -->
-      <v-btn color="error" text @click="$emit('close-study-dialog')"
-        >Cancel</v-btn
-      >
+      <v-btn color="error" text @click="closeDialog()">
+        Cancel
+      </v-btn>
     </v-card-actions>
   </v-card>
   <deleteDialog
@@ -102,11 +105,11 @@ export default {
     )
   },
   mixins: [validationMixin],
-  data: function() {
-    return {
-      deleteWanted: false
-    }
-  },
+  data: () => ({
+    deleteWanted: false,
+    newStudyCardTitle: 'Create New Study',
+    existingStudyCardTitle: 'Edit Existing Study'
+  }),
   computed: {
     data: () => ({
       selectedCollaborators: []
@@ -115,12 +118,11 @@ export default {
       return this.users.map(user => this.getCollaboratorName(user))
     },
     cardTitle: function() {
-      if (this.existingStudy) {
-        return 'Edit Existing Study'
-      }
-      return 'Create New Study'
+      return this.existingStudy
+        ? this.existingStudyCardTitle
+        : this.newStudyCardTitle
     },
-    titleErrors: function() {
+    studyTitleErrors: function() {
       const errors = []
       if (!this.$v.study.title.$dirty) return errors
       !this.$v.study.title.maxLength &&

@@ -1,5 +1,5 @@
 <template>
-  <v-row class="px-4 align-left" v-if="showControls">
+  <v-row class="pa-4 align-left" v-if="showControls">
     <v-col :cols="1" style="max-width: 100px;">
       <v-text-field label="ID" v-model="filters.id" />
     </v-col>

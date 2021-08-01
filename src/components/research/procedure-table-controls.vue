@@ -18,7 +18,7 @@
       />
     </v-col>
     <v-spacer />
-    <div class="pr-2">
+    <div class="pa-4">
       <v-dialog
         v-model="procedureAssociationDialog"
         width="600px"
