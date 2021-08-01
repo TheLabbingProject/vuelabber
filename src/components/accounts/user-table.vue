@@ -23,7 +23,7 @@
       </template>
 
       <!-- First Name -->
-      <template v-slot:[`item.firstName`]="{ item }" v-if="user.isStaff">
+      <template v-slot:[`item.firstName`]="{ item }" v-if="staffPermissions">
         <v-edit-dialog
           :return-value.sync="item.firstName"
           large
@@ -42,7 +42,7 @@
       </template>
 
       <!-- Last Name -->
-      <template v-slot:[`item.lastName`]="{ item }" v-if="user.isStaff">
+      <template v-slot:[`item.lastName`]="{ item }" v-if="staffPermissions">
         <v-edit-dialog
           :return-value.sync="item.lastName"
           large
@@ -61,7 +61,7 @@
       </template>
 
       <!-- Email -->
-      <template v-slot:[`item.email`]="{ item }" v-if="user.isStaff">
+      <template v-slot:[`item.email`]="{ item }" v-if="staffPermissions">
         <v-edit-dialog
           :return-value.sync="item.email"
           large
@@ -82,7 +82,7 @@
       <!-- Institute -->
       <template
         v-slot:[`item.profile.institute`]="{ item }"
-        v-if="user.isStaff"
+        v-if="staffPermissions"
       >
         <v-edit-dialog
           :return-value.sync="item.profile.institute"
@@ -118,7 +118,7 @@ import { mapActions, mapState } from 'vuex'
 export default {
   name: 'UserTable',
   mounted() {
-    if (this.user.isStaff) {
+    if (this.staffPermissions) {
       this.headers.push(this.removeHeader)
     }
   },
@@ -149,6 +149,9 @@ export default {
     removeHeader: { text: 'Remove', value: 'remove', align: 'center' }
   }),
   computed: {
+    staffPermissions: function() {
+      return this.user.isStaff || this.user.isSuperuser
+    },
     ...mapState('accounts', ['users', 'userCount']),
     ...mapState('auth', ['user'])
   },
@@ -175,7 +178,7 @@ export default {
     removeCollaborator(user) {
       let updatedStudy = Object.assign({}, this.study)
       updatedStudy.collaborators = updatedStudy.collaborators.filter(
-        collaboratorId => collaboratorId != user.id
+        collaboratorUrl => collaboratorUrl != user.url
       )
       this.patchStudy(updatedStudy).then(() => {
         this.$refs.controls.update()
