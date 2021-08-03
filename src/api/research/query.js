@@ -30,7 +30,7 @@ const getEventQueryString = ({ filters, options }) => {
     ''}&title_lookup=icontains&description=${filters.description ||
     ''}&description_lookup=icontains&content_type=${filters.contentType ||
     ''}&model_name=${filters.modelName || ''}&app_label=${filters.appLabel ||
-    ''}&page_size=${
+    ''}&exclude_procedure=${filters.excludeProcedure || ''}&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage

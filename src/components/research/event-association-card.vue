@@ -5,31 +5,38 @@
     <v-tab-item>
       <v-card>
         <v-card-text>
-          <v-col>
-            <v-form @submit.prevent>
-              <!-- Title -->
-              <v-text-field
-                label="Title"
-                v-model="event.title"
-                :class="{ hasError: $v.event.title.$error }"
-                :counter="255"
-                :error-messages="titleErrors"
-                @blur="checkIfValid()"
-              />
+          <v-form class="px-3" @submit.prevent>
+            <!-- Title -->
+            <v-text-field
+              label="Title"
+              v-model="event.title"
+              :class="{ hasError: $v.event.title.$error }"
+              :counter="255"
+              :error-messages="titleErrors"
+              @blur="checkIfValid()"
+            />
 
-              <!-- Description -->
-              <v-textarea v-model="event.description" label="Description" />
+            <!-- Description -->
+            <v-textarea v-model="event.description" label="Description" />
 
-              <!-- Type -->
-              <v-radio-group v-model="event.type" row>
-                <v-radio
-                  label="Data Acquisition"
-                  value="MeasurementDefinition"
-                ></v-radio>
-                <v-radio label="Task" value="Task"></v-radio>
-              </v-radio-group>
-            </v-form>
-          </v-col>
+            <!-- Type -->
+            <v-radio-group v-model="event.type" row>
+              <v-radio
+                label="Data Acquisition"
+                value="MeasurementDefinition"
+              ></v-radio>
+              <v-radio label="Task" value="Task"></v-radio>
+            </v-radio-group>
+
+            <!-- Data acquisition model selection -->
+            <div v-if="dataAquisition">
+              <v-autocomplete
+                label="Data Model"
+                :items="dataModels"
+                v-model="dataModel"
+              ></v-autocomplete>
+            </div>
+          </v-form>
         </v-card-text>
 
         <!-- Actions -->
@@ -55,22 +62,20 @@
     <v-tab-item>
       <v-card>
         <v-card-text>
-          <v-col>
-            <v-form @submit.prevent>
-              <v-col>
-                <v-autocomplete
-                  clearable
-                  label="Event"
-                  v-model="selectedEvent"
-                  :items="eventItems"
-                  :loading="loadingEventItems"
-                  :search-input.sync="existingEventQuery"
-                  @focus="updateEventItems"
-                  @update:list-index="updateEventItems"
-                />
-              </v-col>
-            </v-form>
-          </v-col>
+          <v-form class="px-3" @submit.prevent>
+            <v-col>
+              <v-autocomplete
+                clearable
+                label="Event"
+                v-model="selectedEvent"
+                :items="eventItems"
+                :loading="loadingEventItems"
+                :search-input.sync="existingEventQuery"
+                @focus="updateEventItems"
+                @update:list-index="updateEventItems"
+              />
+            </v-col>
+          </v-form>
         </v-card-text>
 
         <!-- Actions -->
@@ -107,7 +112,9 @@ export default {
     event: { title: '', description: '', type: 'MeasurementDefinition' },
     selectedEvent: null,
     loadingEventItems: false,
-    existingEventQuery: null
+    existingEventQuery: null,
+    dataModels: [{ text: 'MRI Session', value: 'django_mri.session' }],
+    dataModel: null
   }),
   computed: {
     titleErrors: function() {
@@ -117,6 +124,9 @@ export default {
         errors.push('Title must be at most 255 characters long!')
       !this.$v.event.title.required && errors.push('Title is required.')
       return errors
+    },
+    dataAquisition: function() {
+      return this.event.type === 'MeasurementDefinition'
     },
     ...mapState('research', ['eventItems'])
   },
@@ -134,6 +144,14 @@ export default {
       // Validation
       this.$v.event.$touch()
       if (this.$v.event.$error) return
+
+      // Fix data model setting
+      if (this.dataModel != null) {
+        let appLabel, modelName
+        ;[appLabel, modelName] = this.dataModel.split('.')
+        this.event['appLabel'] = appLabel
+        this.event['modelName'] = modelName
+      }
 
       // Create
       this.createEvent(this.event)

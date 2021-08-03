@@ -103,7 +103,7 @@
 
       <!-- Remove -->
       <template v-slot:[`item.remove`]="{ item }">
-        <v-icon @click="removeCollaborator(item)">
+        <v-icon small @click="removeCollaborator(item)">
           delete
         </v-icon>
       </template>
@@ -146,7 +146,12 @@ export default {
     expand: true,
     userDialog: false,
     chosenIndex: -1,
-    removeHeader: { text: 'Remove', value: 'remove', align: 'center' }
+    removeHeader: {
+      text: 'Remove',
+      value: 'remove',
+      align: 'center',
+      width: 100
+    }
   }),
   computed: {
     staffPermissions: function() {

@@ -26,7 +26,7 @@
       </template>
 
       <!-- Title -->
-      <template v-slot:item.title="{ item }" v-if="user.isStaff">
+      <template v-slot:[`item.title`]="{ item }" v-if="user.isStaff">
         <v-edit-dialog
           :return-value.sync="item.title"
           large
@@ -45,7 +45,7 @@
       </template>
 
       <!-- Description -->
-      <template v-slot:item.description="{ item }" v-if="user.isStaff">
+      <template v-slot:[`item.description`]="{ item }" v-if="user.isStaff">
         <v-edit-dialog
           :return-value.sync="item.description"
           large
