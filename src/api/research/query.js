@@ -57,7 +57,8 @@ const getSubjectQueryString = ({ filters, options }) => {
 }
 
 const getGroupQueryString = ({ filters, options }) => {
-  return `?id=${filters.id || ''}&description=${filters.description ||
+  return `?id=${filters.id || ''}&title=${filters.title ||
+    ''}&title_lookup=icontains&description=${filters.description ||
     ''}&description_lookup=icontains&study=${filters.studyId || ''}&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
