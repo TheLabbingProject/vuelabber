@@ -23,20 +23,18 @@ const getCategoryQueryString = ({ filters, pagination }) => {
   }`
 }
 
-const getAnalysisQueryString = ({ filters, pagination }) => {
+const getAnalysisQueryString = ({ filters, options }) => {
   return `?id=${filters.id || ''}&title=${filters.title ||
     ''}&title_lookup=icontains&description${filters.description ||
     ''}=&description_lookup=icontains&created_after=${filters.createdAfter ||
     ''}&created_before=${filters.createdBefore ||
-    ''}&category=${filters.category ||
-    ''}&page_size=${pagination.itemsPerPage || 100}&page=${pagination.page ||
-    1}&ordering=${
-    pagination.sortBy
-      ? pagination.descending
-        ? '-' + pagination.sortBy
-        : pagination.sortBy
-      : ''
-  }`
+    ''}&category=${filters.category || ''}&page_size=${
+    options.itemsPerPage
+      ? options.itemsPerPage != -1
+        ? options.itemsPerPage
+        : 10000
+      : 100
+  }&page=${options.page || 1}&ordering=${parseOrdering(options)}`
 }
 
 const getAnalysisVersionQueryString = ({ filters, pagination }) => {
