@@ -25,8 +25,8 @@
         v-if="user.isStaff"
       >
         <template v-slot:activator="{ on }">
-          <v-btn small color="orange darken-2" v-on="on">
-            Add Procedure
+          <v-btn class="info" v-on="on">
+            Add
           </v-btn>
         </template>
         <study-procedure-association-card
