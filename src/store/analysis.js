@@ -28,6 +28,7 @@ import session from '@/api/session'
 
 const state = {
   analyses: [],
+  analysesCount: 0,
   analysisVersions: [],
   categories: [],
   inputSpecifications: [],
@@ -63,6 +64,9 @@ const getters = {
 const mutations = {
   setAnalyses(state, analyses) {
     state.analyses = analyses
+  },
+  setAnalysesCount(state, count) {
+    state.analysesCount = count
   },
   setAnalysisVersions(state, analysisVersions) {
     state.analysisVersions = analysisVersions
@@ -116,7 +120,10 @@ const actions = {
     let queryString = getAnalysisQueryString(options)
     return session
       .get(`${ANALYSES}/${queryString}`)
-      .then(({ data }) => commit('setAnalyses', data.results))
+      .then(({ data }) => {
+        commit('setAnalyses', data.results)
+        commit('setAnalysesCount', data.count)
+      })
       .catch(console.error)
   },
   fetchAnalysisVersions({ commit }, options) {

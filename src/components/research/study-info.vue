@@ -9,6 +9,10 @@
       <v-tab-item>
         <procedure-table :study="study" />
       </v-tab-item>
+      <v-tab>Groups</v-tab>
+      <v-tab-item>
+        <group-table :study="study" />
+      </v-tab-item>
     </v-tabs>
   </v-col>
 </template>
@@ -16,13 +20,14 @@
 <script>
 import UserTable from '@/components/accounts/user-table.vue'
 import ProcedureTable from '@/components/research/procedure-table.vue'
+import GroupTable from '@/components/research/group-table.vue'
 
 export default {
   name: 'StudyInfo',
   props: {
     study: Object
   },
-  components: { ProcedureTable, UserTable },
+  components: { GroupTable, ProcedureTable, UserTable },
   data: () => ({
     active: 0
   })

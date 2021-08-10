@@ -20,6 +20,7 @@ import {
 const state = {
   studies: [],
   groups: [],
+  groupCount: 0,
   subjects: [],
   plots: { subject: {} },
   subjectCount: 0,
@@ -80,6 +81,9 @@ const mutations = {
   },
   setGroups(state, groups) {
     state.groups = groups
+  },
+  setGroupCount(state, groupCount) {
+    state.groupCount = groupCount
   },
   addStudy(state, study) {
     state.studies.push(study)
@@ -161,6 +165,11 @@ const mutations = {
   removeStudyFromState(state, study) {
     state.studies = state.studies.filter(
       existingStudy => existingStudy.id != study.id
+    )
+  },
+  removeGroupFromState(state, group) {
+    state.groups = state.groups.filter(
+      existingGroup => existingGroup.id != group.id
     )
   },
   removeProcedureFromState(state, procedure) {
@@ -290,7 +299,10 @@ const actions = {
     let queryString = getGroupQueryString({ filters, options })
     return session
       .get(`${GROUPS}/${queryString}`)
-      .then(({ data }) => commit('setGroups', data.results))
+      .then(({ data }) => {
+        commit('setGroups', data.results)
+        commit('setGroupCount', data.count)
+      })
       .catch(console.error)
   },
   fetchGroupById({ commit }, groupId) {
@@ -336,6 +348,12 @@ const actions = {
     return session
       .delete(`${STUDIES}/${study.id}/`)
       .then(() => commit('removeStudyFromState', study))
+      .catch(console.error)
+  },
+  deleteGroup({ commit }, group) {
+    return session
+      .delete(`${GROUPS}/${group.id}/`)
+      .then(() => commit('removeGroupFromState', group))
       .catch(console.error)
   },
   createProcedure({ commit }, procedure) {
