@@ -1,5 +1,6 @@
 import session from '@/api/session'
 import {
+  DATA_ACQUISITIONS,
   EVENTS,
   GROUPS,
   MEASUREMENT_DEFINITIONS,
@@ -9,6 +10,7 @@ import {
   SUBJECTS
 } from '@/api/research/endpoints'
 import {
+  getDataAcquisitionQueryString,
   getEventQueryString,
   getGroupQueryString,
   getProcedureQueryString,
@@ -33,7 +35,8 @@ const state = {
   procedureSteps: [],
   procedureStepCount: 0,
   procedureItems: [],
-  measurementDefinitions: []
+  measurementDefinitions: [],
+  dataAcquisitionModels: []
 }
 
 const getters = {
@@ -84,6 +87,9 @@ const mutations = {
   },
   setGroupCount(state, groupCount) {
     state.groupCount = groupCount
+  },
+  setDataAcquisitionModels(state, dataAcquisitionModels) {
+    state.dataAcquisitionModels = dataAcquisitionModels
   },
   addStudy(state, study) {
     state.studies.push(study)
@@ -489,6 +495,16 @@ const actions = {
     return session
       .get(`${SUBJECTS}/plot/`)
       .then(({ data }) => commit('setSubjectDateOfBirthPlot', data))
+      .catch(console.error)
+  },
+  fetchDataAcquisitionModels({ commit }, query) {
+    let queryString = getDataAcquisitionQueryString(query)
+    let URL = `${DATA_ACQUISITIONS}/${queryString}`
+    return session
+      .get(URL)
+      .then(({ data }) => {
+        commit('setDataAcquisitionModels', data.results)
+      })
       .catch(console.error)
   }
 }

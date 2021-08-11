@@ -95,7 +95,20 @@ const getProcedureStepQueryString = ({ filters, options }) => {
   }&page=${options.page || 1}&ordering=${parseOrdering(options)}`
 }
 
+const getDataAcquisitionQueryString = ({ filters, options }) => {
+  return `?id=${filters.id || ''}&app_label=${filters.appLabel ||
+    ''}&app_label_lookup=exact&model=${filters.model ||
+    ''}&model_lookup=exact&page_size=${
+    options.itemsPerPage
+      ? options.itemsPerPage != -1
+        ? options.itemsPerPage
+        : 1000
+      : 100
+  }&page=${options.page || 1}&ordering=${parseOrdering(options)}`
+}
+
 export {
+  getDataAcquisitionQueryString,
   getEventQueryString,
   getGroupQueryString,
   getProcedureQueryString,

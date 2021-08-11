@@ -77,11 +77,16 @@ export default {
   methods: {
     update() {
       this.$emit('fetch-procedure-steps-start')
-      this.fetchProcedureSteps(this.query).then(() => {
-        this.$emit('fetch-procedure-steps-end')
+      this.fetchDataAcquisitionModels({ filters: {}, options: {} }).then(() => {
+        this.fetchProcedureSteps(this.query).then(() => {
+          this.$emit('fetch-procedure-steps-end')
+        })
       })
     },
-    ...mapActions('research', ['fetchProcedureSteps'])
+    ...mapActions('research', [
+      'fetchProcedureSteps',
+      'fetchDataAcquisitionModels'
+    ])
   },
   watch: {
     filters: {

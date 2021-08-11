@@ -52,7 +52,7 @@
           </v-btn>
 
           <!-- Cancel event creation/update -->
-          <v-btn color="error" @click="$emit('close-event-dialog')">
+          <v-btn color="error" @click="$emit('close-event-association-dialog')">
             Cancel
           </v-btn>
         </v-card-actions>
@@ -113,8 +113,13 @@ export default {
     selectedEvent: null,
     loadingEventItems: false,
     existingEventQuery: null,
-    dataModels: [{ text: 'MRI Session', value: 'django_mri.session' }],
-    dataModel: null
+    dataModels: [
+      {
+        text: 'MRI Session',
+        value: { appLabel: 'django_mri', model: 'session' }
+      }
+    ],
+    dataModel: { appLabel: 'django_mri', model: 'session' }
   }),
   computed: {
     titleErrors: function() {
@@ -128,7 +133,7 @@ export default {
     dataAquisition: function() {
       return this.event.type === 'MeasurementDefinition'
     },
-    ...mapState('research', ['eventItems'])
+    ...mapState('research', ['dataAcquisitionModels', 'eventItems'])
   },
   validations: {
     event: {
@@ -147,10 +152,11 @@ export default {
 
       // Fix data model setting
       if (this.dataModel != null) {
-        let appLabel, modelName
-        ;[appLabel, modelName] = this.dataModel.split('.')
-        this.event['appLabel'] = appLabel
-        this.event['modelName'] = modelName
+        this.event['contentType'] = this.dataAcquisitionModels.find(
+          model =>
+            model.appLabel == this.dataModel.appLabel &&
+            model.model == this.dataModel.model
+        ).id
       }
 
       // Create

@@ -173,7 +173,11 @@ export default {
     }
   }),
   computed: {
-    ...mapState('research', ['procedureSteps', 'procedureStepCount']),
+    ...mapState('research', [
+      'dataAcquisitionModels',
+      'procedureSteps',
+      'procedureStepCount'
+    ]),
     ...mapState('auth', ['user'])
   },
   methods: {
@@ -181,11 +185,13 @@ export default {
       return type == 'MeasurementDefinition' ? 'Data Acquisition' : type
     },
     getDataModelDisplay(eventInfo) {
-      try {
-        return this.dataModelNames[eventInfo.appLabel][eventInfo.modelName]
-      } catch (error) {
-        return eventInfo.modelName || ''
+      if (eventInfo.contentType) {
+        let model = this.dataAcquisitionModels.find(
+          model => model.id === eventInfo.contentType
+        )
+        return this.dataModelNames[model['appLabel']][model['model']]
       }
+      return ''
     },
     removeEvent(procedureStep) {
       this.deleteProcedureStep(procedureStep).then(() =>
