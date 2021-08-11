@@ -20,6 +20,7 @@
       item-key="id"
       show-expand
       single-expand
+      :no-data-text="noDataText"
       :expanded.sync="expanded"
       :headers="headers"
       :items="studies"
@@ -156,7 +157,9 @@ export default {
     studyDialog: false,
     createStudyDialog: false,
     deleteStudyDialog: false,
-    chosenIndex: -1
+    chosenIndex: -1,
+    noDataText:
+      'No studies found! Make sure you are a registered as a collaborator to make studies available to your account.'
   }),
   computed: {
     actionPermissions: function() {
