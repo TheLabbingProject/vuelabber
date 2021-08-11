@@ -57,7 +57,7 @@
       </template>
 
       <!-- Title -->
-      <template v-slot:item.title="{ item }" v-if="user.isStaff">
+      <template v-slot:[`item.title`]="{ item }" v-if="user.isStaff">
         <v-edit-dialog
           :return-value.sync="item.title"
           large
@@ -77,7 +77,7 @@
       </template>
 
       <!-- Description -->
-      <template v-slot:item.description="{ item }" v-if="user.isStaff">
+      <template v-slot:[`item.description`]="{ item }" v-if="user.isStaff">
         <v-edit-dialog
           :return-value.sync="item.description"
           large
@@ -96,8 +96,10 @@
         </v-edit-dialog>
       </template>
 
-      <template v-if="actionPermissions" v-slot:item.actions="{ item }">
-        <v-icon small @click="showDeleteStudyDialog(item)"> mdi-delete </v-icon>
+      <template v-if="actionPermissions" v-slot:[`item.remove`]="{ item }">
+        <v-icon small @click="showDeleteStudyDialog(item)">
+          mdi-delete
+        </v-icon>
       </template>
 
       <template v-slot:expanded-item="{ item, headers }">
@@ -134,7 +136,13 @@ export default {
       { text: 'Title', value: 'title' },
       { text: 'Description', value: 'description' }
     ],
-    actionsHeader: { text: 'Actions', value: 'actions', sortable: false },
+    actionsHeader: {
+      text: 'Remove',
+      value: 'remove',
+      sortable: false,
+      width: 100,
+      align: 'center'
+    },
     options: {
       itemsPerPage: 25,
       page: 1,

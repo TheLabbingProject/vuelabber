@@ -9,8 +9,10 @@ const SUBJECTS = `${RESEARCH_API}/subject`
 const PROCEDURES = `${RESEARCH_API}/procedure`
 const PROCEDURE_STEPS = `${RESEARCH_API}/procedure_step`
 const MEASUREMENT_DEFINITIONS = `${RESEARCH_API}/measurement`
+const DATA_ACQUISITIONS = `${RESEARCH_API}/data_acquisition`
 
 export {
+  DATA_ACQUISITIONS,
   EVENTS,
   GROUPS,
   LABS,

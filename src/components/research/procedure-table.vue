@@ -27,7 +27,7 @@
       </template>
 
       <!-- Title -->
-      <template v-slot:item.title="{ item }" v-if="user.isStaff">
+      <template v-slot:[`item.title`]="{ item }" v-if="user.isStaff">
         <v-edit-dialog
           :return-value.sync="item.title"
           large
@@ -46,7 +46,7 @@
       </template>
 
       <!-- Description -->
-      <template v-slot:item.description="{ item }" v-if="user.isStaff">
+      <template v-slot:[`item.description`]="{ item }" v-if="user.isStaff">
         <v-edit-dialog
           :return-value.sync="item.description"
           large
@@ -64,17 +64,17 @@
         </v-edit-dialog>
       </template>
 
-      <template v-slot:item.dissociate="{ item }" v-if="user.isStaff">
-        <v-btn small text @click="dissociateProcedure(item)">
-          <v-icon>
+      <template v-slot:[`item.dissociate`]="{ item }" v-if="user.isStaff">
+        <v-btn text @click="dissociateProcedure(item)">
+          <v-icon small>
             cancel
           </v-icon>
         </v-btn>
       </template>
 
-      <template v-slot:item.delete="{ item }" v-if="user.isStaff">
-        <v-btn small text @click="deleteProcedure(item)">
-          <v-icon>
+      <template v-slot:[`item.delete`]="{ item }" v-if="user.isStaff">
+        <v-btn text @click="deleteProcedure(item)">
+          <v-icon small>
             delete
           </v-icon>
         </v-btn>
@@ -158,7 +158,7 @@ export default {
       let procedures = this.study.procedures.filter(
         associatedProcedure => associatedProcedure != procedure.id
       )
-      let data = { studyId: this.study.id, procedures }
+      let data = { id: this.study.id, procedures }
       this.patchStudy(data).then(() => {
         this.$refs.controls.update()
       })

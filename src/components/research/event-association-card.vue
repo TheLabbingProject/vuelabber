@@ -5,31 +5,38 @@
     <v-tab-item>
       <v-card>
         <v-card-text>
-          <v-col>
-            <v-form @submit.prevent>
-              <!-- Title -->
-              <v-text-field
-                label="Title"
-                v-model="event.title"
-                :class="{ hasError: $v.event.title.$error }"
-                :counter="255"
-                :error-messages="titleErrors"
-                @blur="checkIfValid()"
-              />
+          <v-form class="px-3" @submit.prevent>
+            <!-- Title -->
+            <v-text-field
+              label="Title"
+              v-model="event.title"
+              :class="{ hasError: $v.event.title.$error }"
+              :counter="255"
+              :error-messages="titleErrors"
+              @blur="checkIfValid()"
+            />
 
-              <!-- Description -->
-              <v-textarea v-model="event.description" label="Description" />
+            <!-- Description -->
+            <v-textarea v-model="event.description" label="Description" />
 
-              <!-- Type -->
-              <v-radio-group v-model="event.type" row>
-                <v-radio
-                  label="Data Acquisition"
-                  value="MeasurementDefinition"
-                ></v-radio>
-                <v-radio label="Task" value="Task"></v-radio>
-              </v-radio-group>
-            </v-form>
-          </v-col>
+            <!-- Type -->
+            <v-radio-group v-model="event.type" row>
+              <v-radio
+                label="Data Acquisition"
+                value="MeasurementDefinition"
+              ></v-radio>
+              <v-radio label="Task" value="Task"></v-radio>
+            </v-radio-group>
+
+            <!-- Data acquisition model selection -->
+            <div v-if="dataAquisition">
+              <v-autocomplete
+                label="Data Model"
+                :items="dataModels"
+                v-model="dataModel"
+              ></v-autocomplete>
+            </div>
+          </v-form>
         </v-card-text>
 
         <!-- Actions -->
@@ -45,7 +52,7 @@
           </v-btn>
 
           <!-- Cancel event creation/update -->
-          <v-btn color="error" @click="$emit('close-event-dialog')">
+          <v-btn color="error" @click="$emit('close-event-association-dialog')">
             Cancel
           </v-btn>
         </v-card-actions>
@@ -55,22 +62,20 @@
     <v-tab-item>
       <v-card>
         <v-card-text>
-          <v-col>
-            <v-form @submit.prevent>
-              <v-col>
-                <v-autocomplete
-                  clearable
-                  label="Event"
-                  v-model="selectedEvent"
-                  :items="eventItems"
-                  :loading="loadingEventItems"
-                  :search-input.sync="existingEventQuery"
-                  @focus="updateEventItems"
-                  @update:list-index="updateEventItems"
-                />
-              </v-col>
-            </v-form>
-          </v-col>
+          <v-form class="px-3" @submit.prevent>
+            <v-col>
+              <v-autocomplete
+                clearable
+                label="Event"
+                v-model="selectedEvent"
+                :items="eventItems"
+                :loading="loadingEventItems"
+                :search-input.sync="existingEventQuery"
+                @focus="updateEventItems"
+                @update:list-index="updateEventItems"
+              />
+            </v-col>
+          </v-form>
         </v-card-text>
 
         <!-- Actions -->
@@ -107,7 +112,14 @@ export default {
     event: { title: '', description: '', type: 'MeasurementDefinition' },
     selectedEvent: null,
     loadingEventItems: false,
-    existingEventQuery: null
+    existingEventQuery: null,
+    dataModels: [
+      {
+        text: 'MRI Session',
+        value: { appLabel: 'django_mri', model: 'session' }
+      }
+    ],
+    dataModel: { appLabel: 'django_mri', model: 'session' }
   }),
   computed: {
     titleErrors: function() {
@@ -118,7 +130,10 @@ export default {
       !this.$v.event.title.required && errors.push('Title is required.')
       return errors
     },
-    ...mapState('research', ['eventItems'])
+    dataAquisition: function() {
+      return this.event.type === 'MeasurementDefinition'
+    },
+    ...mapState('research', ['dataAcquisitionModels', 'eventItems'])
   },
   validations: {
     event: {
@@ -134,6 +149,15 @@ export default {
       // Validation
       this.$v.event.$touch()
       if (this.$v.event.$error) return
+
+      // Fix data model setting
+      if (this.dataModel != null) {
+        this.event['contentType'] = this.dataAcquisitionModels.find(
+          model =>
+            model.appLabel == this.dataModel.appLabel &&
+            model.model == this.dataModel.model
+        ).id
+      }
 
       // Create
       this.createEvent(this.event)

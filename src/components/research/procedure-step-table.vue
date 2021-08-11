@@ -25,7 +25,7 @@
       </template>
 
       <!-- Change index -->
-      <template v-slot:item.changeIndex="{ item }" v-if="user.isStaff">
+      <template v-slot:[`item.changeIndex`]="{ item }" v-if="user.isStaff">
         <v-icon
           small
           :disabled="item.index + 1 >= procedureStepCount"
@@ -43,12 +43,17 @@
       </template>
 
       <!-- Event type -->
-      <template v-slot:item.eventInfo.type="{ item }">
+      <template v-slot:[`item.eventInfo.type`]="{ item }">
         {{ getTypeDisplay(item.eventInfo.type) }}
       </template>
 
+      <!-- Data model -->
+      <template v-slot:[`item.eventInfo.modelName`]="{ item }">
+        {{ getDataModelDisplay(item.eventInfo) }}
+      </template>
+
       <!-- Title -->
-      <template v-slot:item.eventInfo.title="{ item }" v-if="user.isStaff">
+      <template v-slot:[`item.eventInfo.title`]="{ item }" v-if="user.isStaff">
         <v-edit-dialog
           :return-value.sync="item.eventInfo.title"
           large
@@ -68,7 +73,7 @@
 
       <!-- Description -->
       <template
-        v-slot:item.eventInfo.description="{ item }"
+        v-slot:[`item.eventInfo.description`]="{ item }"
         v-if="user.isStaff"
       >
         <v-edit-dialog
@@ -88,17 +93,17 @@
         </v-edit-dialog>
       </template>
 
-      <template v-slot:item.dissociate="{ item }" v-if="user.isStaff">
-        <v-btn small text @click="removeProcedureStep(item)">
-          <v-icon>
+      <template v-slot:[`item.dissociate`]="{ item }" v-if="user.isStaff">
+        <v-btn text @click="removeProcedureStep(item)">
+          <v-icon small>
             cancel
           </v-icon>
         </v-btn>
       </template>
 
-      <template v-slot:item.delete="{ item }" v-if="user.isStaff">
-        <v-btn small text @click="removeEvent(item)">
-          <v-icon>
+      <template v-slot:[`item.delete`]="{ item }" v-if="user.isStaff">
+        <v-btn text @click="removeEvent(item)">
+          <v-icon small>
             delete
           </v-icon>
         </v-btn>
@@ -126,6 +131,7 @@ export default {
     headers: [
       { text: 'Index', value: 'index', align: 'left', width: 1 },
       { text: 'Type', value: 'eventInfo.type', width: 150 },
+      { text: 'Data Model', value: 'eventInfo.modelName', width: 150 },
       { text: 'Title', value: 'eventInfo.title', width: 250 },
       { text: 'Description', value: 'eventInfo.description' }
     ],
@@ -159,15 +165,33 @@ export default {
       sortable: false,
       align: 'center',
       width: 1
+    },
+    dataModelNames: {
+      django_mri: {
+        session: 'MRI Session'
+      }
     }
   }),
   computed: {
-    ...mapState('research', ['procedureSteps', 'procedureStepCount']),
+    ...mapState('research', [
+      'dataAcquisitionModels',
+      'procedureSteps',
+      'procedureStepCount'
+    ]),
     ...mapState('auth', ['user'])
   },
   methods: {
     getTypeDisplay(type) {
       return type == 'MeasurementDefinition' ? 'Data Acquisition' : type
+    },
+    getDataModelDisplay(eventInfo) {
+      if (eventInfo.contentType) {
+        let model = this.dataAcquisitionModels.find(
+          model => model.id === eventInfo.contentType
+        )
+        return this.dataModelNames[model['appLabel']][model['model']]
+      }
+      return ''
     },
     removeEvent(procedureStep) {
       this.deleteProcedureStep(procedureStep).then(() =>
