@@ -42,7 +42,7 @@
       </template>
 
       <!-- ID Number -->
-      <template v-slot:item.idNumber="{ item }" v-if="currentUser.isStaff">
+      <template v-slot:[`item.idNumber`]="{ item }" v-if="currentUser.isStaff">
         <v-edit-dialog
           :return-value.sync="item.idNumber"
           large
@@ -61,7 +61,7 @@
       </template>
 
       <!-- First Name -->
-      <template v-slot:item.firstName="{ item }" v-if="currentUser.isStaff">
+      <template v-slot:[`item.firstName`]="{ item }" v-if="currentUser.isStaff">
         <v-edit-dialog
           :return-value.sync="item.firstName"
           large
@@ -80,7 +80,7 @@
       </template>
 
       <!-- Last Name -->
-      <template v-slot:item.lastName="{ item }" v-if="currentUser.isStaff">
+      <template v-slot:[`item.lastName`]="{ item }" v-if="currentUser.isStaff">
         <v-edit-dialog
           :return-value.sync="item.lastName"
           large
@@ -99,7 +99,10 @@
       </template>
 
       <!-- Date of Birth -->
-      <template v-slot:item.dateOfBirth="{ item }" v-if="currentUser.isStaff">
+      <template
+        v-slot:[`item.dateOfBirth`]="{ item }"
+        v-if="currentUser.isStaff"
+      >
         <v-edit-dialog
           :return-value.sync="item.dateOfBirth"
           large
@@ -123,12 +126,12 @@
           </template>
         </v-edit-dialog>
       </template>
-      <template v-slot:item.dateOfBirth="{ item }" v-else>
+      <template v-slot:[`item.dateOfBirth`]="{ item }" v-else>
         {{ item.dateOfBirth | formatDate }}
       </template>
 
       <!-- Sex -->
-      <template v-if="currentUser.isStaff" v-slot:item.sex="{ item }">
+      <template v-if="currentUser.isStaff" v-slot:[`item.sex`]="{ item }">
         <v-edit-dialog
           :return-value.sync="item.sex"
           large
@@ -147,12 +150,12 @@
           </template>
         </v-edit-dialog>
       </template>
-      <template v-else v-slot:item.sex="{ item }">
+      <template v-else v-slot:[`item.sex`]="{ item }">
         {{ getDisplay(item.sex, sexOptions) }}
       </template>
 
       <!-- Gender -->
-      <template v-if="currentUser.isStaff" v-slot:item.gender="{ item }">
+      <template v-if="currentUser.isStaff" v-slot:[`item.gender`]="{ item }">
         <v-edit-dialog
           :return-value.sync="item.gender"
           large
@@ -171,12 +174,15 @@
           </template>
         </v-edit-dialog>
       </template>
-      <template v-else v-slot:item.gender="{ item }">
+      <template v-else v-slot:[`item.gender`]="{ item }">
         {{ getDisplay(item.gender, genderOptions) }}
       </template>
 
       <!-- Dominant Hand -->
-      <template v-if="currentUser.isStaff" v-slot:item.dominantHand="{ item }">
+      <template
+        v-if="currentUser.isStaff"
+        v-slot:[`item.dominantHand`]="{ item }"
+      >
         <v-edit-dialog
           :return-value.sync="item.dominantHand"
           large
@@ -195,24 +201,24 @@
           </template>
         </v-edit-dialog>
       </template>
-      <template v-else v-slot:item.dominantHand="{ item }">
+      <template v-else v-slot:[`item.dominantHand`]="{ item }">
         {{ getDisplay(item.dominantHand, dominantHandOptions) }}
       </template>
 
-      <template v-slot:item.latestMriSessionTime="{ item }">
+      <template v-slot:[`item.latestMriSessionTime`]="{ item }">
         {{ item.latestMriSessionTime | formatDateTime }}
       </template>
 
-      <template v-slot:item.created="{ item }">
+      <template v-slot:[`item.created`]="{ item }">
         {{ item.created | formatDateTime }}
       </template>
 
-      <template v-slot:item.modified="{ item }">
+      <template v-slot:[`item.modified`]="{ item }">
         {{ item.modified | formatDateTime }}
       </template>
 
       <!-- Edit dialog -->
-      <template v-slot:item.edit="{ item }" v-if="currentUser.isStaff">
+      <template v-slot:[`item.edit`]="{ item }" v-if="currentUser.isStaff">
         <v-dialog v-model="editSubjectDialog[item.id]" width="600px">
           <template v-slot:activator="{ on }">
             <v-icon v-on="on">edit</v-icon>
@@ -259,17 +265,17 @@ export default {
       // { text: 'Gender', value: 'gender', sortable: false },
       { text: 'Dominant Hand', value: 'dominantHand' },
       {
-        text: 'Latest Session',
+        text: 'Latest MRI Session',
         value: 'latestMriSessionTime',
         align: 'center'
       },
       {
-        text: 'Session Count',
+        text: 'MRI Session Count',
         value: 'mriSessionCount',
         align: 'center'
-      },
-      { text: 'Created', value: 'created', align: 'center' },
-      { text: 'Modified', value: 'modified', align: 'center' }
+      }
+      // { text: 'Created', value: 'created', align: 'center' },
+      // { text: 'Modified', value: 'modified', align: 'center' }
     ],
     options: {
       itemsPerPage: 25,
