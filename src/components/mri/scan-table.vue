@@ -85,7 +85,7 @@
       </template>
 
       <!-- Subject ID button opening subject info dialog -->
-      <template v-slot:item.subject="{ item }">
+      <template v-slot:[`item.subject`]="{ item }">
         <div class="py-1">
           <v-dialog v-model="editSubjectDialog[item.subject.id]" width="600px">
             <template v-slot:activator="{ on }">
@@ -102,17 +102,17 @@
       </template>
 
       <!-- Date -->
-      <template v-slot:item.date="{ item }">
+      <template v-slot:[`item.date`]="{ item }">
         {{ item.time | formatDate }}
       </template>
 
       <!-- Time -->
-      <template v-slot:item.time="{ item }">
+      <template v-slot:[`item.time`]="{ item }">
         {{ item.time ? item.time.slice(11, 23) : '' }}
       </template>
 
       <!-- Sequence Type -->
-      <template v-slot:item.sequenceType="{ item }">
+      <template v-slot:[`item.sequenceType`]="{ item }">
         <!-- Existing -->
         <div v-if="item.sequenceType" class="py-1">
           <v-dialog v-model="sequenceTypeDialog[item.id]" width="800px">
@@ -140,12 +140,12 @@
       </template>
 
       <!-- Spatial Resolution -->
-      <template v-slot:item.spatialResolution="{ item }">
+      <template v-slot:[`item.spatialResolution`]="{ item }">
         {{ formatSpatialResolution(item.spatialResolution) }}
       </template>
 
       <!-- Study Groups -->
-      <template v-slot:item.studyGroups="{ item }">
+      <template v-slot:[`item.studyGroups`]="{ item }">
         <div v-for="groupId in item.studyGroups" :key="groupId" class="py-1">
           <v-chip
             small

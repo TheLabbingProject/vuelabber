@@ -59,7 +59,7 @@
       </template>
 
       <!-- Subject ID button opening subject info dialog -->
-      <template v-slot:item.subject="{ item }">
+      <template v-slot:[`item.subject`]="{ item }">
         <div class="py-1">
           <v-dialog v-model="editSubjectDialog[item.subject.id]" width="600px">
             <template v-slot:activator="{ on }">
@@ -76,17 +76,17 @@
       </template>
 
       <!-- Date -->
-      <template v-slot:item.date="{ item }">
+      <template v-slot:[`item.date`]="{ item }">
         {{ item.time | formatDate }}
       </template>
 
       <!-- Time -->
-      <template v-slot:item.time="{ item }">
+      <template v-slot:[`item.time`]="{ item }">
         {{ item.time ? item.time.slice(11, 19) : '' }}
       </template>
 
       <!-- Measurement -->
-      <template v-slot:item.measurement="{ item }">
+      <template v-slot:[`item.measurement`]="{ item }">
         <v-edit-dialog
           :return-value.sync="item.measurement"
           large
@@ -111,7 +111,7 @@
       </template>
 
       <!-- Comments -->
-      <template v-slot:item.comments="{ item }">
+      <template v-slot:[`item.comments`]="{ item }">
         <v-edit-dialog
           :return-value.sync="item.comments"
           large
@@ -130,7 +130,7 @@
         </v-edit-dialog>
       </template>
 
-      <template v-slot:item.irb="{ item }">
+      <template v-slot:[`item.irb`]="{ item }">
         <v-edit-dialog
           :return-value.sync="item.irb"
           large
@@ -181,7 +181,7 @@
         </v-edit-dialog>
       </template>
 
-      <template v-slot:item.download="{ item }">
+      <template v-slot:[`item.download`]="{ item }">
         <div class="py-1">
           <span class="px-1">
             <v-btn
@@ -213,6 +213,26 @@
           <hr />
         </td>
       </template>
+
+      <!-- Study groups -->
+      <template v-slot:[`item.studyGroups`]="{ item }">
+        <v-row no-gutters>
+          <template v-for="n in Array(item.studyGroups.length).keys()">
+            <v-col class="py-1" :key="n">
+              <v-chip class="pa-1" small>
+                <div class="pa-1">
+                  {{ item.studyGroups[n].studyTitle }}
+                </div>
+              </v-chip>
+            </v-col>
+            <v-responsive
+              v-if="n === 2"
+              :key="`width-${n}`"
+              width="100%"
+            ></v-responsive>
+          </template>
+        </v-row>
+      </template>
     </v-data-table>
   </div>
 </template>
@@ -240,12 +260,27 @@ export default {
   data: () => ({
     headers: [
       { text: 'Subject', value: 'subject', align: 'center' },
-      { text: 'Date', value: 'date' },
-      { text: 'Time', value: 'time' },
-      { text: 'Measurement', value: 'measurement' },
+      { text: 'ID', value: 'id', align: 'left', width: 70 },
+      { text: 'Date', value: 'date', width: 100 },
+      { text: 'Time', value: 'time', width: 100 },
+      { text: 'Data Acquisition', value: 'measurement' },
       { text: 'IRB', value: 'irb' },
       { text: 'Comments', value: 'comments' },
-      { text: 'Download', value: 'download', align: 'center', sortable: false }
+      { text: 'Scans', value: 'nScans', width: 90 },
+      {
+        text: 'Studies',
+        value: 'studyGroups',
+        align: 'center',
+        sortable: false,
+        width: 200
+      },
+      {
+        text: 'Download',
+        value: 'download',
+        align: 'center',
+        sortable: false,
+        width: 200
+      }
     ],
     options: {
       itemsPerPage: 25,

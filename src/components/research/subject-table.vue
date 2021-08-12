@@ -209,12 +209,31 @@
         {{ item.latestMriSessionTime | formatDateTime }}
       </template>
 
-      <template v-slot:[`item.created`]="{ item }">
+      <!-- <template v-slot:[`item.created`]="{ item }">
         {{ item.created | formatDateTime }}
       </template>
 
       <template v-slot:[`item.modified`]="{ item }">
         {{ item.modified | formatDateTime }}
+      </template> -->
+
+      <template v-slot:[`item.studies`]="{ item }">
+        <v-row no-gutters>
+          <template v-for="n in Array(item.studies.length).keys()">
+            <v-col class="py-1" :key="n">
+              <v-chip class="pa-1" small>
+                <div class="pa-1">
+                  {{ item.studies[n].title }}
+                </div>
+              </v-chip>
+            </v-col>
+            <v-responsive
+              v-if="n === 2"
+              :key="`width-${n}`"
+              width="100%"
+            ></v-responsive>
+          </template>
+        </v-row>
       </template>
 
       <!-- Edit dialog -->
@@ -272,7 +291,14 @@ export default {
       {
         text: 'MRI Session Count',
         value: 'mriSessionCount',
-        align: 'center'
+        align: 'center',
+        width: 160
+      },
+      {
+        text: 'Study Association',
+        value: 'studies',
+        align: 'center',
+        width: 200
       }
       // { text: 'Created', value: 'created', align: 'center' },
       // { text: 'Modified', value: 'modified', align: 'center' }
