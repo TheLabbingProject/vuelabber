@@ -70,11 +70,20 @@
         :items="dominantHandItems"
       />
     </v-col>
+    <v-col :cols="2">
+      <v-autocomplete
+        multiple
+        v-model="filters.studies"
+        :items="studies"
+        item-value="id"
+        item-text="title"
+      />
+    </v-col>
   </v-row>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 import { sexOptions, genderOptions, dominantHandOptions } from './choices.js'
 import { createSelectItems } from '@/components/utils'
 
@@ -82,7 +91,7 @@ export default {
   name: 'SubjectTableControls',
   props: { options: Object },
   created() {
-    this.update()
+    this.fetchStudies({ filters: {}, options: {} }).then(() => this.update())
   },
   data: () => ({
     bornAfterMenu: false,
@@ -95,7 +104,8 @@ export default {
       bornBefore: '',
       sex: '',
       gender: '',
-      dominantHand: ''
+      dominantHand: '',
+      studies: ''
     },
     sexItems: createSelectItems(sexOptions),
     genderItems: createSelectItems(genderOptions),
@@ -107,6 +117,9 @@ export default {
       dateOfBirth: 'date_of_birth'
     }
   }),
+  computed: {
+    ...mapState('research', ['studies'])
+  },
   methods: {
     update() {
       this.$emit('fetch-subjects-start')
@@ -119,7 +132,7 @@ export default {
         this.$emit('fetch-subjects-end')
       })
     },
-    ...mapActions('research', ['fetchSubjects'])
+    ...mapActions('research', ['fetchStudies', 'fetchSubjects'])
   },
   watch: {
     filters: {

@@ -47,7 +47,8 @@ const getSubjectQueryString = ({ filters, options }) => {
     ''}&gender=${filters.gender || ''}&born_after_date=${filters.bornAfter ||
     ''}&born_before_date=${filters.bornBefore ||
     ''}&dominant_hand=${filters.dominantHand ||
-    ''}&dicom_patient=${filters.dicomPatientId || ''}&page_size=${
+    ''}&dicom_patient=${filters.dicomPatientId ||
+    ''}&studies=${filters.studies || ''}&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage
