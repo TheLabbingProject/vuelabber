@@ -72,6 +72,7 @@
     </v-col>
     <v-col :cols="2">
       <v-autocomplete
+        label="Study"
         multiple
         v-model="filters.studies"
         :items="studies"
