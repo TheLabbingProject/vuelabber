@@ -6,7 +6,7 @@ import Home from '../views/Home.vue'
 import User from '../views/User.vue'
 import AnalysisBrowser from '../views/AnalysisBrowser.vue'
 import AnalysisInformation from '../components/analysis/analysis-information.vue'
-import BrainBrowserView from '../views/BrainBrowser.vue'
+// import BrainBrowserView from '../views/BrainBrowser.vue'
 import DicomBrowser from '../views/DicomBrowser.vue'
 import MriBrowser from '../views/MriBrowser.vue'
 import PipelineBrowser from '../views/PipelineBrowser.vue'
@@ -140,12 +140,12 @@ export default new Router({
       component: PipelineBrowser,
       beforeEnter: requireAuthenticated
     },
-    {
-      path: '/brain-browser',
-      name: 'brainBrowser',
-      component: BrainBrowserView,
-      beforeEnter: requireAuthenticated
-    },
+    // {
+    //   path: '/brain-browser',
+    //   name: 'brainBrowser',
+    //   component: BrainBrowserView,
+    //   beforeEnter: requireAuthenticated
+    // },
     {
       path: '/scan-types',
       name: 'scanTypes',

@@ -75,12 +75,12 @@
             </v-list-item>
 
             <!-- BrainBrowser -->
-            <v-list-item to="/brain-browser" class="drawer-link">
+            <!-- <v-list-item to="/brain-browser" class="drawer-link">
               <v-list-item-title>Brain Browser</v-list-item-title>
               <v-list-item-icon>
                 <v-icon>mdi-brain</v-icon>
               </v-list-item-icon>
-            </v-list-item>
+            </v-list-item> -->
           </v-list-group>
         </v-list-group>
 
