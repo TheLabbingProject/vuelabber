@@ -33,7 +33,11 @@
         <!-- Cards -->
         <v-row>
           <v-col cols="3" v-for="user in users" :key="user.id">
-            <v-card hover color="grey lighten-2" :to="`user/${user.username}`">
+            <v-card
+              hover
+              color="grey lighten-2 pa-1"
+              :to="`user/${user.username}`"
+            >
               <v-row>
                 <v-col cols="4">
                   <v-avatar size="100px">
@@ -47,10 +51,22 @@
                 <v-col>
                   <v-card-title class="text-left pl-0">
                     <v-col>
-                      <div class="subtitle-1">
+                      <div class="subtitle-2">
                         {{ user | formatResearcherName }}
+                        <span class="subtitle-3 grey--text font-italic">
+                          (@{{ user.username }})
+                        </span>
                       </div>
-                      <div class="subtitle-2 grey--text font-italic">
+                      <div
+                        v-for="labId in user.laboratorySet"
+                        class="subtitle-2 grey--text font-italic"
+                        :key="labId"
+                      >
+                        {{
+                          labs.find(laboratory => laboratory.id === labId).title
+                        }}
+                      </div>
+                      <div class="subtitle-2 grey--text">
                         {{ user.profile.institute }}
                       </div>
                     </v-col>
