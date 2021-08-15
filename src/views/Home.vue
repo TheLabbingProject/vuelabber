@@ -1,57 +1,67 @@
 <template>
   <div>
-    <!-- Labs Summary Information -->
-    <!-- Title -->
-    <div class="title">Labs</div>
+    <v-container>
+      <v-col>
+        <!-- Labs Summary Information -->
+        <!-- Title -->
+        <div class="title pb-3">
+          Labs
+        </div>
 
-    <!-- Cards -->
-    <v-row class="text-left">
-      <v-col cols="3" v-for="lab in labs" :key="lab.id">
-        <v-card color="grey lighten-3">
-          <v-img v-if="lab.image" :src="lab.image" aspect-ratio="2.5" />
-          <v-img v-else src="/Laboratory.jpg" aspect-ratio="2.5" />
-          <v-card-title>{{ lab.title }}</v-card-title>
-          <v-card-text>{{ lab.description }}</v-card-text>
-        </v-card>
+        <!-- Cards -->
+        <v-row class="text-left">
+          <v-col cols="3" v-for="lab in labs" :key="lab.id">
+            <v-card color="grey lighten-3">
+              <v-img v-if="lab.image" :src="lab.image" aspect-ratio="2.5" />
+              <v-img v-else src="/Laboratory.jpg" aspect-ratio="2.5" />
+              <v-card-title>{{ lab.title }}</v-card-title>
+              <v-card-text>{{ lab.description }}</v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
       </v-col>
-    </v-row>
 
-    <v-divider />
+      <v-divider />
 
-    <!-- Researchers Summary Information -->
-    <!-- Title -->
-    <div class="title">Researchers</div>
+      <!-- Researchers Summary Information -->
+      <!-- Title -->
+      <v-col>
+        <div class="title pt-2 pb-6">
+          Researchers
+        </div>
 
-    <!-- Cards -->
-    <v-row>
-      <v-col cols="3" v-for="user in users" :key="user.id">
-        <v-card hover color="grey lighten-2" :to="`user/${user.username}`">
-          <v-row>
-            <v-col cols="4">
-              <v-avatar size="100px">
-                <v-img
-                  v-if="user.profile && user.profile['image']"
-                  :src="user.profile['image']"
-                />
-                <v-img v-else src="/user.png" />
-              </v-avatar>
-            </v-col>
-            <v-col>
-              <v-card-title class="text-left pl-0">
-                <v-col>
-                  <div class="subtitle-1">
-                    {{ user | formatResearcherName }}
-                  </div>
-                  <div class="subtitle-2 grey--text font-italic">
-                    {{ user.profile.institute }}
-                  </div>
+        <!-- Cards -->
+        <v-row>
+          <v-col cols="3" v-for="user in users" :key="user.id">
+            <v-card hover color="grey lighten-2" :to="`user/${user.username}`">
+              <v-row>
+                <v-col cols="4">
+                  <v-avatar size="100px">
+                    <v-img
+                      v-if="user.profile && user.profile['image']"
+                      :src="user.profile['image']"
+                    />
+                    <v-img v-else src="/user.png" />
+                  </v-avatar>
                 </v-col>
-              </v-card-title>
-            </v-col>
-          </v-row>
-        </v-card>
+                <v-col>
+                  <v-card-title class="text-left pl-0">
+                    <v-col>
+                      <div class="subtitle-1">
+                        {{ user | formatResearcherName }}
+                      </div>
+                      <div class="subtitle-2 grey--text font-italic">
+                        {{ user.profile.institute }}
+                      </div>
+                    </v-col>
+                  </v-card-title>
+                </v-col>
+              </v-row>
+            </v-card>
+          </v-col>
+        </v-row>
       </v-col>
-    </v-row>
+    </v-container>
   </div>
 </template>
 
