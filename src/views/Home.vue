@@ -25,7 +25,7 @@
 
       <!-- Researchers Summary Information -->
       <!-- Title -->
-      <v-col>
+      <v-col v-if="user.isStaff || user.isSuperuser">
         <div class="title pt-2 pb-6">
           Researchers
         </div>
@@ -92,7 +92,8 @@ export default {
     this.fetchUsers(query)
   },
   computed: {
-    ...mapState('accounts', ['labs', 'users'])
+    ...mapState('accounts', ['labs', 'users']),
+    ...mapState('auth', ['user'])
   },
   methods: {
     ...mapActions('accounts', ['fetchLabs', 'fetchUsers'])
