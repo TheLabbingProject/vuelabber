@@ -62,9 +62,7 @@
                         class="subtitle-2 grey--text font-italic"
                         :key="labId"
                       >
-                        {{
-                          labs.find(laboratory => laboratory.id === labId).title
-                        }}
+                        {{ getLabTitle(labId) }}
                       </div>
                       <div class="subtitle-2 grey--text">
                         {{ user.profile.institute }}
@@ -87,15 +85,24 @@ import { mapActions, mapState } from 'vuex'
 export default {
   name: 'HomeView',
   mounted() {
-    this.fetchLabs()
-    let query = { filters: {}, options: {} }
-    this.fetchUsers(query)
+    this.fetchLabs().then(() => this.fetchUsers(this.emptyQuery))
   },
+  data: () => ({
+    emptyQuery: { filters: {}, options: {} }
+  }),
   computed: {
     ...mapState('accounts', ['labs', 'users']),
     ...mapState('auth', ['user'])
   },
   methods: {
+    getLabTitle: function(labId) {
+      try {
+        let lab = this.labs.find(laboratory => laboratory.id === labId)
+        return lab ? lab.title : ''
+      } catch (e) {
+        return ''
+      }
+    },
     ...mapActions('accounts', ['fetchLabs', 'fetchUsers'])
   }
 }
