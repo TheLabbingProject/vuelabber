@@ -25,7 +25,7 @@
 
       <!-- Researchers Summary Information -->
       <!-- Title -->
-      <v-col v-if="user.isStaff || user.isSuperuser">
+      <v-col>
         <div class="title pt-2 pb-6">
           Researchers
         </div>
