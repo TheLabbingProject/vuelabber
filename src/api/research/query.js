@@ -48,7 +48,9 @@ const getSubjectQueryString = ({ filters, options }) => {
     ''}&born_before_date=${filters.bornBefore ||
     ''}&dominant_hand=${filters.dominantHand ||
     ''}&dicom_patient=${filters.dicomPatientId ||
-    ''}&studies=${filters.studies || ''}&page_size=${
+    ''}&studies=${filters.studies ||
+    ''}&mri_session_time_after=${filters.mriSessionAfter ||
+    ''}&mri_session_time_before=${filters.mriSessionBefore || ''}&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage

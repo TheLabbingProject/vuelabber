@@ -80,6 +80,52 @@
         item-text="title"
       />
     </v-col>
+
+    <!-- Session time -->
+    <v-col :cols="3">
+      <v-row class="align-center">
+        <v-col>
+          <v-menu
+            v-model="sessionTimeAfterMenu"
+            :close-on-content-click="false"
+          >
+            <template v-slot:activator="{ on }">
+              <v-text-field
+                clearable
+                readonly
+                label="Scanned After"
+                prepend-icon="event"
+                v-model="filters.mriSessionAfter"
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="filters.mriSessionAfter"
+              @input="sessionTimeAfterMenu = false"
+              scrollable
+            ></v-date-picker>
+          </v-menu>
+        </v-col>
+        <v-col>
+          <v-menu v-model="sessionBeforeMenu" :close-on-content-click="false">
+            <template v-slot:activator="{ on }">
+              <v-text-field
+                clearable
+                readonly
+                label="Scanned Before"
+                v-model="filters.mriSessionBefore"
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="filters.mriSessionBefore"
+              @input="sessionBeforeMenu = false"
+              scrollable
+            ></v-date-picker>
+          </v-menu>
+        </v-col>
+      </v-row>
+    </v-col>
   </v-row>
 </template>
 
@@ -97,6 +143,8 @@ export default {
   data: () => ({
     bornAfterMenu: false,
     bornBeforeMenu: false,
+    sessionTimeAfterMenu: false,
+    sessionBeforeMenu: false,
     filters: {
       idNumber: '',
       firstName: '',
@@ -106,7 +154,9 @@ export default {
       sex: '',
       gender: '',
       dominantHand: '',
-      studies: ''
+      studies: '',
+      mriSessionAfter: '',
+      mriSessionBefore: ''
     },
     sexItems: createSelectItems(sexOptions),
     genderItems: createSelectItems(genderOptions),
