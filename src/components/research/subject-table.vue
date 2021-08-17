@@ -179,7 +179,7 @@
       </template>
 
       <!-- Dominant Hand -->
-      <template
+      <!-- <template
         v-if="currentUser.isStaff"
         v-slot:[`item.dominantHand`]="{ item }"
       >
@@ -203,7 +203,7 @@
       </template>
       <template v-else v-slot:[`item.dominantHand`]="{ item }">
         {{ getDisplay(item.dominantHand, dominantHandOptions) }}
-      </template>
+      </template> -->
 
       <template v-slot:[`item.latestMriSessionTime`]="{ item }">
         {{ item.latestMriSessionTime | formatDateTime }}
@@ -282,7 +282,7 @@ export default {
       { text: 'Date of Birth', value: 'dateOfBirth', align: 'center' },
       { text: 'Sex', value: 'sex', align: 'center' },
       // { text: 'Gender', value: 'gender', sortable: false },
-      { text: 'Dominant Hand', value: 'dominantHand' },
+      // { text: 'Dominant Hand', value: 'dominantHand' },
       {
         text: 'Latest MRI Session',
         value: 'latestMriSessionTime',

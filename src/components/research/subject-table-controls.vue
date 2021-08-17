@@ -62,14 +62,14 @@
         :items="genderItems"
       />
     </v-col> -->
-    <v-col :cols="2">
+    <!-- <v-col :cols="2">
       <v-select
         clearable
         label="Dominant Hand"
         v-model="filters.dominantHand"
         :items="dominantHandItems"
       />
-    </v-col>
+    </v-col> -->
     <v-col :cols="2">
       <v-autocomplete
         label="Study"
