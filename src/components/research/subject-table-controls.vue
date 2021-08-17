@@ -73,6 +73,7 @@
     <v-col :cols="2">
       <v-autocomplete
         label="Study"
+        clearable
         multiple
         v-model="filters.studies"
         :items="studies"
