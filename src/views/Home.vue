@@ -10,7 +10,7 @@
 
         <!-- Cards -->
         <v-row class="text-left">
-          <v-col cols="3" v-for="lab in labs" :key="lab.id">
+          <v-col cols="3" v-for="lab in labs" :key="`lab-card-${lab.id}`">
             <v-card color="grey lighten-3">
               <v-img v-if="lab.image" :src="lab.image" aspect-ratio="2.5" />
               <v-img v-else src="/Laboratory.jpg" aspect-ratio="2.5" />
@@ -32,7 +32,7 @@
 
         <!-- Cards -->
         <v-row>
-          <v-col cols="3" v-for="user in users" :key="user.id">
+          <v-col cols="3" v-for="user in users" :key="`user-card-${user.id}`">
             <v-card
               hover
               color="grey lighten-2 pa-1"
@@ -60,7 +60,7 @@
                       <div
                         v-for="labId in user.laboratorySet"
                         class="subtitle-2 grey--text font-italic"
-                        :key="labId"
+                        :key="`user-${user.id}-lab-${labId}`"
                       >
                         {{ getLabTitle(labId) }}
                       </div>

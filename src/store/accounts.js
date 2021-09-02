@@ -1,12 +1,22 @@
 import session from '@/api/session'
-import { ACCOUNTS_BASE, LABS, USERS } from '@/api/accounts/endpoints'
-import { getUserQueryString } from '@/api/accounts/query'
+import {
+  ACCOUNTS_BASE,
+  LABS,
+  USERS,
+  EXPORT_DESTINATIONS
+} from '@/api/accounts/endpoints'
+import {
+  getUserQueryString,
+  getExportDestinationQueryString
+} from '@/api/accounts/query'
 
 const state = {
   users: [],
   labs: [],
   institutionNames: [],
-  potentialCollaborators: []
+  potentialCollaborators: [],
+  exportDestinations: [],
+  exportDestinationCount: 0
 }
 
 const getters = {
@@ -38,6 +48,23 @@ const mutations = {
     users.push(updatedUser)
     state.users = users
   },
+  updateExportDestinationState(state, updatedExportDestination) {
+    // Remove the old version
+    let desstinations = state.exportDestinations.filter(
+      exportDestination => exportDestination.id != updatedExportDestination.id
+    )
+    // Add the updated version
+    desstinations.push(updatedExportDestination)
+    state.exportDestinations = desstinations
+  },
+  removeExportDestinationFromState(state, removedExportDestination) {
+    state.exportDestinations = state.exportDestination.filter(
+      exportDestination => exportDestination.id != removedExportDestination.id
+    )
+  },
+  addExportDestinationToState(state, exportDestination) {
+    state.exportDestinations.push(exportDestination)
+  },
   setLabs(state, labs) {
     state.labs = labs
   },
@@ -45,6 +72,12 @@ const mutations = {
     state.institutionNames = institutionNames.map(name =>
       name == undefined ? '' : name
     )
+  },
+  setExportDestinations(state, exportDestinations) {
+    state.exportDestinations = exportDestinations
+  },
+  setExportDestinationCount(state, exportDestinationCount) {
+    state.exportDestinationCount = exportDestinationCount
   }
 }
 
@@ -97,6 +130,42 @@ const actions = {
     return session
       .get(LABS)
       .then(({ data }) => commit('setLabs', data.results))
+      .catch(console.error)
+  },
+  fetchExportDestinations({ commit }, query) {
+    let queryString = getExportDestinationQueryString(query)
+    let URL = `${EXPORT_DESTINATIONS}/${queryString}`
+    return session
+      .get(URL)
+      .then(({ data }) => {
+        commit('setExportDestinations', data.results)
+        commit('setExportDestinationCount', data.count)
+      })
+      .catch(console.error)
+  },
+  patchExportDestination({ commit }, data) {
+    let { id, ...dataWithoutId } = data
+    return session
+      .patch(`${EXPORT_DESTINATIONS}/${id}/`, dataWithoutId)
+      .then(({ data }) => {
+        commit('updateExportDestinationState', data)
+        return data
+      })
+      .catch(console.error)
+  },
+  deleteExportDestination({ commit }, exportDestination) {
+    let URL = `${EXPORT_DESTINATIONS}/${exportDestination.id}`
+    return session
+      .delete(URL)
+      .then(() => commit('removeExportDestinationFromState'), exportDestination)
+      .catch(console.error)
+  },
+  createExportDestination({ commit }, exportDestination) {
+    return session
+      .create(EXPORT_DESTINATIONS, exportDestination)
+      .then(({ data }) => {
+        commit('addExportDestinationToState', data)
+      })
       .catch(console.error)
   }
 }

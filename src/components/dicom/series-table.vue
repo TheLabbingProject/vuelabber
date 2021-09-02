@@ -88,7 +88,6 @@ export default {
   data: () => ({
     protocolInformationDialog: {},
     scanInfoDialog: {},
-    studyGroups: {},
     selectedSeries: [],
     headers: [
       { text: 'Number', value: 'number', width: '5%' },

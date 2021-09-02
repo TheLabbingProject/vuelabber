@@ -15,4 +15,21 @@ const getUserQueryString = ({ filters, options }) => {
   }`
 }
 
-export { getUserQueryString }
+const getExportDestinationQueryString = ({ filters, options }) => {
+  return `?id=${filters.id || ''}&title=${filters.title ||
+    ''}&title_lookup=icontains&description=${filters.description ||
+    ''}&description_lookup=icontains&ip=${filters.ip ||
+    ''}&ip_lookup=icontains&username=${filters.username ||
+    ''}&username_lookup=icontains&destination=${filters.destination ||
+    ''}&destination_lookup=icontains&user_in=${filters.users ||
+    ''}&page_size=${options.itemsPerPage || 100}&page=${options.page ||
+    1}&ordering=${
+    options.sortBy
+      ? options.sortDesc
+        ? '-' + options.sortBy
+        : options.sortBy
+      : ''
+  }`
+}
+
+export { getExportDestinationQueryString, getUserQueryString }
