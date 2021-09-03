@@ -162,7 +162,7 @@ const actions = {
   },
   createExportDestination({ commit }, exportDestination) {
     return session
-      .create(EXPORT_DESTINATIONS, exportDestination)
+      .post(`${EXPORT_DESTINATIONS}/`, exportDestination)
       .then(({ data }) => {
         commit('addExportDestinationToState', data)
       })

@@ -1,166 +1,181 @@
 <template>
-  <div>
-    <v-data-table
-      dense
-      item-key="id"
-      :headers="headers"
-      :items="exportDestinations"
-      :loading="loading"
-      :options.sync="options"
-      :server-items-length="exportDestinationCount"
-      :footer-props="{
-        itemsPerPageOptions
-      }"
-    >
-      <template v-slot:top>
-        <v-toolbar flat>
-          <export-destination-table-controls
-            :options="options"
-            :user="user"
-            @fetch-export-destinations-start="loading = true"
-            @fetch-export-destinations-end="loading = false"
-            ref="controls"
-          />
-          <v-divider class="mx-4" inset vertical></v-divider>
-          <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="500px">
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                color="primary"
-                dark
-                class="mb-2"
-                v-bind="attrs"
-                v-on="on"
-                small
-              >
-                {{ newItemButtonText }}
-              </v-btn>
-            </template>
-            <v-card>
-              <v-card-title>
-                <span class="text-h5">{{ formTitle }}</span>
-              </v-card-title>
+  <v-container>
+    <v-col>
+      <v-row>
+        Export Destinations
+      </v-row>
+      <v-row>
+        <v-data-table
+          dense
+          item-key="id"
+          :headers="headers"
+          :items="exportDestinations"
+          :loading="loading"
+          :options.sync="options"
+          :server-items-length="exportDestinationCount"
+          :footer-props="{
+            itemsPerPageOptions
+          }"
+        >
+          <template v-slot:top>
+            <v-toolbar flat>
+              <export-destination-table-controls
+                :options="options"
+                :user="user"
+                @fetch-export-destinations-start="loading = true"
+                @fetch-export-destinations-end="loading = false"
+                ref="controls"
+              />
+              <v-divider class="mx-4" inset vertical></v-divider>
+              <v-spacer></v-spacer>
+              <v-dialog v-model="dialog" max-width="500px">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    color="primary"
+                    dark
+                    class="mb-2"
+                    v-bind="attrs"
+                    v-on="on"
+                    small
+                  >
+                    {{ newItemButtonText }}
+                  </v-btn>
+                </template>
+                <v-card>
+                  <v-card-title>
+                    <span class="text-h5">{{ formTitle }}</span>
+                  </v-card-title>
 
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <v-col>
-                      <v-text-field
-                        v-model="editedItem.title"
-                        label="Title"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col>
-                      <v-text-field
-                        v-model="editedItem.description"
-                        label="Description"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col>
-                      <v-text-field
-                        v-model="editedItem.ip"
-                        label="IP"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col>
-                      <v-text-field
-                        v-model="editedItem.username"
-                        label="Username"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col>
-                      <v-text-field
-                        v-model="editedItem.password"
-                        label="Password"
-                        type="password"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col>
-                      <v-text-field
-                        v-model="editedItem.destination"
-                        label="Destination"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
+                  <v-card-text>
+                    <v-container>
+                      <v-row>
+                        <v-col>
+                          <v-text-field
+                            v-model="editedItem.title"
+                            label="Title"
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col>
+                          <v-text-field
+                            v-model="editedItem.description"
+                            label="Description"
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col>
+                          <v-text-field
+                            v-model="editedItem.ip"
+                            label="IP"
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col>
+                          <v-text-field
+                            v-model="editedItem.username"
+                            label="Username"
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col>
+                          <v-text-field
+                            v-model="editedItem.password"
+                            label="Password"
+                            type="password"
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col>
+                          <v-text-field
+                            v-model="editedItem.destination"
+                            label="Destination"
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+                    </v-container>
+                  </v-card-text>
 
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="close">
-                  Cancel
-                </v-btn>
-                <v-btn color="blue darken-1" text @click="save">
-                  Save
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-          <v-dialog v-model="dialogDelete" max-width="500px">
-            <v-card>
-              <v-card-title class="text-h5"
-                >Are you sure you want to delete this item?</v-card-title
-              >
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="closeDelete"
-                  >Cancel</v-btn
-                >
-                <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-                  >OK</v-btn
-                >
-                <v-spacer></v-spacer>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-toolbar>
-      </template>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" text @click="close">
+                      Cancel
+                    </v-btn>
+                    <v-btn color="blue darken-1" text @click="save">
+                      Save
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+              <v-dialog v-model="dialogDelete" max-width="500px">
+                <v-card>
+                  <v-card-title class="text-h5"
+                    >Are you sure you want to delete this item?</v-card-title
+                  >
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" text @click="closeDelete"
+                      >Cancel</v-btn
+                    >
+                    <v-btn color="blue darken-1" text @click="deleteItemConfirm"
+                      >OK</v-btn
+                    >
+                    <v-spacer></v-spacer>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </v-toolbar>
+          </template>
 
-      <!-- Title -->
-      <template v-slot:[`item.title`]="{ item }">
-        {{ item.title }}
-      </template>
+          <!-- Title -->
+          <template v-slot:[`item.title`]="{ item }">
+            {{ item.title }}
+          </template>
 
-      <!-- Description -->
-      <template v-slot:[`item.description`]="{ item }">
-        {{ item.description }}
-      </template>
+          <!-- Description -->
+          <template v-slot:[`item.description`]="{ item }">
+            {{ item.description }}
+          </template>
 
-      <!-- IP -->
-      <template v-slot:[`item.ip`]="{ item }">
-        {{ item.ip }}
-      </template>
+          <!-- IP -->
+          <template v-slot:[`item.ip`]="{ item }">
+            {{ item.ip }}
+          </template>
 
-      <!-- Username -->
-      <template v-slot:[`item.username`]="{ item }">
-        {{ item.username }}
-      </template>
+          <!-- Username -->
+          <template v-slot:[`item.username`]="{ item }">
+            {{ item.username }}
+          </template>
 
-      <!-- Destination -->
-      <template v-slot:[`item.destination`]="{ item }">
-        {{ item.destination }}
-      </template>
-      <!-- Actions -->
-      <template v-slot:[`item.actions`]="{ item }">
-        <v-icon small class="mr-2" @click="editItem(item)">
-          mdi-pencil
-        </v-icon>
-        <v-icon small @click="deleteItem(item)">
-          mdi-delete
-        </v-icon>
-      </template>
-    </v-data-table>
-  </div>
+          <!-- Destination -->
+          <template v-slot:[`item.destination`]="{ item }">
+            {{ item.destination }}
+          </template>
+
+          <!-- Status -->
+          <template v-slot:[`item.status`]="{ item }">
+            <v-icon small :color="itemStatusColor(item)">
+              circle
+            </v-icon>
+          </template>
+
+          <!-- Actions -->
+          <template v-slot:[`item.actions`]="{ item }">
+            <v-icon small class="mr-2" @click="editItem(item)">
+              mdi-pencil
+            </v-icon>
+            <v-icon small @click="deleteItem(item)">
+              mdi-delete
+            </v-icon>
+          </template>
+        </v-data-table>
+      </v-row>
+    </v-col>
+  </v-container>
 </template>
 
 <script>
@@ -184,7 +199,8 @@ export default {
       { text: 'Description', value: 'description' },
       { text: 'IP', value: 'ip' },
       { text: 'Username', value: 'username' },
-      { text: 'Destination', value: 'destination' }
+      { text: 'Destination', value: 'destination' },
+      { text: 'Status', value: 'status', sortable: false, align: 'center' }
     ],
     options: {
       itemsPerPage: 25,
@@ -253,6 +269,9 @@ export default {
     }
   },
   methods: {
+    itemStatusColor(item) {
+      return item.status ? 'green' : 'red'
+    },
     editItem(item) {
       this.editedIndex = this.exportDestinations.indexOf(item)
       this.editedItem = Object.assign({}, item)
