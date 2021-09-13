@@ -78,7 +78,9 @@ export default {
   }),
   computed: {
     user: function() {
-      return this.users ? this.users[0] : null
+      return this.users
+        ? this.users.find(user => user.username == this.username)
+        : null
     },
     editPermissions: function() {
       if (this.user && this.currentUser) {

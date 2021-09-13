@@ -66,11 +66,6 @@ export default {
         this.update()
       },
       deep: true
-    },
-    user: {
-      handler() {
-        this.update()
-      }
     }
   }
 }
