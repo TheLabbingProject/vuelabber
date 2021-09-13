@@ -118,12 +118,16 @@
                   >
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" text @click="closeDelete"
-                      >Cancel</v-btn
+                    <v-btn color="blue darken-1" text @click="closeDelete">
+                      Cancel
+                    </v-btn>
+                    <v-btn
+                      color="blue darken-1"
+                      text
+                      @click="deleteExportDestination(editedItem)"
                     >
-                    <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-                      >OK</v-btn
-                    >
+                      OK
+                    </v-btn>
                     <v-spacer></v-spacer>
                   </v-card-actions>
                 </v-card>
@@ -237,12 +241,6 @@ export default {
     newItemButtonText: 'New Destination',
     newItemFormTitle: 'New Export Destination',
     editItemFormTitle: 'Edit Export Destination'
-    // removeHeader: {
-    //   text: 'Remove',
-    //   value: 'remove',
-    //   align: 'center',
-    //   width: 100
-    // }
   }),
   computed: {
     editPermissions: function() {
@@ -283,12 +281,6 @@ export default {
       this.editedItem = Object.assign({}, item)
       this.dialogDelete = true
     },
-
-    deleteItemConfirm() {
-      this.exportDestinations.splice(this.editedIndex, 1)
-      this.closeDelete()
-    },
-
     close() {
       this.dialog = false
       this.$nextTick(() => {
@@ -315,7 +307,7 @@ export default {
     },
     ...mapActions('accounts', [
       'createExportDestination',
-      'removeExportDestination',
+      'deleteExportDestination',
       'patchExportDestination'
     ])
     // ...mapActions('research', ['patchStudy'])
