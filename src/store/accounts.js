@@ -58,7 +58,7 @@ const mutations = {
     state.exportDestinations = desstinations
   },
   removeExportDestinationFromState(state, removedExportDestination) {
-    state.exportDestinations = state.exportDestination.filter(
+    state.exportDestinations = state.exportDestinations.filter(
       exportDestination => exportDestination.id != removedExportDestination.id
     )
   },
@@ -167,6 +167,16 @@ const actions = {
         commit('addExportDestinationToState', data)
       })
       .catch(console.error)
+  },
+  exportDataInstance(undefined, instanceInfo) {
+    let URL = `${EXPORT_DESTINATIONS}/${instanceInfo.exportId}/${
+      instanceInfo.appLabel
+    }/${instanceInfo.modelName}/${instanceInfo.instanceId}/?${Object.entries(
+      instanceInfo.parameters
+    )
+      .map(item => item.join('='))
+      .join('&')}`
+    return session.get(URL).then()
   }
 }
 

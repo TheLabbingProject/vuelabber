@@ -25,9 +25,9 @@ export default {
   name: 'ExportDestinationTableControls',
   props: { options: Object, user: Object },
   mounted() {
-    // if (this.study) {
-    //   this.filters.study = this.study.id
-    // }
+    if (this.user) {
+      this.filters.users = [this.user.id]
+    }
     this.update()
   },
   data: () => ({
@@ -35,14 +35,14 @@ export default {
       title: '',
       description: '',
       username: '',
-      destination: ''
+      destination: '',
+      users: []
     }
   }),
   computed: {
     query: function() {
       return { filters: this.filters, options: this.options }
     },
-    // ...mapState('accounts', ['institutionNames', 'potentialCollaborators']),
     ...mapState('auth', { currentUser: 'user' })
   },
   methods: {

@@ -181,28 +181,27 @@
         </v-edit-dialog>
       </template>
 
-      <template v-slot:[`item.download`]="{ item }">
+      <template v-slot:[`item.export`]="{ item }">
         <div class="py-1">
-          <span class="px-1">
-            <v-btn
-              small
-              rounded
-              color="indigo lighten-3"
-              :href="getDicomZip(item)"
-            >
-              DICOM
-            </v-btn>
-          </span>
-          <span class="px-1">
-            <v-btn
-              small
-              rounded
-              color="indigo lighten-3"
-              :href="getNiftiZip(item)"
-            >
-              NIfTI
-            </v-btn>
-          </span>
+          <v-dialog v-model="exportDialog" max-width="500px">
+            <template v-slot:activator="{ on, attrs }">
+              <!-- Fix button and create dialog -->
+              <v-btn
+                color="primary"
+                dark
+                class="mb-2"
+                v-bind="attrs"
+                v-on="on"
+                small
+              >
+                Export
+              </v-btn>
+            </template>
+            <export-session-card
+              :session="item"
+              @close-export-dialog="closeExportDialog"
+            />
+          </v-dialog>
         </div>
       </template>
 
@@ -241,6 +240,7 @@
 import ScanTable from '@/components/mri/scan-table.vue'
 import SessionTableControls from '@/components/mri/session-table-controls.vue'
 import SubjectInfoCard from '@/components/research/subject-info-card.vue'
+import ExportSessionCard from '@/components/mri/export-session-card.vue'
 import { mapActions, mapState } from 'vuex'
 import BASE_URL from '@/api/base_url.js'
 
@@ -248,6 +248,7 @@ export default {
   name: 'SessionTable',
   props: ['subject'],
   components: {
+    ExportSessionCard,
     ScanTable,
     SessionTableControls,
     SubjectInfoCard
@@ -275,8 +276,8 @@ export default {
         width: 200
       },
       {
-        text: 'Download',
-        value: 'download',
+        text: '',
+        value: 'export',
         align: 'center',
         sortable: false,
         width: 200
@@ -301,7 +302,8 @@ export default {
     irbApprovalInstitution: '',
     irbApprovalNumber: '',
     newIrbApproval: { institution: '', number: '' },
-    gettingDicomZip: false
+    gettingDicomZip: false,
+    exportDialog: false
   }),
   computed: {
     irbApprovalInstitutions: function() {
@@ -394,15 +396,22 @@ export default {
     getNiftiZip(session) {
       return `${BASE_URL}/${session.niftiZip.substring(5)}`
     },
+    closeExportDialog() {
+      this.exportDialog = false
+    },
     ...mapActions('mri', ['fetchIrbApprovals', 'patchSession']),
     ...mapActions('research', ['fetchMeasurementDefinitions'])
   },
+
   watch: {
     irbApprovalNumber: function() {
       this.filterIrbApprovals()
     },
     irbApprovalInstitution: function() {
       this.filterIrbApprovals()
+    },
+    exportDialog(val) {
+      val || this.closeExportDialog()
     }
   }
 }
