@@ -204,8 +204,7 @@ const EMPTY_EXPORT_DESTINATION = {
   ip: '',
   username: '',
   password: '',
-  destination: '',
-  userIds: []
+  destination: ''
 }
 
 export default {
@@ -213,7 +212,10 @@ export default {
   mounted() {
     if (this.editPermissions) {
       this.headers.push(this.actionsHeader)
-      this.defaultItem.userIds.push(this.currentUser.id)
+      this.selectedUsers.push({
+        text: this.getUserRepresentation(this.currentUser),
+        value: this.currentUser.id
+      })
       this.fetchUsers({ filters: {}, options: {} })
     }
   },
