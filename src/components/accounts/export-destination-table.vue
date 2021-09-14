@@ -97,6 +97,18 @@
                           ></v-text-field>
                         </v-col>
                       </v-row>
+                      <v-row>
+                        <v-col>
+                          <!-- User Access -->
+                          <v-combobox
+                            label="Share with..."
+                            v-model="selectedUsers"
+                            chips
+                            multiple
+                            :items="possibleUsers"
+                          />
+                        </v-col>
+                      </v-row>
                     </v-container>
                   </v-card-text>
 
@@ -186,11 +198,23 @@
 import ExportDestinationTableControls from '@/components/accounts/export-destination-table-controls.vue'
 import { mapActions, mapState } from 'vuex'
 
+const EMPTY_EXPORT_DESTINATION = {
+  title: '',
+  description: '',
+  ip: '',
+  username: '',
+  password: '',
+  destination: '',
+  userIds: []
+}
+
 export default {
   name: 'ExportDestinationTable',
   mounted() {
     if (this.editPermissions) {
       this.headers.push(this.actionsHeader)
+      this.defaultItem.userIds.push(this.currentUser.id)
+      this.fetchUsers({ filters: {}, options: {} })
     }
   },
   components: {
@@ -222,25 +246,14 @@ export default {
     dialogDelete: false,
     actionsHeader: { text: 'Actions', value: 'actions', sortable: false },
     editedIndex: -1,
-    editedItem: {
-      title: '',
-      description: '',
-      ip: '',
-      username: '',
-      password: '',
-      destination: ''
-    },
-    defaultItem: {
-      title: '',
-      description: '',
-      ip: '',
-      username: '',
-      password: '',
-      destination: ''
-    },
+    editedItem: Object.assign({}, EMPTY_EXPORT_DESTINATION),
+    defaultItem: Object.assign({}, EMPTY_EXPORT_DESTINATION),
     newItemButtonText: 'New Destination',
     newItemFormTitle: 'New Export Destination',
-    editItemFormTitle: 'Edit Export Destination'
+    editItemFormTitle: 'Edit Export Destination',
+    reachableExportDestinationColor: 'green',
+    unreachableExportDestinationColor: 'red',
+    selectedUsers: []
   }),
   computed: {
     editPermissions: function() {
@@ -255,7 +268,17 @@ export default {
         ? this.newItemFormTitle
         : this.editItemFormTitle
     },
-    ...mapState('accounts', ['exportDestinations', 'exportDestinationCount']),
+    possibleUsers: function() {
+      return this.users.map(user => ({
+        text: this.getUserRepresentation(user),
+        value: user.id
+      }))
+    },
+    ...mapState('accounts', [
+      'exportDestinations',
+      'exportDestinationCount',
+      'users'
+    ]),
     ...mapState('auth', { currentUser: 'user' })
   },
   watch: {
@@ -267,15 +290,22 @@ export default {
     }
   },
   methods: {
+    getUserRepresentation: user =>
+      `${user.firstName} ${user.lastName} [${user.username}]`,
     itemStatusColor(item) {
-      return item.status ? 'green' : 'red'
+      return item.status
+        ? this.reachableExportDestinationColor
+        : this.unreachableExportDestinationColor
     },
     editItem(item) {
       this.editedIndex = this.exportDestinations.indexOf(item)
       this.editedItem = Object.assign({}, item)
+      this.selectedUsers = this.editedItem.users.map(user => ({
+        text: this.getUserRepresentation(user),
+        value: this.user.id
+      }))
       this.dialog = true
     },
-
     deleteItem(item) {
       this.editedIndex = this.exportDestinations.indexOf(item)
       this.editedItem = Object.assign({}, item)
@@ -288,7 +318,6 @@ export default {
         this.editedIndex = -1
       })
     },
-
     closeDelete() {
       this.dialogDelete = false
       this.$nextTick(() => {
@@ -296,8 +325,8 @@ export default {
         this.editedIndex = -1
       })
     },
-
     save() {
+      this.editedItem.userIds = this.selectedUsers.map(user => user.value)
       if (this.editedIndex > -1) {
         this.patchExportDestination(this.editedItem)
       } else {
@@ -308,9 +337,9 @@ export default {
     ...mapActions('accounts', [
       'createExportDestination',
       'deleteExportDestination',
-      'patchExportDestination'
+      'patchExportDestination',
+      'fetchUsers'
     ])
-    // ...mapActions('research', ['patchStudy'])
   }
 }
 </script>
