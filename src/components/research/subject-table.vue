@@ -276,7 +276,7 @@ export default {
   },
   data: () => ({
     headers: [
-      { text: 'ID', value: 'idNumber', align: 'center', width: 75 },
+      { text: 'Subject ID', value: 'idNumber', align: 'center', width: 120 },
       { text: 'First Name', value: 'firstName' },
       { text: 'Last Name', value: 'lastName' },
       { text: 'Date of Birth', value: 'dateOfBirth', align: 'center' },

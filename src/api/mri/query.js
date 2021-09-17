@@ -31,7 +31,9 @@ const getSessionQueryString = ({ filters, options }) => {
     filters.idIn ? filters.idIn.join(',') : ''
   }&subject_id_in=${filters.subjects || ''}&subject=${filters.subject ||
     ''}&created_after=&created_before=&session_date_after=${filters.afterDate ||
-    ''}&session_date_before=${filters.beforeDate || ''}&page_size=${
+    ''}&session_date_before=${filters.beforeDate || ''}&study_id_in=${
+    filters.studyIdIn ? filters.studyIdIn.join(',') : ''
+  }&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage

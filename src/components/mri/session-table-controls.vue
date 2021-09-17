@@ -1,60 +1,73 @@
 <template>
-  <v-row class="px-4 justify-space-between align-center">
-    <!-- ID -->
-    <v-col :cols="2">
-      <v-text-field v-model="filters.id" label="ID" />
-    </v-col>
-    <!-- Scan Date -->
-    <v-col :cols="4">
-      <v-row class="align-center">
-        <!-- After Date -->
-        <v-col>
-          <v-menu v-model="afterDateMenu" :close-on-content-click="false">
-            <template v-slot:activator="{ on }">
-              <v-text-field
-                clearable
-                readonly
-                label="Scanned After"
-                prepend-icon="event"
+  <v-container>
+    <v-row class="px-4">
+      <!-- ID -->
+      <v-col :cols="1">
+        <v-text-field v-model="filters.id" label="ID" />
+      </v-col>
+      <!-- Scan Date -->
+      <v-col :cols="4">
+        <v-row class="align-center">
+          <!-- After Date -->
+          <v-col>
+            <v-menu v-model="afterDateMenu" :close-on-content-click="false">
+              <template v-slot:activator="{ on }">
+                <v-text-field
+                  clearable
+                  readonly
+                  label="Scanned After"
+                  prepend-icon="event"
+                  v-model="filters.afterDate"
+                  v-on="on"
+                ></v-text-field>
+              </template>
+              <v-date-picker
                 v-model="filters.afterDate"
-                v-on="on"
-              ></v-text-field>
-            </template>
-            <v-date-picker
-              v-model="filters.afterDate"
-              @input="afterDateMenu = false"
-            ></v-date-picker>
-          </v-menu>
-        </v-col>
-        <!-- Before Date -->
-        <v-col>
-          <v-menu v-model="beforeDateMenu" :close-on-content-click="false">
-            <template v-slot:activator="{ on }">
-              <v-text-field
+                @input="afterDateMenu = false"
+              ></v-date-picker>
+            </v-menu>
+          </v-col>
+          <!-- Before Date -->
+          <v-col>
+            <v-menu v-model="beforeDateMenu" :close-on-content-click="false">
+              <template v-slot:activator="{ on }">
+                <v-text-field
+                  v-model="filters.beforeDate"
+                  label="Scanned Before"
+                  readonly
+                  clearable
+                  v-on="on"
+                ></v-text-field>
+              </template>
+              <v-date-picker
                 v-model="filters.beforeDate"
-                label="Scanned Before"
-                readonly
-                clearable
-                v-on="on"
-              ></v-text-field>
-            </template>
-            <v-date-picker
-              v-model="filters.beforeDate"
-              @input="beforeDateMenu = false"
-            ></v-date-picker>
-          </v-menu>
-        </v-col>
-      </v-row>
-    </v-col>
-    <!-- Comments -->
-    <v-col :cols="2">
-      <v-text-field v-model="filters.comments" label="Comments" />
-    </v-col>
-  </v-row>
+                @input="beforeDateMenu = false"
+              ></v-date-picker>
+            </v-menu>
+          </v-col>
+        </v-row>
+      </v-col>
+      <v-col :cols="2">
+        <v-select
+          v-model="filters.studyIdIn"
+          label="Associated Studies"
+          :items="studies"
+          item-text="title"
+          item-value="id"
+          multiple
+          clearable
+        />
+      </v-col>
+      <!-- Comments -->
+      <v-col :cols="3">
+        <v-text-field v-model="filters.comments" label="Comments" />
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   name: 'SessionTableControls',
@@ -64,6 +77,7 @@ export default {
       this.$set(this.filters, 'subject', this.subject.id)
     }
     this.update()
+    this.fetchStudies({ filters: {}, options: {} })
   },
   data: () => ({
     filters: {
@@ -71,7 +85,8 @@ export default {
       afterDate: '',
       beforeDate: '',
       comments: '',
-      subject: ''
+      subject: '',
+      studyIdIn: []
     },
     afterDateMenu: false,
     beforeDateMenu: false
@@ -89,7 +104,8 @@ export default {
         }
       })
       return options
-    }
+    },
+    ...mapState('research', ['studies'])
   },
   methods: {
     update() {
@@ -99,7 +115,8 @@ export default {
         this.$emit('fetch-sessions-end')
       })
     },
-    ...mapActions('mri', ['fetchSessions'])
+    ...mapActions('mri', ['fetchSessions']),
+    ...mapActions('research', ['fetchStudies'])
   },
   watch: {
     subject(selectedSubject) {

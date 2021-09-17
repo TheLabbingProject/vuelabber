@@ -261,7 +261,7 @@ export default {
   data: () => ({
     headers: [
       { text: 'Subject', value: 'subject', align: 'center' },
-      { text: 'ID', value: 'id', align: 'left', width: 70 },
+      { text: 'Session ID', value: 'id', align: 'left', width: 120 },
       { text: 'Date', value: 'date', width: 100 },
       { text: 'Time', value: 'time', width: 100 },
       { text: 'Data Acquisition', value: 'measurement' },
