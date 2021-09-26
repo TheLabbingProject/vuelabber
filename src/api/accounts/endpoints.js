@@ -5,5 +5,13 @@ const USERS = `${ACCOUNTS_BASE}/user`
 const PROFILES = `${ACCOUNTS_BASE}/profile`
 const LABS = `${ACCOUNTS_BASE}/laboratory`
 const EXPORT_DESTINATIONS = `${ACCOUNTS_BASE}/export_destination`
+const INSTANCE_EXPORT = `${EXPORT_DESTINATIONS}/export_instance/`
 
-export { ACCOUNTS_BASE, PROFILES, LABS, USERS, EXPORT_DESTINATIONS }
+export {
+  ACCOUNTS_BASE,
+  PROFILES,
+  LABS,
+  USERS,
+  EXPORT_DESTINATIONS,
+  INSTANCE_EXPORT
+}

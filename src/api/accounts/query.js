@@ -21,8 +21,9 @@ const getExportDestinationQueryString = ({ filters, options }) => {
     ''}&description_lookup=icontains&ip=${filters.ip ||
     ''}&ip_lookup=icontains&username=${filters.username ||
     ''}&username_lookup=icontains&destination=${filters.destination ||
-    ''}&destination_lookup=icontains&user_in=${filters.users.join() ||
-    ''}&page_size=${options.itemsPerPage || 100}&page=${options.page ||
+    ''}&destination_lookup=icontains&user_in=${
+    filters.users ? filters.users.join() : ''
+  }&page_size=${options.itemsPerPage || 100}&page=${options.page ||
     1}&ordering=${
     options.sortBy
       ? options.sortDesc

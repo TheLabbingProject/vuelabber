@@ -19,8 +19,10 @@
       </v-dialog>
     </v-row>
     <v-data-table
+      v-model="selectedSubjects"
       dense
       item-key="id"
+      show-select
       show-expand
       single-expand
       :expanded.sync="expanded"
@@ -36,6 +38,7 @@
       <template v-slot:top>
         <subject-table-controls
           :options="options"
+          :selectedSubjects="selectedSubjects"
           @fetch-subjects-start="loading = true"
           @fetch-subjects-end="loading = false"
         />
@@ -323,7 +326,8 @@ export default {
     dateOfBirthMenu: false,
     sexItems: createSelectItems(sexOptions),
     genderItems: createSelectItems(genderOptions),
-    dominantHandItems: createSelectItems(dominantHandOptions)
+    dominantHandItems: createSelectItems(dominantHandOptions),
+    selectedSubjects: []
   }),
   computed: {
     ...mapState('research', ['subjects', 'subjectCount']),

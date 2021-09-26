@@ -70,7 +70,7 @@
         :items="dominantHandItems"
       />
     </v-col> -->
-    <v-col :cols="2">
+    <v-col :cols="1">
       <v-autocomplete
         label="Study"
         clearable
@@ -127,6 +127,45 @@
         </v-col>
       </v-row>
     </v-col>
+    <v-col>
+      <!-- <div class="text-center"> -->
+      <div class="py-1">
+        <v-dialog v-model="exportSubjectDataDialog" max-width="500px">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              color="primary"
+              dark
+              class="mb-2"
+              v-bind="attrs"
+              v-on="on"
+              small
+              :disabled="!allowExport"
+            >
+              Export
+            </v-btn>
+          </template>
+          <export-subject-data-card
+            :selectedSubjects="selectedSubjects"
+            @close-subject-export-dialog="closeSubjectExportDialog"
+          />
+        </v-dialog>
+      </div>
+      <!--
+        <v-snackbar v-model="exportSnackbar" :timeout="exportSnackbarTimeout">
+          {{ exportSnackbarText }}
+          <template v-slot:action="{ attrs }">
+            <v-btn
+              color="blue"
+              text
+              v-bind="attrs"
+              @click="exportSnackbar = false"
+            >
+              Close
+            </v-btn>
+          </template>
+        </v-snackbar>
+      </div> -->
+    </v-col>
   </v-row>
 </template>
 
@@ -134,12 +173,16 @@
 import { mapActions, mapState } from 'vuex'
 import { sexOptions, genderOptions, dominantHandOptions } from './choices.js'
 import { createSelectItems } from '@/components/utils'
+import ExportSubjectDataCard from '@/components/research/export-subject-data-card'
 
 export default {
   name: 'SubjectTableControls',
-  props: { options: Object },
+  props: { options: Object, selectedSubjects: Array },
+  components: { ExportSubjectDataCard },
   created() {
-    this.fetchStudies({ filters: {}, options: {} }).then(() => this.update())
+    this.fetchStudies({ filters: {}, options: {} })
+      .then(() => this.update())
+      .then(() => this.fetchExportDestinations({ filters: {}, options: {} }))
   },
   data: () => ({
     bornAfterMenu: false,
@@ -167,10 +210,18 @@ export default {
       firstName: 'first_name',
       lastName: 'last_name',
       dateOfBirth: 'date_of_birth'
-    }
+    },
+    exportSubjectDataDialog: false,
+    exportSnackbar: false,
+    exportSnackbarTimeout: 5000,
+    exportSnackbarText: ''
   }),
   computed: {
-    ...mapState('research', ['studies'])
+    allowExport: function() {
+      return this.exportDestinations.length && this.selectedSubjects.length
+    },
+    ...mapState('research', ['studies']),
+    ...mapState('accounts', ['exportDestinations'])
   },
   methods: {
     update() {
@@ -184,7 +235,18 @@ export default {
         this.$emit('fetch-subjects-end')
       })
     },
-    ...mapActions('research', ['fetchStudies', 'fetchSubjects'])
+    exportSubjects() {
+      this.exportSnackbar = true
+    },
+    closeSubjectExportDialog() {
+      this.exportSubjectDataDialog = false
+    },
+    ...mapActions('research', [
+      'fetchStudies',
+      'fetchSubjects',
+      'exportSubjectData'
+    ]),
+    ...mapActions('accounts', ['fetchExportDestinations'])
   },
   watch: {
     filters: {

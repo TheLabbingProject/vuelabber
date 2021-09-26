@@ -3,7 +3,8 @@ import {
   ACCOUNTS_BASE,
   LABS,
   USERS,
-  EXPORT_DESTINATIONS
+  EXPORT_DESTINATIONS,
+  INSTANCE_EXPORT
 } from '@/api/accounts/endpoints'
 import {
   getUserQueryString,
@@ -169,14 +170,7 @@ const actions = {
       .catch(console.error)
   },
   exportDataInstance(undefined, instanceInfo) {
-    let URL = `${EXPORT_DESTINATIONS}/${instanceInfo.exportId}/${
-      instanceInfo.appLabel
-    }/${instanceInfo.modelName}/${instanceInfo.instanceId}/?${Object.entries(
-      instanceInfo.parameters
-    )
-      .map(item => item.join('='))
-      .join('&')}`
-    return session.get(URL).then()
+    return session.post(INSTANCE_EXPORT, instanceInfo).catch(console.error)
   }
 }
 

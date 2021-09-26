@@ -1,6 +1,7 @@
 import session from '@/api/session'
 import {
   DATA_ACQUISITIONS,
+  EXPORT_SUBJECT_DATA,
   EVENTS,
   GROUPS,
   MEASUREMENT_DEFINITIONS,
@@ -506,6 +507,9 @@ const actions = {
         commit('setDataAcquisitionModels', data.results)
       })
       .catch(console.error)
+  },
+  exportSubjectData(undefined, data) {
+    return session.post(EXPORT_SUBJECT_DATA, data).catch(console.error)
   }
 }
 

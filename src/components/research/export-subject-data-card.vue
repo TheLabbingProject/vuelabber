@@ -8,7 +8,15 @@
 
     <v-card-text>
       <v-container fluid>
-        <v-col class="py-0">
+        <v-row>
+          <v-checkbox
+            v-model="mriExportCheckbox"
+            :label="mriExportCheckboxLabel"
+            dense
+            class="py-0"
+          />
+        </v-row>
+        <v-col class="py-0" v-if="mriExportCheckbox">
           <v-row align="center">
             <div class="pl-0 pt-1 text-h6">
               File Format
@@ -77,7 +85,7 @@
       <v-btn
         color="blue darken-1"
         text
-        @click="exportSession"
+        @click="exportSubject"
         :disabled="exportDisabled"
       >
         Export
@@ -89,13 +97,15 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 export default {
-  name: 'ExportSessionCard',
-  props: { session: { type: Object } },
+  name: 'ExportSubjectDataCard',
+  props: { selectedSubjects: { type: Array } },
   created() {
     this.fetchExportDestinations({ filters: {}, options: {} })
   },
   data: () => ({
-    exportDialogTitle: 'Export MRI Session',
+    exportDialogTitle: 'Export Subject Data',
+    mriExportCheckbox: true,
+    mriExportCheckboxLabel: 'MRI',
     dicomExportCheckbox: false,
     dicomExportCheckboxLabel: 'DICOM',
     niftiExportCheckbox: true,
@@ -115,14 +125,18 @@ export default {
       return this.dicomExportCheckbox || this.niftiExportCheckbox
     },
     exportDisabled() {
-      return !(this.fileFormatSelected && this.selectedExportDestination)
+      return !(
+        this.mriExportCheckbox &&
+        this.fileFormatSelected &&
+        this.selectedExportDestination
+      )
     },
     ...mapState('accounts', ['exportDestinations']),
     ...mapState('auth', { currentUser: 'user' })
   },
   methods: {
     close() {
-      this.$emit('close-export-dialog')
+      this.$emit('close-export-subject-dialog')
     },
     fetchDestinations() {
       this.loadingExportDestinations = true
@@ -130,25 +144,28 @@ export default {
         () => (this.loadingExportDestinations = false)
       )
     },
-    exportSession() {
-      let file_format = []
-      if (this.dicomExportCheckbox) {
-        file_format.push('dicom')
-      }
-      if (this.niftiExportCheckbox) {
-        file_format.push('nifti')
-      }
-      let instanceInfo = {
+    exportSubject() {
+      let data = {
         export_destination_id: this.selectedExportDestination,
-        app_label: 'django_mri',
-        model_name: 'Session',
-        instance_id: this.session.id,
-        include_json: this.jsonSidecar,
-        file_format
+        instance_id: this.selectedSubjects.map(subject => subject.id)
       }
-      this.exportDataInstance(instanceInfo).then(() => this.close())
+      if (this.mriExportCheckbox) {
+        let file_format = []
+        if (this.dicomExportCheckbox) {
+          file_format.push('dicom')
+        }
+        if (this.niftiExportCheckbox) {
+          file_format.push('nifti')
+        }
+        data['mri'] = {
+          include_json: this.jsonSidecar,
+          file_format
+        }
+      }
+      this.exportSubjectData(data).then(() => this.close())
     },
-    ...mapActions('accounts', ['fetchExportDestinations', 'exportDataInstance'])
+    ...mapActions('accounts', ['fetchExportDestinations']),
+    ...mapActions('research', ['exportSubjectData'])
   }
 }
 </script>
