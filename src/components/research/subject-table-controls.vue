@@ -147,24 +147,24 @@
           <export-subject-data-card
             :selectedSubjects="selectedSubjects"
             @close-subject-export-dialog="closeSubjectExportDialog"
+            @subject-export-started="showExportSnackbar"
           />
         </v-dialog>
       </div>
-      <!--
-        <v-snackbar v-model="exportSnackbar" :timeout="exportSnackbarTimeout">
-          {{ exportSnackbarText }}
-          <template v-slot:action="{ attrs }">
-            <v-btn
-              color="blue"
-              text
-              v-bind="attrs"
-              @click="exportSnackbar = false"
-            >
-              Close
-            </v-btn>
-          </template>
-        </v-snackbar>
-      </div> -->
+
+      <v-snackbar v-model="exportSnackbar" :timeout="exportSnackbarTimeout">
+        {{ exportSnackbarText }}
+        <template v-slot:action="{ attrs }">
+          <v-btn
+            color="blue"
+            text
+            v-bind="attrs"
+            @click="exportSnackbar = false"
+          >
+            Close
+          </v-btn>
+        </template>
+      </v-snackbar>
     </v-col>
   </v-row>
 </template>
@@ -235,7 +235,11 @@ export default {
         this.$emit('fetch-subjects-end')
       })
     },
-    exportSubjects() {
+    showExportSnackbar(nSubjects, nExportDestinations) {
+      let exportDestinationsText =
+        'destination' + (nExportDestinations > 1 ? 's' : '')
+      let subjectsText = 'subject' + (nSubjects > 1 ? 's' : '')
+      this.exportSnackbarText = `Data export successfully started! (${nSubjects} ${subjectsText}, ${nExportDestinations} ${exportDestinationsText})`
       this.exportSnackbar = true
     },
     closeSubjectExportDialog() {

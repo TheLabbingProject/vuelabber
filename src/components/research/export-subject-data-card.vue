@@ -131,6 +131,19 @@ export default {
         this.selectedExportDestination
       )
     },
+    fileFormat() {
+      let fileFormat = []
+      if (this.dicomExportCheckbox) {
+        fileFormat.push('dicom')
+      }
+      if (this.niftiExportCheckbox) {
+        fileFormat.push('nifti')
+      }
+      return fileFormat
+    },
+    selectedSubjectIds() {
+      return this.selectedSubjects.map(subject => subject.id)
+    },
     ...mapState('accounts', ['exportDestinations']),
     ...mapState('auth', { currentUser: 'user' })
   },
@@ -147,22 +160,22 @@ export default {
     exportSubject() {
       let data = {
         export_destination_id: this.selectedExportDestination,
-        instance_id: this.selectedSubjects.map(subject => subject.id)
+        instance_id: this.selectedSubjectIds
       }
       if (this.mriExportCheckbox) {
-        let file_format = []
-        if (this.dicomExportCheckbox) {
-          file_format.push('dicom')
-        }
-        if (this.niftiExportCheckbox) {
-          file_format.push('nifti')
-        }
         data['mri'] = {
           include_json: this.jsonSidecar,
-          file_format
+          file_format: this.fileFormat
         }
       }
-      this.exportSubjectData(data).then(() => this.close())
+      this.exportSubjectData(data).then(() => {
+        this.$emit(
+          'subject-export-started',
+          this.selectedSubjectIds.length,
+          this.selectedExportDestination.length
+        )
+        this.close()
+      })
     },
     ...mapActions('accounts', ['fetchExportDestinations']),
     ...mapActions('research', ['exportSubjectData'])

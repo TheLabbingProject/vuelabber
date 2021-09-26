@@ -117,6 +117,16 @@ export default {
     exportDisabled() {
       return !(this.fileFormatSelected && this.selectedExportDestination)
     },
+    fileFormat() {
+      let fileFormat = []
+      if (this.dicomExportCheckbox) {
+        fileFormat.push('dicom')
+      }
+      if (this.niftiExportCheckbox) {
+        fileFormat.push('nifti')
+      }
+      return fileFormat
+    },
     ...mapState('accounts', ['exportDestinations']),
     ...mapState('auth', { currentUser: 'user' })
   },
@@ -131,22 +141,15 @@ export default {
       )
     },
     exportSession() {
-      let file_format = []
-      if (this.dicomExportCheckbox) {
-        file_format.push('dicom')
-      }
-      if (this.niftiExportCheckbox) {
-        file_format.push('nifti')
-      }
-      let instanceInfo = {
+      let data = {
         export_destination_id: this.selectedExportDestination,
         app_label: 'django_mri',
         model_name: 'Session',
         instance_id: this.session.id,
         include_json: this.jsonSidecar,
-        file_format
+        file_format: this.fileFormat
       }
-      this.exportDataInstance(instanceInfo).then(() => this.close())
+      this.exportDataInstance(data).then(() => this.close())
     },
     ...mapActions('accounts', ['fetchExportDestinations', 'exportDataInstance'])
   }
