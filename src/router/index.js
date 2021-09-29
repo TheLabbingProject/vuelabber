@@ -14,6 +14,7 @@ import RunBrowser from '../views/RunBrowser.vue'
 import SequenceTypes from '../views/SequenceTypes.vue'
 import StudyBrowser from '../views/StudyBrowser.vue'
 import SubjectBrowser from '../views/SubjectBrowser.vue'
+import TaskBrowser from '../views/TaskBrowser.vue'
 import ScanTypes from '../views/ScanTypes.vue'
 import store from '../store'
 
@@ -150,6 +151,12 @@ export default new Router({
       path: '/scan-types',
       name: 'scanTypes',
       component: ScanTypes,
+      beforeEnter: requireAuthenticated
+    },
+    {
+      path: '/tasks',
+      name: 'taskBrowser',
+      component: TaskBrowser,
       beforeEnter: requireAuthenticated
     }
   ]

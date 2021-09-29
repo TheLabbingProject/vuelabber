@@ -8,10 +8,10 @@
     :items="inputSpecifications"
     :loading="loading"
   >
-    <template v-slot:item.created="{ item }">
+    <template v-slot:[`item.created`]="{ item }">
       {{ item.created | formatDateTime }}
     </template>
-    <template v-slot:item.modified="{ item }">
+    <template v-slot:[`item.modified`]="{ item }">
       {{ item.modified | formatDateTime }}
     </template>
 

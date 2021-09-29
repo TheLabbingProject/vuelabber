@@ -8,6 +8,8 @@
       :loading="loading"
       :options.sync="options"
       :server-items-length="taskCount"
+      show-expand
+      :expanded.sync="expanded"
       :footer-props="{
         itemsPerPageOptions
       }"
@@ -20,12 +22,52 @@
           ref="controls"
         />
       </template>
+
+      <!-- Created -->
+      <template v-slot:[`item.dateCreated`]="{ item }">
+        {{ item.dateCreated | formatDateTime }}
+      </template>
+
+      <!-- Completed -->
+      <template v-slot:[`item.dateDone`]="{ item }">
+        {{ item.dateDone | formatDateTime }}
+      </template>
+
+      <!-- Status -->
+      <template v-slot:[`item.status`]="{ item }">
+        <v-icon small :color="getStatusColor(item.status)">
+          circle
+        </v-icon>
+      </template>
+
+      <!-- Status -->
+      <template v-slot:[`item.remove`]="{ item }">
+        <v-icon small @click="deleteTask(item)">
+          delete
+        </v-icon>
+      </template>
+
+      <!-- Expanded Information -->
+      <template v-slot:expanded-item="{ item, headers }">
+        <td :colspan="headers.length" class="pa-0 ma-0">
+          <task-info :task="item" />
+        </td>
+      </template>
     </v-data-table>
+    <v-snackbar v-model="deleteSnackbar" :timeout="deleteSnackbarTimeout">
+      {{ deleteSnackbarText }}
+      <template v-slot:action="{ attrs }">
+        <v-btn color="blue" text v-bind="attrs" @click="deleteSnackbar = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
 
 <script>
 import TaskTableControls from '@/components/accounts/task-table-controls.vue'
+import TaskInfo from '@/components/accounts/task-info.vue'
 import { mapActions, mapState } from 'vuex'
 
 export default {
@@ -36,7 +78,8 @@ export default {
     }
   },
   components: {
-    TaskTableControls
+    TaskTableControls,
+    TaskInfo
   },
   props: ['study'],
   data: () => ({
@@ -62,7 +105,20 @@ export default {
       value: 'remove',
       align: 'center',
       width: 100
-    }
+    },
+    statusOptions: [
+      'FAILURE',
+      'PENDING',
+      'RECEIVED',
+      'RETRY',
+      'REVOKED',
+      'STARTED',
+      'SUCCESS'
+    ],
+    statusColors: ['red', 'grey', 'yellow', 'yellow', 'red', 'orange', 'green'],
+    deleteSnackbar: false,
+    deleteSnackbarTimeout: 5000,
+    deleteSnackbarText: ''
   }),
   computed: {
     adminPermissions: function() {
@@ -72,7 +128,16 @@ export default {
     ...mapState('auth', ['user'])
   },
   methods: {
-    // ...mapActions('accounts', ['patchUser']),
+    getStatusColor: function(status) {
+      return this.statusColors[this.statusOptions.indexOf(status)]
+    },
+    deleteTask(task) {
+      this.deleteTaskAction(task).then(() => {
+        this.deleteSnackbarText = `Task ${task.taskId} successfully deleted`
+        this.deleteSnackbar = true
+      })
+    },
+    ...mapActions('accounts', { deleteTaskAction: 'deleteTask' })
     // ...mapActions('research', ['patchStudy'])
   }
 }

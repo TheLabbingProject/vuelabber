@@ -77,6 +77,9 @@ const mutations = {
       exportDestination => exportDestination.id != removedExportDestination.id
     )
   },
+  removeTaskFromState(state, removedTask) {
+    state.tasks = state.tasks.filter(task => task.id != removedTask.id)
+  },
   addExportDestinationToState(state, exportDestination) {
     state.exportDestinations.push(exportDestination)
   },
@@ -175,7 +178,9 @@ const actions = {
     let URL = `${EXPORT_DESTINATIONS}/${exportDestination.id}`
     return session
       .delete(URL)
-      .then(() => commit('removeExportDestinationFromState'), exportDestination)
+      .then(() => {
+        commit('removeExportDestinationFromState', exportDestination)
+      })
       .catch(console.error)
   },
   createExportDestination({ commit }, exportDestination) {
@@ -189,7 +194,7 @@ const actions = {
   exportDataInstance(undefined, instanceInfo) {
     return session.post(INSTANCE_EXPORT, instanceInfo).catch(console.error)
   },
-  fetchTaskResults({ commit }, query) {
+  fetchTasks({ commit }, query) {
     let queryString = getTaskResultQueryString(query)
     let URL = `${TASK_RESULTS}/${queryString}`
     return session
@@ -197,6 +202,15 @@ const actions = {
       .then(({ data }) => {
         commit('setTasks', data.results)
         commit('setTaskCount', data.count)
+      })
+      .catch(console.error)
+  },
+  deleteTask({ commit }, task) {
+    let URL = `${TASK_RESULTS}/${task.id}`
+    return session
+      .delete(URL)
+      .then(() => {
+        commit('removeTaskFromState', task)
       })
       .catch(console.error)
   }
