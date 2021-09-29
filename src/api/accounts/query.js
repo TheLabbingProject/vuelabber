@@ -33,4 +33,21 @@ const getExportDestinationQueryString = ({ filters, options }) => {
   }`
 }
 
-export { getExportDestinationQueryString, getUserQueryString }
+const getTaskResultQueryString = ({ filters, options }) => {
+  return `?id=${filters.id || ''}&task_id=${filters.taskId ||
+    ''}&task_id_lookup=icontains&task_name=${filters.taskName ||
+    ''}&task_name_lookup=icontains&page_size=${options.itemsPerPage ||
+    100}&page=${options.page || 1}&ordering=${
+    options.sortBy
+      ? options.sortDesc
+        ? '-' + options.sortBy
+        : options.sortBy
+      : ''
+  }`
+}
+
+export {
+  getExportDestinationQueryString,
+  getUserQueryString,
+  getTaskResultQueryString
+}

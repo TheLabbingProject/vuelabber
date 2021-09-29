@@ -4,19 +4,24 @@ import {
   LABS,
   USERS,
   EXPORT_DESTINATIONS,
-  INSTANCE_EXPORT
+  INSTANCE_EXPORT,
+  TASK_RESULTS
 } from '@/api/accounts/endpoints'
 import {
   getUserQueryString,
-  getExportDestinationQueryString
+  getExportDestinationQueryString,
+  getTaskResultQueryString
 } from '@/api/accounts/query'
 
 const state = {
   users: [],
   labs: [],
+  tasks: [],
   institutionNames: [],
   potentialCollaborators: [],
   exportDestinations: [],
+  userCount: 0,
+  taskCount: 0,
   exportDestinationCount: 0
 }
 
@@ -38,6 +43,15 @@ const getters = {
 const mutations = {
   setUsers(state, users) {
     state.users = users
+  },
+  setUserCount(state, count) {
+    state.userCount = count
+  },
+  setTasks(state, tasks) {
+    state.tasks = tasks
+  },
+  setTaskCount(state, count) {
+    state.taskCount = count
   },
   setPotentialCollaborators(state, potentialCollaborators) {
     state.potentialCollaborators = potentialCollaborators
@@ -88,7 +102,10 @@ const actions = {
     let URL = `${USERS}/${queryString}`
     return session
       .get(URL)
-      .then(({ data }) => commit('setUsers', data.results))
+      .then(({ data }) => {
+        commit('setUsers', data.results)
+        commit('setUserCount', data.count)
+      })
       .catch(console.error)
   },
   fetchPotentialCollaborators({ commit }, studyId) {
@@ -171,6 +188,17 @@ const actions = {
   },
   exportDataInstance(undefined, instanceInfo) {
     return session.post(INSTANCE_EXPORT, instanceInfo).catch(console.error)
+  },
+  fetchTaskResults({ commit }, query) {
+    let queryString = getTaskResultQueryString(query)
+    let URL = `${TASK_RESULTS}/${queryString}`
+    return session
+      .get(URL)
+      .then(({ data }) => {
+        commit('setTasks', data.results)
+        commit('setTaskCount', data.count)
+      })
+      .catch(console.error)
   }
 }
 

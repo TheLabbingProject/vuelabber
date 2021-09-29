@@ -114,6 +114,16 @@
             </v-list-item-icon>
           </v-list-item>
         </v-list-group>
+
+        <!-- Tasks -->
+        <v-list-item to="/tasks" class="drawer-link">
+          <v-list-item-icon>
+            <v-icon>timer</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>Tasks</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
