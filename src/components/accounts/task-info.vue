@@ -59,7 +59,11 @@ export default {
   },
   methods: {
     jsonify: function(value) {
-      return JSON.stringify(value, null, 2)
+      try {
+        return JSON.stringify(JSON.parser(value), null, 2)
+      } catch (error) {
+        return JSON.stringify(value, null, 2)
+      }
     }
   }
 }
