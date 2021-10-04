@@ -111,7 +111,7 @@ export default {
       updatedStudy.collaborators = updatedStudy.collaborators.concat(
         this.newCollaborators
       )
-      this.updateStudy(updatedStudy).then(() => {
+      this.patchStudy(updatedStudy).then(() => {
         this.addCollaboratorDialog = false
         this.update()
       })
@@ -121,7 +121,7 @@ export default {
       'fetchUsers',
       'fetchPotentialCollaborators'
     ]),
-    ...mapActions('research', ['updateStudy'])
+    ...mapActions('research', ['patchStudy'])
   },
   watch: {
     filters: {
