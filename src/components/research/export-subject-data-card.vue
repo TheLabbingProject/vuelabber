@@ -150,7 +150,7 @@ export default {
   },
   methods: {
     close() {
-      this.$emit('close-export-subject-dialog')
+      this.$emit('close-subject-export-dialog')
     },
     fetchDestinations() {
       this.loadingExportDestinations = true

@@ -1,9 +1,14 @@
 <template>
   <v-container>
     <v-row class="px-4">
-      <!-- ID -->
-      <v-col :cols="1">
-        <v-text-field v-model="filters.id" label="ID" />
+      <v-col v-if="!subject">
+        <v-text-field v-model="filters.subjectIdNumber" label="Subject ID" />
+      </v-col>
+      <v-col v-if="!subject">
+        <v-text-field v-model="filters.subjectFirstName" label="First Name" />
+      </v-col>
+      <v-col v-if="!subject">
+        <v-text-field v-model="filters.subjectLastName" label="Last Name" />
       </v-col>
       <!-- Scan Date -->
       <v-col :cols="4">
@@ -59,8 +64,46 @@
         />
       </v-col>
       <!-- Comments -->
-      <v-col :cols="3">
+      <v-col>
         <v-text-field v-model="filters.comments" label="Comments" />
+      </v-col>
+
+      <!-- Export Button -->
+      <v-col>
+        <div class="pt-3 text-right">
+          <v-dialog v-model="exportSessionDataDialog" max-width="500px">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                color="primary"
+                v-bind="attrs"
+                v-on="on"
+                :disabled="!allowExport"
+                :dark="allowExport"
+              >
+                Export
+              </v-btn>
+            </template>
+            <export-session-card
+              :selectedSessions="selectedSessions"
+              @close-session-export-dialog="closeSessionExportDialog"
+              @session-export-started="showExportSnackbar"
+            />
+          </v-dialog>
+        </div>
+
+        <v-snackbar v-model="exportSnackbar" :timeout="exportSnackbarTimeout">
+          {{ exportSnackbarText }}
+          <template v-slot:action="{ attrs }">
+            <v-btn
+              color="blue"
+              text
+              v-bind="attrs"
+              @click="exportSnackbar = false"
+            >
+              Close
+            </v-btn>
+          </template>
+        </v-snackbar>
       </v-col>
     </v-row>
   </v-container>
@@ -68,20 +111,29 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import ExportSessionCard from '@/components/mri/export-session-card'
 
 export default {
   name: 'SessionTableControls',
-  props: ['subject', 'options'],
+  props: ['subject', 'options', 'selectedSessions'],
+  components: { ExportSessionCard },
   mounted() {
     if (this.subject) {
       this.$set(this.filters, 'subject', this.subject.id)
     }
     this.update()
-    this.fetchStudies({ filters: {}, options: {} })
+    this.fetchStudies({ filters: {}, options: {} }).then(() =>
+      this.fetchExportDestinations({
+        filters: { user: this.currentUser.id },
+        options: {}
+      })
+    )
   },
   data: () => ({
     filters: {
-      id: '',
+      subjectIdNumber: '',
+      subjectFirstName: '',
+      subjectlastName: '',
       afterDate: '',
       beforeDate: '',
       comments: '',
@@ -89,7 +141,11 @@ export default {
       studyIdIn: []
     },
     afterDateMenu: false,
-    beforeDateMenu: false
+    beforeDateMenu: false,
+    exportSessionDataDialog: false,
+    exportSnackbar: false,
+    exportSnackbarTimeout: 5000,
+    exportSnackbarText: ''
   }),
   computed: {
     parsedOptions: function() {
@@ -99,13 +155,26 @@ export default {
           return 'time__date'
         } else if (item == 'time') {
           return 'time__time'
+        } else if (item == 'subject.idNumber') {
+          return 'subject__id_number'
+        } else if (item == 'subject.firstName') {
+          return 'subject__first_name'
+        } else if (item == 'subject.lastName') {
+          return 'subject__last_name'
         } else {
           return item
         }
       })
       return options
     },
-    ...mapState('research', ['studies'])
+    allowExport: function() {
+      return Boolean(
+        this.exportDestinations.length && this.selectedSessions.length
+      )
+    },
+    ...mapState('accounts', ['exportDestinations']),
+    ...mapState('research', ['studies']),
+    ...mapState('auth', { currentUser: 'user' })
   },
   methods: {
     update() {
@@ -115,8 +184,19 @@ export default {
         this.$emit('fetch-sessions-end')
       })
     },
+    closeSessionExportDialog() {
+      this.exportSessionDataDialog = false
+    },
+    showExportSnackbar(nSessions, nExportDestinations) {
+      let exportDestinationsText =
+        'destination' + (nExportDestinations > 1 ? 's' : '')
+      let sessionText = 'session' + (nSessions > 1 ? 's' : '')
+      this.exportSnackbarText = `Data export successfully started! (${nSessions} ${sessionText}, ${nExportDestinations} ${exportDestinationsText})`
+      this.exportSnackbar = true
+    },
     ...mapActions('mri', ['fetchSessions']),
-    ...mapActions('research', ['fetchStudies'])
+    ...mapActions('research', ['fetchStudies']),
+    ...mapActions('accounts', ['fetchExportDestinations'])
   },
   watch: {
     subject(selectedSubject) {

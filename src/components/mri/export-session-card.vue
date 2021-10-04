@@ -90,7 +90,7 @@
 import { mapActions, mapState } from 'vuex'
 export default {
   name: 'ExportSessionCard',
-  props: { session: { type: Object } },
+  props: { selectedSessions: { type: Array } },
   created() {
     this.fetchExportDestinations({ filters: {}, options: {} })
   },
@@ -132,7 +132,7 @@ export default {
   },
   methods: {
     close() {
-      this.$emit('close-export-dialog')
+      this.$emit('close-session-export-dialog')
     },
     fetchDestinations() {
       this.loadingExportDestinations = true
@@ -145,11 +145,19 @@ export default {
         export_destination_id: this.selectedExportDestination,
         app_label: 'django_mri',
         model_name: 'Session',
-        instance_id: this.session.id,
+        instance_id: this.selectedSessions.map(session => session.id),
         include_json: this.jsonSidecar,
         file_format: this.fileFormat
       }
-      this.exportDataInstance(data).then(() => this.close())
+      this.exportDataInstance(data)
+        .then(() => {
+          this.$emit(
+            'session-export-started',
+            this.selectedSessions.length,
+            this.selectedExportDestination.length
+          )
+        })
+        .then(() => this.close())
     },
     ...mapActions('accounts', ['fetchExportDestinations', 'exportDataInstance'])
   }

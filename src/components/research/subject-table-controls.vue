@@ -128,18 +128,16 @@
       </v-row>
     </v-col>
     <v-col>
-      <!-- <div class="text-center"> -->
       <div class="py-1">
         <v-dialog v-model="exportSubjectDataDialog" max-width="500px">
           <template v-slot:activator="{ on, attrs }">
             <v-btn
               color="primary"
-              dark
               class="mb-2"
               v-bind="attrs"
               v-on="on"
-              small
               :disabled="!allowExport"
+              :dark="allowExport"
             >
               Export
             </v-btn>
@@ -218,7 +216,9 @@ export default {
   }),
   computed: {
     allowExport: function() {
-      return this.exportDestinations.length && this.selectedSubjects.length
+      return Boolean(
+        this.exportDestinations.length && this.selectedSubjects.length
+      )
     },
     ...mapState('research', ['studies']),
     ...mapState('accounts', ['exportDestinations'])

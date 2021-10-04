@@ -30,7 +30,10 @@ const getSessionQueryString = ({ filters, options }) => {
   return `?id_in=${
     filters.idIn ? filters.idIn.join(',') : ''
   }&subject_id_in=${filters.subjects || ''}&subject=${filters.subject ||
-    ''}&created_after=&created_before=&session_date_after=${filters.afterDate ||
+    ''}&subject_id_number=${filters.subjectIdNumber ||
+    ''}&subject_id_number_lookup=icontains&subject_first_name=${filters.subjectFirstName ||
+    ''}&subject_first_name_lookup=icontains&subject_last_name=${filters.subjectLastName ||
+    ''}&subject_last_name_lookup=icontains&created_after=&created_before=&session_date_after=${filters.afterDate ||
     ''}&session_date_before=${filters.beforeDate || ''}&study_id_in=${
     filters.studyIdIn ? filters.studyIdIn.join(',') : ''
   }&page_size=${

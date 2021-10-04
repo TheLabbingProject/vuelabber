@@ -21,9 +21,9 @@
                   @focus="updateMeasurementDefinitions"
                   @update:list-index="updateMeasurementDefinitions"
                 />
-                <v-btn class="pl-5" color="success" @click="updateMeasurements"
-                  >Update</v-btn
-                >
+                <v-btn class="pl-5" color="success" @click="updateMeasurements">
+                  Update
+                </v-btn>
               </v-row>
             </v-card-text>
           </v-card>
@@ -53,13 +53,14 @@
           ref="controls"
           :subject="subject"
           :options="options"
+          :selectedSessions="selected"
           @fetch-sessions-start="loading = true"
           @fetch-sessions-end="loading = false"
         />
       </template>
 
       <!-- Subject ID button opening subject info dialog -->
-      <template v-slot:[`item.subject`]="{ item }">
+      <!-- <template v-slot:[`item.subject`]="{ item }">
         <div class="py-1">
           <v-dialog v-model="editSubjectDialog[item.subject.id]" width="600px">
             <template v-slot:activator="{ on }">
@@ -73,7 +74,7 @@
             />
           </v-dialog>
         </div>
-      </template>
+      </template> -->
 
       <!-- Date -->
       <template v-slot:[`item.date`]="{ item }">
@@ -181,30 +182,6 @@
         </v-edit-dialog>
       </template>
 
-      <template v-slot:[`item.export`]="{ item }">
-        <div class="py-1">
-          <v-dialog v-model="exportDialog" max-width="500px">
-            <template v-slot:activator="{ on, attrs }">
-              <!-- Fix button and create dialog -->
-              <v-btn
-                color="primary"
-                dark
-                class="mb-2"
-                v-bind="attrs"
-                v-on="on"
-                small
-              >
-                Export
-              </v-btn>
-            </template>
-            <export-session-card
-              :session="item"
-              @close-export-dialog="closeExportDialog"
-            />
-          </v-dialog>
-        </div>
-      </template>
-
       <!-- Show scan table when expanded -->
       <template v-slot:expanded-item="{ item, headers }">
         <td :colspan="headers.length" class="subject-data pa-0 ma-0">
@@ -239,8 +216,7 @@
 <script>
 import ScanTable from '@/components/mri/scan-table.vue'
 import SessionTableControls from '@/components/mri/session-table-controls.vue'
-import SubjectInfoCard from '@/components/research/subject-info-card.vue'
-import ExportSessionCard from '@/components/mri/export-session-card.vue'
+// import SubjectInfoCard from '@/components/research/subject-info-card.vue'
 import { mapActions, mapState } from 'vuex'
 import BASE_URL from '@/api/base_url.js'
 
@@ -248,20 +224,20 @@ export default {
   name: 'SessionTable',
   props: ['subject'],
   components: {
-    ExportSessionCard,
     ScanTable,
-    SessionTableControls,
-    SubjectInfoCard
+    SessionTableControls
+    // SubjectInfoCard
   },
   mounted() {
     if (this.subject) {
-      this.headers.splice(0, 1)
+      this.headers.splice(0, 3)
     }
   },
   data: () => ({
     headers: [
-      { text: 'Subject', value: 'subject', align: 'center' },
-      { text: 'Session ID', value: 'id', align: 'left', width: 120 },
+      { text: 'Subject ID', value: 'subject.idNumber', align: 'center' },
+      { text: 'First Name', value: 'subject.firstName', align: 'center' },
+      { text: 'Last Name', value: 'subject.lastName', align: 'center' },
       { text: 'Date', value: 'date', width: 100 },
       { text: 'Time', value: 'time', width: 100 },
       { text: 'Data Acquisition', value: 'measurement' },
@@ -287,7 +263,7 @@ export default {
       itemsPerPage: 25,
       page: 1,
       sortBy: ['date', 'time'],
-      sortDesc: [true, false]
+      sortDesc: [true, true]
     },
     itemsPerPageOptions: [10, 25, 50, -1],
     loading: false,
@@ -302,8 +278,7 @@ export default {
     irbApprovalInstitution: '',
     irbApprovalNumber: '',
     newIrbApproval: { institution: '', number: '' },
-    gettingDicomZip: false,
-    exportDialog: false
+    gettingDicomZip: false
   }),
   computed: {
     irbApprovalInstitutions: function() {
