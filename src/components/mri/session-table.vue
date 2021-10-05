@@ -190,23 +190,20 @@
         </td>
       </template>
 
-      <!-- Study groups -->
-      <template v-slot:[`item.studyGroups`]="{ item }">
+      <!-- Associated studies -->
+      <template v-slot:[`item.studies`]="{ item }">
         <v-row no-gutters>
-          <template v-for="n in Array(item.studyGroups.length).keys()">
-            <v-col class="py-1" :key="n">
-              <v-chip class="pa-1" small>
-                <div class="pa-1">
-                  {{ item.studyGroups[n].studyTitle }}
-                </div>
-              </v-chip>
-            </v-col>
-            <v-responsive
-              v-if="n === 2"
-              :key="`width-${n}`"
-              width="100%"
-            ></v-responsive>
-          </template>
+          <span
+            v-for="study in getAssociatedStudies(item)"
+            :key="`${item.id}-${study.id}`"
+            class="pa-1"
+          >
+            <v-chip class="pa-1" small>
+              <div class="pa-1">
+                {{ study.title }}
+              </div>
+            </v-chip>
+          </span>
         </v-row>
       </template>
     </v-data-table>
@@ -246,7 +243,7 @@ export default {
       { text: 'Scans', value: 'nScans', width: 90 },
       {
         text: 'Studies',
-        value: 'studyGroups',
+        value: 'studies',
         align: 'center',
         sortable: false,
         width: 200
@@ -373,6 +370,15 @@ export default {
     },
     closeExportDialog() {
       this.exportDialog = false
+    },
+    getAssociatedStudies(session) {
+      let groupStudies = session.studyGroups.map(group => group.study)
+      let measurementStudies = session.measurement
+        ? session.measurement.associatedStudies
+        : []
+      return groupStudies
+        .concat(measurementStudies)
+        .filter((v, i, a) => a.findIndex(t => t.id === v.id) === i)
     },
     ...mapActions('mri', ['fetchIrbApprovals', 'patchSession']),
     ...mapActions('research', ['fetchMeasurementDefinitions'])
