@@ -17,7 +17,10 @@ const getScanQueryString = ({ filters, options }) => {
     ''}&scan_time_before=${filters.beforeDate ||
     ''}&echo_time=&inversion_time=&repetition_time=&institution_name=&is_updated_from_dicom=&dicom__id=${filters.dicomId ||
     ''}&sequence_type=${filters.sequenceType || ''}&session=${filters.session ||
-    ''}&page_size=${
+    ''}&subject_id_number=${filters.subjectIdNumber ||
+    ''}&subject_id_number_lookup=icontains&subject_first_name=${filters.subjectFirstName ||
+    ''}&subject_first_name_lookup=icontains&subject_last_name=${filters.subjectLastName ||
+    ''}&subject_last_name_lookup=icontains&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage

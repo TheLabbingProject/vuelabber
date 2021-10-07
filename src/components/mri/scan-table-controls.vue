@@ -1,21 +1,49 @@
 <template>
   <v-col>
+    <!-- Subject Information -->
+    <v-row class="px-4 justify-space-between align-center" v-if="!subject">
+      <!-- Subject ID Number -->
+      <v-col>
+        <v-text-field
+          clearable
+          v-model="filters.subjectIdNumber"
+          label="Subject ID"
+        />
+      </v-col>
+      <!-- Subject First Name -->
+      <v-col>
+        <v-text-field
+          clearable
+          v-model="filters.subjectFirstName"
+          label="First Name"
+        />
+      </v-col>
+      <!-- Subject Last Name -->
+      <v-col>
+        <v-text-field
+          clearable
+          v-model="filters.subjectLastName"
+          label="Last Name"
+        />
+      </v-col>
+    </v-row>
+
+    <!-- Scan Information -->
     <v-row class="px-4 justify-space-between align-center">
       <!-- Number -->
-      <v-col :cols="1">
-        <v-text-field clearable v-model="filters.number" label="Number" />
+      <v-col>
+        <v-text-field clearable v-model="filters.number" label="Scan Number" />
       </v-col>
 
       <!-- Description -->
-      <v-col :cols="2">
+      <v-col>
         <v-text-field
           clearable
           v-model="filters.description"
-          label="Description"
+          label="Scan Description"
         />
       </v-col>
-
-      <!-- Scan Date -->
+      <!-- Date -->
       <v-col :cols="4">
         <v-row class="align-center">
           <!-- After Date -->
@@ -59,7 +87,7 @@
       </v-col>
 
       <!-- Sequence Type -->
-      <v-col :cols="2">
+      <v-col>
         <v-select
           chips
           clearable
@@ -69,14 +97,14 @@
           :items="sequenceTypeItems"
         />
       </v-col>
-      <v-col :cols="2">
+      <v-col>
         <div>
           <span class="px-1">
             <v-btn
               small
               rounded
               color="indigo lighten-3"
-              :disabled="!selected.length"
+              :disabled="!selectedScans.length"
               :href="dicomDownloadUrl"
             >
               DICOM
@@ -87,7 +115,7 @@
               small
               rounded
               color="indigo lighten-3"
-              :disabled="!selected.length"
+              :disabled="!selectedScans.length"
               :href="niftiDownloadUrl"
             >
               NIfTI
@@ -107,7 +135,12 @@ import { SERIES } from '@/api/dicom/endpoints.js'
 
 export default {
   name: 'ScanTableControls',
-  props: { options: Object, subject: Object, session: Object, selected: Array },
+  props: {
+    options: Object,
+    subject: Object,
+    session: Object,
+    selectedScans: Array
+  },
   created() {
     if (this.subject) {
       this.$set(this.filters, 'subject', this.subject.id)
@@ -129,11 +162,15 @@ export default {
       beforeDate: '',
       sequenceType: '',
       dicomId: '',
-      session: ''
+      session: '',
+      subjectIdNumber: '',
+      subjectFirstName: '',
+      subjectLastName: ''
     },
     afterDateMenu: false,
     beforeDateMenu: false
   }),
+  // TODO: ADD SUBJECT FILTERS
   computed: {
     sequenceTypeItems: function() {
       let items = createSelectItems(this.sequenceTypes, 'title', 'id')
@@ -147,6 +184,12 @@ export default {
           return 'time__date'
         } else if (item == 'time') {
           return 'time__time'
+        } else if (item == 'subject.firstName') {
+          return 'session__subject__first_name'
+        } else if (item == 'subject.lastName') {
+          return 'session__subject__last_name'
+        } else if (item == 'subject.idNumber') {
+          return 'session__subject__id_number'
         } else {
           return item
         }
@@ -154,10 +197,10 @@ export default {
       return options
     },
     selectedIdsString: function() {
-      return this.selected.map(scan => scan.id).join(',')
+      return this.selectedScans.map(scan => scan.id).join(',')
     },
     selectedDicomIdsString: function() {
-      return this.selected.map(scan => scan.dicom).join(',')
+      return this.selectedScans.map(scan => scan.dicom).join(',')
     },
     niftiDownloadUrl: function() {
       return `${SCANS}/nifti_zip/${this.selectedIdsString}/`

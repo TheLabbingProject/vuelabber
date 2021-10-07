@@ -6,6 +6,7 @@
       show-expand
       v-model="selectedTasks"
       ref="taskTable"
+      multi-sort
       :headers="headers"
       :items="tasks"
       :loading="loading"
@@ -94,7 +95,12 @@ export default {
       { text: 'Worker', value: 'worker', align: 'center' },
       { text: 'Created', value: 'dateCreated', align: 'center' },
       { text: 'Completed', value: 'dateDone', align: 'center' },
-      { text: 'Duration', value: 'duration', align: 'center' },
+      {
+        text: 'Duration',
+        value: 'duration',
+        align: 'center',
+        sortable: false
+      },
       { text: 'Status', value: 'status', align: 'center' }
     ],
     options: {

@@ -1,3 +1,5 @@
+import { parseOrdering } from '@/api/utils.js'
+
 const getUserQueryString = ({ filters, options }) => {
   return `?id=${filters.id || ''}&username=${filters.username ||
     ''}&username_lookup=icontains&first_name=${filters.firstName ||
@@ -42,13 +44,7 @@ const getTaskResultQueryString = ({ filters, options }) => {
       ? filters.status.map(state => `&status=${state}`).join('')
       : ''
   }&page_size=${options.itemsPerPage || 100}&page=${options.page ||
-    1}&ordering=${
-    options.sortBy
-      ? options.sortDesc
-        ? '-' + options.sortBy
-        : options.sortBy
-      : ''
-  }`
+    1}&ordering=${parseOrdering(options)}`
 }
 
 export {

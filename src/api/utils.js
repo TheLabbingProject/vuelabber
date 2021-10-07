@@ -3,4 +3,14 @@ let urlToId = url => {
   return Number(urlParts[urlParts.length - 2])
 }
 
-export { urlToId }
+const parseOrdering = options => {
+  return options.sortBy && options.sortDesc
+    ? options.sortBy
+        .map((value, index) => {
+          return options.sortDesc[index] ? '-' + value : value
+        })
+        .join(',')
+    : ''
+}
+
+export { urlToId, parseOrdering }

@@ -29,19 +29,16 @@
           <v-expansion-panel-content>
             <v-card>
               <v-card-text>
-                <group-association :selectedScans="selected" />
+                <group-association :selectedScans="selectedScans" />
               </v-card-text>
             </v-card>
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
-
-      <!-- <br />
-      <hr /> -->
     </v-col>
 
     <!-- Scan Preview -->
-    <div :key="scanPreviewKey" :hidden="!showPreview">
+    <!-- <div :key="scanPreviewKey" :hidden="!showPreview">
       <div>
         {{ previewMessage }}
       </div>
@@ -51,11 +48,11 @@
           cancel
         </v-icon>
       </div>
-    </div>
+    </div> -->
 
     <!-- Scan Table -->
     <v-data-table
-      v-model="selected"
+      v-model="selectedScans"
       item-key="id"
       show-select
       multi-sort
@@ -74,31 +71,14 @@
     >
       <template v-slot:top>
         <scan-table-controls
-          ref="tableController"
+          ref="controls"
           :options="options"
           :subject="subject"
           :session="session"
-          :selected="selected"
+          :selectedScans="selectedScans"
           @fetch-scans-start="loading = true"
           @fetch-scans-end="loading = false"
         />
-      </template>
-
-      <!-- Subject ID button opening subject info dialog -->
-      <template v-slot:[`item.subject`]="{ item }">
-        <div class="py-1">
-          <v-dialog v-model="editSubjectDialog[item.subject.id]" width="600px">
-            <template v-slot:activator="{ on }">
-              <v-btn small color="info" v-on="on">
-                {{ item.subject.idNumber }}
-              </v-btn>
-            </template>
-            <subject-info-card
-              :subjectId="item.subject.id"
-              @close-subject-dialog="editSubjectDialog[item.subject.id] = false"
-            />
-          </v-dialog>
-        </div>
       </template>
 
       <!-- Date -->
@@ -158,11 +138,11 @@
       </template>
 
       <!-- Preview -->
-      <template v-slot:item.preview="{ item }">
+      <!-- <template v-slot:item.preview="{ item }">
         <v-icon @click="loadPreview(item.id)">
           search
         </v-icon>
-      </template>
+      </template> -->
 
       <!-- Show scan runs when expanded -->
       <template v-slot:expanded-item="{ item, headers }">
@@ -186,7 +166,6 @@ import { scanPreviewScript } from '@/api/mri/endpoints'
 import EditSequenceType from '@/components/mri/edit-sequence-type.vue'
 import GroupAssociation from '@/components/mri/group-association.vue'
 import ProtocolInformation from '@/components/dicom/protocol-information.vue'
-import SubjectInfoCard from '@/components/research/subject-info-card.vue'
 import RunTable from '@/components/analysis/run-table.vue'
 // import ScanUpload from '@/components/mri/scan-upload.vue'
 import ScanTableControls from '@/components/mri/scan-table-controls.vue'
@@ -203,8 +182,7 @@ export default {
     GroupAssociation,
     ProtocolInformation,
     RunTable,
-    ScanTableControls,
-    SubjectInfoCard
+    ScanTableControls
     // ScanUpload
   },
   mounted() {
@@ -212,7 +190,7 @@ export default {
     let groupQuery = { filters: {}, options: {} }
     this.fetchGroups(groupQuery)
     if (this.subject != undefined) {
-      this.removeHeader('subject')
+      this.headers.splice(0, 3)
     }
     if (this.session != undefined) {
       this.removeHeader('date')
@@ -221,7 +199,9 @@ export default {
   data: () => ({
     sequenceTypeDialog: {},
     headers: [
-      { text: 'Subject', value: 'subject' },
+      { text: 'Subject ID', value: 'subject.idNumber', align: 'center' },
+      { text: 'First Name', value: 'subject.firstName', align: 'center' },
+      { text: 'Last Name', value: 'subject.lastName', align: 'center' },
       { text: 'Date', value: 'date' },
       { text: 'Time', value: 'time' },
       { text: 'Number', value: 'number' },
@@ -243,16 +223,16 @@ export default {
         value: 'studyGroups',
         sortable: false,
         align: 'center'
-      },
-      { text: 'Preview', value: 'preview', sortable: false }
+      }
+      // { text: 'Preview', value: 'preview', sortable: false }
     ],
-    selected: [],
+    selectedScans: [],
     expanded: [],
     active: 0,
     options: {
       page: 1,
       sortBy: ['date', 'time'],
-      sortDesc: [true, false],
+      sortDesc: [true, true],
       itemsPerPage: 25
     },
     itemsPerPageOptions: [10, 25, 50, -1],
@@ -300,7 +280,7 @@ export default {
       }
     },
     update() {
-      this.$refs.tableController.update()
+      this.$refs.controls.update()
     },
     loadPreview(scanId) {
       this.showPreview = true
