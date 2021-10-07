@@ -191,9 +191,17 @@ export default {
     this.fetchGroups(groupQuery)
     if (this.subject != undefined) {
       this.headers.splice(0, 3)
+      this.options.sortBy = ['number']
+      this.options.sortDesc = [false]
     }
     if (this.session != undefined) {
-      this.removeHeader('date')
+      this.headers = this.headers.filter(header => header.value != 'date')
+      this.options.sortBy = ['number']
+      this.options.sortDesc = [false]
+    }
+    if (this.subject == undefined && this.session == undefined) {
+      this.options.sortBy = ['date', 'time']
+      this.options.sortDesc = [true, true]
     }
   },
   data: () => ({
@@ -231,8 +239,8 @@ export default {
     active: 0,
     options: {
       page: 1,
-      sortBy: ['date', 'time'],
-      sortDesc: [true, true],
+      sortBy: [],
+      sortDesc: [],
       itemsPerPage: 25
     },
     itemsPerPageOptions: [10, 25, 50, -1],
