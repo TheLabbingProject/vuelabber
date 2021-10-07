@@ -34,6 +34,15 @@
         hint="Current task state"
       />
     </v-col>
+    <v-col :cols="1" v-if="showDeleteButton">
+      <v-btn
+        color="error"
+        :disabled="disableDeleteButton"
+        @click="deleteSelectedTasks"
+      >
+        Delete
+      </v-btn>
+    </v-col>
   </v-row>
 </template>
 
@@ -52,7 +61,7 @@ const STATE_SELECT_OPTIONS = [
 
 export default {
   name: 'TaskTableControls',
-  props: { options: Object },
+  props: { options: Object, selectedTasks: Array },
   mounted() {
     this.update()
   },
@@ -70,6 +79,12 @@ export default {
     query: function() {
       return { filters: this.filters, options: this.options }
     },
+    showDeleteButton: function() {
+      return this.user.isSuperuser
+    },
+    disableDeleteButton: function() {
+      return !this.selectedTasks.length
+    },
     ...mapState('accounts', ['tasks']),
     ...mapState('auth', ['user'])
   },
@@ -80,7 +95,14 @@ export default {
         this.$emit('fetch-tasks-end')
       })
     },
-    ...mapActions('accounts', ['fetchTasks'])
+    deleteSelectedTasks() {
+      this.$emit('task-delete-start')
+      let promises = this.selectedTasks.map(task => this.deleteTask(task))
+      Promise.all(promises)
+        .then(() => this.$emit('task-delete-end'))
+        .catch(console.log)
+    },
+    ...mapActions('accounts', ['deleteTask', 'fetchTasks'])
   },
   watch: {
     filters: {

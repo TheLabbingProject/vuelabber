@@ -3,22 +3,27 @@
     <v-data-table
       dense
       item-key="id"
+      show-expand
+      v-model="selectedTasks"
+      ref="taskTable"
       :headers="headers"
       :items="tasks"
       :loading="loading"
       :options.sync="options"
       :server-items-length="taskCount"
-      show-expand
       :expanded.sync="expanded"
       :footer-props="{
         itemsPerPageOptions
       }"
+      :show-select="this.user.isSuperuser"
     >
       <template v-slot:top>
         <task-table-controls
           :options="options"
+          :selectedTasks="selectedTasks"
           @fetch-tasks-start="loading = true"
           @fetch-tasks-end="loading = false"
+          @task-delete-end="handleTaskDeletion"
           ref="controls"
         />
       </template>
@@ -77,11 +82,6 @@ import { mapActions, mapState } from 'vuex'
 
 export default {
   name: 'TaskTable',
-  mounted() {
-    if (this.adminPermissions) {
-      this.headers.push(this.removeHeader)
-    }
-  },
   components: {
     TaskTableControls,
     TaskInfo
@@ -107,12 +107,6 @@ export default {
     loading: false,
     expanded: [],
     expand: true,
-    removeHeader: {
-      text: 'Remove',
-      value: 'remove',
-      align: 'center',
-      width: 100
-    },
     statusOptions: [
       'FAILURE',
       'PENDING',
@@ -123,8 +117,9 @@ export default {
       'SUCCESS'
     ],
     statusColors: ['red', 'grey', 'yellow', 'yellow', 'red', 'orange', 'green'],
+    selectedTasks: [],
     deleteSnackbar: false,
-    deleteSnackbarTimeout: 5000,
+    deleteSnackbarTimeout: 2500,
     deleteSnackbarText: ''
   }),
   computed: {
@@ -138,17 +133,22 @@ export default {
     getStatusColor: function(status) {
       return this.statusColors[this.statusOptions.indexOf(status)]
     },
-    deleteTask(task) {
-      this.deleteTaskAction(task).then(() => {
-        this.deleteSnackbarText = `Task ${task.taskId} successfully deleted`
-        this.deleteSnackbar = true
-      })
-    },
     calculateDuration(taskResult) {
       let started = new Date(taskResult.dateCreated)
       let finished = new Date(taskResult.dateDone)
       let seconds = finished - started
       return new Date(seconds).toISOString().substr(11, 8)
+    },
+    showDeleteSnackbar() {
+      let nDeleted = this.selectedTasks.length
+      let taskText = 'task' + (nDeleted > 1 ? 's' : '')
+      this.deleteSnackbarText = `${nDeleted} ${taskText} successfully deleted`
+      this.deleteSnackbar = true
+    },
+    handleTaskDeletion() {
+      this.showDeleteSnackbar()
+      this.selectedTasks = []
+      this.$refs.controls.update()
     },
     ...mapActions('accounts', { deleteTaskAction: 'deleteTask' })
   }
