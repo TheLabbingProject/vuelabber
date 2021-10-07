@@ -33,6 +33,11 @@
         {{ item.dateDone | formatDateTime }}
       </template>
 
+      <!-- Duration -->
+      <template v-slot:[`item.duration`]="{ item }">
+        {{ calculateDuration(item) }}
+      </template>
+
       <!-- Status -->
       <template v-slot:[`item.status`]="{ item }">
         <v-icon small :color="getStatusColor(item.status)">
@@ -86,8 +91,10 @@ export default {
     headers: [
       { text: 'Task ID', value: 'taskId', align: 'center' },
       { text: 'Task Name', value: 'taskName', align: 'left' },
+      { text: 'Worker', value: 'worker', align: 'center' },
       { text: 'Created', value: 'dateCreated', align: 'center' },
       { text: 'Completed', value: 'dateDone', align: 'center' },
+      { text: 'Duration', value: 'duration', align: 'center' },
       { text: 'Status', value: 'status', align: 'center' }
     ],
     options: {
@@ -137,8 +144,13 @@ export default {
         this.deleteSnackbar = true
       })
     },
+    calculateDuration(taskResult) {
+      let started = new Date(taskResult.dateCreated)
+      let finished = new Date(taskResult.dateDone)
+      let seconds = finished - started
+      return new Date(seconds).toISOString().substr(11, 8)
+    },
     ...mapActions('accounts', { deleteTaskAction: 'deleteTask' })
-    // ...mapActions('research', ['patchStudy'])
   }
 }
 </script>
