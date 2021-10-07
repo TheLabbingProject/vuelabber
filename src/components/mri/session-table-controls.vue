@@ -69,7 +69,7 @@
       </v-col>
 
       <!-- Export Button -->
-      <v-col>
+      <v-col :cols="1">
         <div class="pt-3 text-right">
           <v-dialog v-model="exportSessionDataDialog" max-width="500px">
             <template v-slot:activator="{ on, attrs }">
