@@ -1,7 +1,7 @@
 <template>
   <v-col>
     <series-table-controls
-      ref="tableController"
+      ref="controls"
       :options="options"
       :patient="patient"
       @fetch-series-start="loading = true"

@@ -1,14 +1,18 @@
 <template>
   <v-col>
     <patient-table-controls
-      ref="tableController"
+      ref="controls"
       :options="options"
+      :loading="loading"
       :studyId="studyId"
       @fetch-patients-start="loading = true"
       @fetch-patients-end="loading = false"
+      @fetch-patient-aggregations-start="loading = true"
+      @fetch-patient-aggregations-end="loading = false"
     />
     <v-data-table
       dense
+      multi-sort
       show-expand
       single-expand
       item-key="id"
@@ -76,12 +80,29 @@ export default {
     patientToSubject: {},
     expanded: [],
     headers: [
-      { text: 'ID', value: 'id', align: 'left' },
       { text: 'Patient UID', value: 'uid' },
-      { text: 'First Name', value: 'givenName' },
       { text: 'Last Name', value: 'familyName' },
+      { text: 'First Name', value: 'givenName' },
       { text: 'Sex', value: 'sex' },
       { text: 'Date of Birth', value: 'dateOfBirth', sortable: false },
+      {
+        text: '# Studies',
+        value: 'nStudies',
+        align: 'center',
+        width: 120
+      },
+      {
+        text: '# Series',
+        value: 'nSeries',
+        align: 'center',
+        width: 120
+      },
+      {
+        text: '# Images',
+        value: 'nImages',
+        align: 'center',
+        width: 120
+      },
       {
         text: 'Research Subject',
         value: 'subject',
@@ -92,8 +113,8 @@ export default {
     options: {
       itemsPerPage: 25,
       page: 1,
-      sortBy: ['number'],
-      descending: false
+      sortBy: ['familyName', 'givenName'],
+      sortDesc: [false, false]
     },
     itemsPerPageOptions: [10, 25, 50, -1],
     loading: false,

@@ -24,6 +24,10 @@ export const camelToSnakeCase = obj => {
   return result
 }
 
+export const camelToSnake = string => {
+  return string.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
+}
+
 export function getKeyByValue(object, value) {
   return Object.keys(object).find(key => object[key] === value)
 }

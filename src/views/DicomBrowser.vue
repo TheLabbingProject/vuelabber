@@ -40,7 +40,7 @@ export default {
       this.active = active < 2 ? active + 1 : 0
     },
     ...mapMutations('dicom', ['setSelectedPatientId', 'setSelectedStudyId']),
-    ...mapActions('dicom', ['fetchPatients', 'fetchStudies', 'fetchSeries'])
+    ...mapActions('dicom', ['fetchPatients', 'fetchSeries'])
   },
   watch: {
     // This resets selections when moving between tabs, however it
@@ -48,10 +48,8 @@ export default {
     active: function(value) {
       if (value === 0) {
         this.setSelectedStudyId(null)
-        this.fetchStudies({ filters: {}, options: {} })
       } else if (value === 1) {
         this.setSelectedPatientId(null)
-        this.fetchPatients({ filters: {}, options: {} })
       } else if (value === 2) {
         this.fetchSeries({ filters: {}, options: {} })
       }

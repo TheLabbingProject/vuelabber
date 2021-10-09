@@ -4,7 +4,9 @@ import {
   SERIES,
   STUDIES,
   MANUFACTURERS,
-  seriesToCSV
+  seriesToCSV,
+  STUDY_AGGREGATIONS,
+  PATIENT_AGGREGATIONS
 } from '@/api/dicom/endpoints'
 import {
   getPatientQueryString,
@@ -20,6 +22,22 @@ const state = {
   seriesCount: 0,
   studies: [],
   studyCount: 0,
+  studyAggregations: {
+    nPatientsMin: 0,
+    nPatientsMax: 1,
+    nSeriesMin: 0,
+    nSeriesMax: 1,
+    nImagesMin: 0,
+    nImagesMax: 1
+  },
+  patientAggregations: {
+    nStudiesMin: 0,
+    nStudiesMax: 1,
+    nSeriesMin: 0,
+    nSeriesMax: 1,
+    nImagesMin: 0,
+    nImagesMax: 1
+  },
   selectedStudyId: null,
   manufacturersList: []
 }
@@ -40,6 +58,9 @@ const mutations = {
   setPatientCount(state, count) {
     state.patientCount = count
   },
+  setPatientAggregations(state, aggregations) {
+    state.patientAggregations = aggregations
+  },
   setSelectedPatientId(state, selectedPatientId) {
     state.selectedPatientId = selectedPatientId
   },
@@ -54,6 +75,9 @@ const mutations = {
   },
   setStudyCount(state, count) {
     state.studyCount = count
+  },
+  setStudyAggregations(state, aggregations) {
+    state.studyAggregations = aggregations
   },
   setSelectedStudyId(state, selectedStudyId) {
     state.selectedStudyId = selectedStudyId
@@ -94,6 +118,22 @@ const actions = {
       .then(({ data }) => {
         commit('setStudies', data.results)
         commit('setStudyCount', data.count)
+      })
+      .catch(console.error)
+  },
+  fetchStudyAggregations({ commit }) {
+    return session
+      .get(STUDY_AGGREGATIONS)
+      .then(({ data }) => {
+        commit('setStudyAggregations', data)
+      })
+      .catch(console.error)
+  },
+  fetchPatientAggregations({ commit }) {
+    return session
+      .get(PATIENT_AGGREGATIONS)
+      .then(({ data }) => {
+        commit('setPatientAggregations', data)
       })
       .catch(console.error)
   },

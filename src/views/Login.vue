@@ -8,6 +8,7 @@
           type="text"
           id="username"
           label="Username"
+          autofocus
           required
         />
         <v-text-field

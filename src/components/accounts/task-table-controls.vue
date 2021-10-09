@@ -48,6 +48,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import { camelToSnake } from '@/utils'
 
 const STATE_SELECT_OPTIONS = [
   { text: 'Started', value: 'STARTED' },
@@ -78,7 +79,7 @@ export default {
   computed: {
     query: function() {
       let options = Object.assign({}, this.options)
-      options.sortBy = options.sortBy.map(field => this.camelToSnake(field))
+      options.sortBy = options.sortBy.map(field => camelToSnake(field))
       return { filters: this.filters, options }
     },
     showDeleteButton: function() {
@@ -91,9 +92,6 @@ export default {
     ...mapState('auth', ['user'])
   },
   methods: {
-    camelToSnake: function(string) {
-      return string.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
-    },
     update() {
       this.$emit('fetch-tasks-start')
       this.fetchTasks(this.query).then(() => {
