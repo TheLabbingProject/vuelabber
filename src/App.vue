@@ -132,7 +132,9 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
 
       <!-- Title -->
-      <v-toolbar-title>pylabber</v-toolbar-title>
+      <v-toolbar-title>
+        pylabber
+      </v-toolbar-title>
 
       <v-spacer />
 
@@ -153,7 +155,9 @@
           </template>
           <v-list>
             <router-link to="/logout" class="dropmenu-link">
-              <v-list-item>Logout</v-list-item>
+              <v-list-item>
+                Logout
+              </v-list-item>
             </router-link>
           </v-list>
         </v-menu>

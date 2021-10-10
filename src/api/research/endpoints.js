@@ -5,6 +5,7 @@ const EVENTS = `${RESEARCH_API}/event`
 const GROUPS = `${RESEARCH_API}/group`
 const LABS = `${RESEARCH_API}/laboratory`
 const STUDIES = `${RESEARCH_API}/study`
+const STUDY_AGGREGATIONS = `${STUDIES}/aggregate`
 const SUBJECTS = `${RESEARCH_API}/subject`
 const EXPORT_SUBJECT_DATA = `${SUBJECTS}/export/`
 const PROCEDURES = `${RESEARCH_API}/procedure`
@@ -22,5 +23,6 @@ export {
   PROCEDURES,
   PROCEDURE_STEPS,
   STUDIES,
+  STUDY_AGGREGATIONS,
   SUBJECTS
 }

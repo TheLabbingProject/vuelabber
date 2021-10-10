@@ -8,6 +8,7 @@ import {
   PROCEDURE_STEPS,
   PROCEDURES,
   STUDIES,
+  STUDY_AGGREGATIONS,
   SUBJECTS
 } from '@/api/research/endpoints'
 import {
@@ -22,12 +23,13 @@ import {
 
 const state = {
   studies: [],
+  studyCount: 0,
+  studyAggregations: { nSubjectsMin: 0, nSubjectsMax: 1 },
   groups: [],
   groupCount: 0,
   subjects: [],
   plots: { subject: {} },
   subjectCount: 0,
-  studyCount: 0,
   procedures: [],
   procedureCount: 0,
   events: [],
@@ -55,6 +57,9 @@ const getters = {
 const mutations = {
   setStudies(state, studies) {
     state.studies = studies
+  },
+  setSubjectAggregations(state, aggregations) {
+    state.studyAggregations = aggregations
   },
   setProcedures(state, procedures) {
     state.procedures = procedures
@@ -225,6 +230,14 @@ const actions = {
       .then(({ data }) => {
         commit('setStudies', data.results)
         commit('setStudyCount', data.count)
+      })
+      .catch(console.error)
+  },
+  fetchStudyAggregations({ commit }) {
+    return session
+      .get(STUDY_AGGREGATIONS)
+      .then(({ data }) => {
+        commit('setSubjectAggregations', data)
       })
       .catch(console.error)
   },

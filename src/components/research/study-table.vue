@@ -24,6 +24,7 @@
       item-key="id"
       show-expand
       single-expand
+      multi-sort
       :no-data-text="noDataText"
       :expanded.sync="expanded"
       :headers="headers"
@@ -37,10 +38,13 @@
     >
       <template v-slot:top>
         <study-table-controls
+          :loading="loading"
           :options="options"
           ref="controls"
           @fetch-studies-start="loading = true"
           @fetch-studies-end="loading = false"
+          @fetch-study-aggregations-start="loading = true"
+          @fetch-study-aggregations-end="loading = false"
         />
         <v-dialog v-model="deleteStudyDialog" max-width="500px">
           <v-card>
@@ -139,8 +143,23 @@ export default {
     title: 'Studies',
     newStudyButtonText: 'New Study',
     headers: [
-      { text: 'Title', value: 'title' },
-      { text: 'Description', value: 'description' }
+      { text: 'Title', value: 'title', align: 'left' },
+      { text: 'Description', value: 'description', align: 'left' },
+      {
+        text: '# Collaborators',
+        value: 'collaborators.length',
+        align: 'center'
+      },
+      {
+        text: '# Procedures',
+        value: 'procedures.length',
+        align: 'center'
+      },
+      {
+        text: '# Subjects',
+        value: 'nSubjects',
+        align: 'center'
+      }
     ],
     actionsHeader: {
       text: 'Remove',

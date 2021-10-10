@@ -1,22 +1,16 @@
-const camelToSnakeCase = str =>
-  str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
-
-const parseOrdering = options => {
-  let sortBy = options.sortBy ? options.sortBy : []
-  let sortDesc = options.sortDesc ? options.sortDesc : []
-  return sortBy
-    .map((value, index) => {
-      return sortDesc[index]
-        ? '-' + camelToSnakeCase(value)
-        : camelToSnakeCase(value)
-    })
-    .join(',')
-}
+import { parseOrdering } from '@/api/utils'
 
 const getStudyQueryString = ({ filters, options }) => {
   return `?id=${filters.id || ''}&title=${filters.title ||
     ''}&title_lookup=icontains&description=${filters.description ||
-    ''}&description_lookup=icontains&page_size=${
+    ''}&description_lookup=icontains&n_subjects_min=${filters.nSubjectsMin ||
+    ''}&n_subjects_max=${filters.nSubjectsMax || ''}${
+    filters.collaborators
+      ? filters.collaborators.map(pk => `&collaborators=${pk}`)
+      : ''
+  }${
+    filters.procedures ? filters.procedures.map(pk => `&procedures=${pk}`) : ''
+  }&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage
