@@ -25,11 +25,11 @@
       }"
     >
       <!-- Date -->
-      <template v-slot:item.date="{ item }">{{
+      <template v-slot:[`item.date`]="{ item }">{{
         item.date ? item.date : '' | formatDate
       }}</template>
 
-      <template v-slot:item.time="{ item }">{{
+      <template v-slot:[`item.time`]="{ item }">{{
         item.time ? item.time.slice(0, 8) : ''
       }}</template>
 
@@ -54,16 +54,9 @@ export default {
   data: () => ({
     expanded: [],
     headers: [
-      { text: 'UID', value: 'uid', align: 'center', width: 450 },
       { text: 'Description', value: 'description', align: 'left' },
       { text: 'Date', value: 'date', align: 'center', width: 100 },
       { text: 'Time', value: 'time', align: 'center', width: 100 },
-      {
-        text: '# Patients',
-        value: 'nPatients',
-        align: 'center',
-        width: 120
-      },
       {
         text: '# Series',
         value: 'nSeries',
