@@ -1,11 +1,15 @@
 <template>
   <div>
     <v-row class="pa-5">
-      <div class="title text-left">Studies</div>
+      <div class="title text-left">
+        {{ title }}
+      </div>
       <v-spacer />
       <v-dialog v-model="createStudyDialog" width="600px" v-if="user.isStaff">
         <template v-slot:activator="{ on }">
-          <v-btn color="success" v-on="on">New Study</v-btn>
+          <v-btn color="success" v-on="on">
+            {{ newStudyButtonText }}
+          </v-btn>
         </template>
         <study-info-card
           :createMode="true"
@@ -132,8 +136,9 @@ export default {
     }
   },
   data: () => ({
+    title: 'Studies',
+    newStudyButtonText: 'New Study',
     headers: [
-      { text: 'ID', value: 'id', align: 'left', width: 1 },
       { text: 'Title', value: 'title' },
       { text: 'Description', value: 'description' }
     ],

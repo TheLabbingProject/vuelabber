@@ -1,8 +1,5 @@
 <template>
   <v-row class="px-4 align-left">
-    <v-col :cols="1" style="max-width: 100px;">
-      <v-text-field label="ID" v-model="filters.id" />
-    </v-col>
     <v-col :cols="2">
       <v-text-field
         label="Title"
