@@ -37,7 +37,11 @@ export function isEmptyArray(array) {
 }
 
 export function isEmptyObject(obj) {
-  return Object.entries(obj).length === 0 && obj.constructor === Object
+  return (
+    obj &&
+    Object.keys(obj).length === 0 &&
+    Object.getPrototypeOf(obj) === Object.prototype
+  )
 }
 
 export const titlesDictionary = {

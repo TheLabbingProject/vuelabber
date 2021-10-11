@@ -3,10 +3,12 @@
     <!-- Title -->
     <v-card-title class="success darken-3">
       <div>
-        <span class="white--text">Subject Information</span>
-        <span v-if="existingSubject" class="grey--text text--lighten-1">{{
-          `#${subject.id}`
-        }}</span>
+        <span class="white--text">
+          Subject Information
+        </span>
+        <span v-if="existingSubject" class="grey--text text--lighten-1">
+          {{ `#${subject.id}` }}
+        </span>
       </div>
       <v-spacer />
 
@@ -15,8 +17,9 @@
         v-if="existingSubject && editable && currentUser.isStaff"
         style="cursor: pointer;"
         @click="verifyDelete"
-        >delete</v-icon
       >
+        delete
+      </v-icon>
     </v-card-title>
 
     <!-- Body -->
@@ -140,8 +143,9 @@
         v-if="editable && (existingSubject || subjectId)"
         :disabled="!currentUser.isStaff"
         @click="updateExistingSubject"
-        >Update</v-btn
       >
+        Update
+      </v-btn>
 
       <!-- Create -->
       <v-btn
@@ -174,17 +178,23 @@ import { sexOptions, genderOptions, dominantHandOptions } from './choices.js'
 import { createSelectItems } from '@/components/utils'
 import ObjectTable from '@/components/object-table.vue'
 import deleteDialog from '@/components/deleteDialog.vue'
+import { isEmptyObject } from '@/utils'
 
 export default {
   name: 'SubjectInfoCard',
   components: { ObjectTable, deleteDialog },
   props: {
-    existingSubject: Object,
+    existingSubject: {
+      type: Object,
+      default: function() {
+        return {}
+      }
+    },
     createMode: { type: Boolean, default: false },
     subjectId: { type: Number, default: 0 }
   },
   created() {
-    if (this.existingSubject) {
+    if (isEmptyObject(this.existingSubject)) {
       this.subject = Object.assign({}, this.existingSubject)
       this.editable = false
     } else if (this.subjectId != 0) {

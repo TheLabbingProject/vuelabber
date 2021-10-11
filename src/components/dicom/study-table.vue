@@ -58,7 +58,7 @@ export default {
       { text: 'Date', value: 'date', align: 'center', width: 100 },
       { text: 'Time', value: 'time', align: 'center', width: 100 },
       {
-        text: '# Series',
+        text: '# Scans',
         value: 'nSeries',
         align: 'center',
         width: 120

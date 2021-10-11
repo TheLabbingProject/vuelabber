@@ -22,22 +22,8 @@ const state = {
   seriesCount: 0,
   studies: [],
   studyCount: 0,
-  studyAggregations: {
-    nPatientsMin: 0,
-    nPatientsMax: 1,
-    nSeriesMin: 0,
-    nSeriesMax: 1,
-    nImagesMin: 0,
-    nImagesMax: 1
-  },
-  patientAggregations: {
-    nStudiesMin: 0,
-    nStudiesMax: 1,
-    nSeriesMin: 0,
-    nSeriesMax: 1,
-    nImagesMin: 0,
-    nImagesMax: 1
-  },
+  studyAggregations: false,
+  patientAggregations: false,
   selectedStudyId: null,
   manufacturersList: []
 }
@@ -59,7 +45,11 @@ const mutations = {
     state.patientCount = count
   },
   setPatientAggregations(state, aggregations) {
-    state.patientAggregations = aggregations
+    if (typeof aggregations === 'string' || aggregations instanceof String) {
+      state.patientAggregations = false
+    } else {
+      state.patientAggregations = aggregations
+    }
   },
   setSelectedPatientId(state, selectedPatientId) {
     state.selectedPatientId = selectedPatientId
@@ -77,7 +67,11 @@ const mutations = {
     state.studyCount = count
   },
   setStudyAggregations(state, aggregations) {
-    state.studyAggregations = aggregations
+    if (typeof aggregations === 'string' || aggregations instanceof String) {
+      state.studyAggregations = false
+    } else {
+      state.studyAggregations = aggregations
+    }
   },
   setSelectedStudyId(state, selectedStudyId) {
     state.selectedStudyId = selectedStudyId

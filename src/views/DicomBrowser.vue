@@ -1,20 +1,26 @@
 <template>
   <v-col>
     <v-tabs v-model="active">
-      <!-- Studies -->
-      <v-tab ripple>Studies</v-tab>
-      <v-tab-item>
-        <study-table />
-      </v-tab-item>
-
       <!-- Patients -->
-      <v-tab ripple>Patients</v-tab>
+      <v-tab ripple>
+        {{ patientTitle }}
+      </v-tab>
       <v-tab-item>
         <patient-table />
       </v-tab-item>
 
+      <!-- Studies -->
+      <v-tab ripple>
+        {{ studyTitle }}
+      </v-tab>
+      <v-tab-item>
+        <study-table />
+      </v-tab-item>
+
       <!-- Series -->
-      <v-tab ripple>Series</v-tab>
+      <v-tab ripple>
+        {{ seriesTitle }}
+      </v-tab>
       <v-tab-item>
         <series-table />
       </v-tab-item>
@@ -32,7 +38,10 @@ export default {
   name: 'DicomBrowser',
   components: { PatientTable, SeriesTable, StudyTable },
   data: () => ({
-    active: null
+    active: null,
+    patientTitle: 'Subjects',
+    studyTitle: 'Sessions',
+    seriesTitle: 'Scans'
   }),
   methods: {
     next() {

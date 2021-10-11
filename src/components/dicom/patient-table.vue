@@ -26,11 +26,23 @@
         itemsPerPageOptions
       }"
     >
-      <template v-slot:item.sex="{ item }">{{ getPatientSex(item) }}</template>
-      <template v-slot:item.dateOfBirth="{ item }">{{
-        item.dateOfBirth | formatDate
-      }}</template>
-      <template v-slot:item.subject="{ item }">
+      <!-- Sex -->
+      <template v-slot:[`item.sex`]="{ item }"
+        >{{ getPatientSex(item) }}
+      </template>
+
+      <!-- Date of Birth -->
+      <template v-slot:[`item.dateOfBirth`]="{ item }">
+        {{ item.dateOfBirth | formatDate }}
+      </template>
+
+      <!-- Latest Study Time -->
+      <template v-slot:[`item.latestStudyTime`]="{ item }">
+        {{ item.latestStudyTime | formatDateTime }}
+      </template>
+
+      <!-- Research Subject -->
+      <template v-slot:[`item.subject`]="{ item }">
         <div class="py-1">
           <v-dialog v-model="subjectDialog[item.id]" width="400px">
             <template v-slot:activator="{ on }">
@@ -38,15 +50,16 @@
                 small
                 color="success"
                 v-on="on"
-                v-if="patientToSubject[item.id]"
-                >Subject #{{ patientToSubject[item.id].id }}</v-btn
+                v-if="item.researchSubject"
               >
-              <v-btn v-else small color="warning" v-on="on" disabled
-                >Create</v-btn
-              >
+                Subject #{{ item.researchSubject }}
+              </v-btn>
+              <v-btn v-else small color="warning" v-on="on" disabled>
+                Create
+              </v-btn>
             </template>
             <subject-info-card
-              :existingSubject="patientToSubject[item.id]"
+              :subjectId="item.researchSubject"
               :key="subjectDialog[item.id]"
               @close-subject-dialog="subjectDialog[item.id] = false"
             />
@@ -80,41 +93,54 @@ export default {
     patientToSubject: {},
     expanded: [],
     headers: [
-      { text: 'Patient UID', value: 'uid' },
-      { text: 'Last Name', value: 'familyName' },
-      { text: 'First Name', value: 'givenName' },
-      { text: 'Sex', value: 'sex' },
-      { text: 'Date of Birth', value: 'dateOfBirth', sortable: false },
+      { text: 'UID', value: 'uid', align: 'center' },
+      { text: 'Last Name', value: 'familyName', align: 'left' },
+      { text: 'First Name', value: 'givenName', align: 'left' },
+      { text: 'Sex', value: 'sex', align: 'center' },
       {
-        text: '# Studies',
-        value: 'nStudies',
-        align: 'center',
-        width: 120
+        text: 'Date of Birth',
+        value: 'dateOfBirth',
+        align: 'center'
       },
       {
-        text: '# Series',
+        text: 'Latest Session',
+        value: 'latestStudyTime',
+        align: 'center'
+      },
+      {
+        text: '# Sessions',
+        value: 'nStudies',
+        align: 'center',
+        width: 120,
+        sortable: false
+      },
+      {
+        text: '# Scans',
         value: 'nSeries',
         align: 'center',
-        width: 120
+        width: 120,
+        sortable: false
       },
       {
         text: '# Images',
         value: 'nImages',
         align: 'center',
-        width: 120
+        width: 120,
+        sortable: false
       },
       {
         text: 'Research Subject',
         value: 'subject',
         width: '50px',
-        sortable: false
+        sortable: false,
+        align: 'center'
       }
     ],
     options: {
       itemsPerPage: 25,
       page: 1,
-      sortBy: ['familyName', 'givenName'],
-      sortDesc: [false, false]
+      sortBy: ['latestStudyTime'],
+      sortDesc: [true]
     },
     itemsPerPageOptions: [10, 25, 50, -1],
     loading: false,

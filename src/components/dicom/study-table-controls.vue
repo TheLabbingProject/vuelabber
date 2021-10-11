@@ -105,7 +105,7 @@
         </v-row>
       </v-col>
     </v-row>
-    <v-row>
+    <v-row v-if="studyAggregations">
       <v-col>
         <v-row>
           <v-range-slider

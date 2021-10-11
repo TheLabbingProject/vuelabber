@@ -73,7 +73,7 @@
         </v-row>
       </v-col>
     </v-row>
-    <v-row>
+    <v-row v-if="patientAggregations">
       <v-col>
         <v-row>
           <v-range-slider
@@ -208,7 +208,7 @@ export default {
     bornBeforeMenu: false,
     sexOptions,
     uidFilter: {
-      label: 'Patient UID',
+      label: 'UID',
       value: ''
     },
     firstNameFilter: {
