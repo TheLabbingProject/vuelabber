@@ -33,6 +33,16 @@
           </v-list-item-content>
         </v-list-item>
 
+        <!-- MRI Browser -->
+        <v-list-item to="/mri-browser" class="drawer-link">
+          <v-list-item-icon>
+            <v-icon>blur_on</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>MRI Browser</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
         <!-- Data -->
         <v-list-group no-action prepend-icon="storage" :value="false">
           <template v-slot:activator>
@@ -49,14 +59,6 @@
                 </v-list-item-icon>
               </v-list-item>
             </template>
-
-            <!-- Browser -->
-            <v-list-item to="/mri-browser" class="drawer-link">
-              <v-list-item-title>Browser</v-list-item-title>
-              <v-list-item-icon>
-                <v-icon>search</v-icon>
-              </v-list-item-icon>
-            </v-list-item>
 
             <!-- Sequence Types -->
             <v-list-item to="/mri-sequence-types" class="drawer-link">
