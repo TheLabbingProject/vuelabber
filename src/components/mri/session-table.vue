@@ -226,15 +226,13 @@ export default {
     // SubjectInfoCard
   },
   mounted() {
-    if (this.subject) {
-      this.headers.splice(0, 3)
+    if (this.currentUser.isSuperuser && this.subject == undefined) {
+      console.log('true')
+      this.headers = [...this.personalInformation, ...this.headers]
     }
   },
   data: () => ({
     headers: [
-      { text: 'Subject ID', value: 'subject.idNumber', align: 'center' },
-      { text: 'First Name', value: 'subject.firstName', align: 'center' },
-      { text: 'Last Name', value: 'subject.lastName', align: 'center' },
       { text: 'Date', value: 'date', width: 100 },
       { text: 'Time', value: 'time', width: 100 },
       { text: 'Data Acquisition', value: 'measurement' },
@@ -262,6 +260,11 @@ export default {
       sortBy: ['date', 'time'],
       sortDesc: [true, true]
     },
+    personalInformation: [
+      { text: 'Subject ID', value: 'subject.idNumber', align: 'center' },
+      { text: 'First Name', value: 'subject.firstName', align: 'center' },
+      { text: 'Last Name', value: 'subject.lastName', align: 'center' }
+    ],
     itemsPerPageOptions: [10, 25, 50, -1],
     loading: false,
     expanded: [],
