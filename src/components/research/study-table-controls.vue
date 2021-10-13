@@ -39,7 +39,7 @@
         />
       </v-col>
     </v-row>
-    <v-row class="px-4 align-left">
+    <v-row v-if="studyAggregations" class="px-4 align-left">
       <v-col>
         <v-row>
           <v-range-slider
@@ -88,10 +88,11 @@
 import { mapActions, mapState } from 'vuex'
 
 export default {
-  name: 'SubjectTableControls',
+  name: 'StudyTableControls',
   props: { loading: Boolean, options: Object },
   created() {
     this.updateStudyAggregations()
+    this.update()
   },
   data: () => ({
     titleFilter: { label: 'Title', value: '' },
@@ -110,8 +111,12 @@ export default {
         description: this.descriptionFilter.value,
         collaborators: this.collaboratorsFilter.value,
         procedures: this.proceduresFilter.value,
-        nSubjectsMin: this.nSubjectsRangeFilter.value[0],
-        nSubjectsMax: this.nSubjectsRangeFilter.value[1]
+        nSubjectsMin: this.studyAggregations
+          ? this.nSubjectsRangeFilter.value[0]
+          : '',
+        nSubjectsMax: this.studyAggregations
+          ? this.nSubjectsRangeFilter.value[1]
+          : ''
       }
     },
     ...mapState('accounts', ['users']),
@@ -145,10 +150,12 @@ export default {
       this.$emit('fetch-study-aggregations-start')
       this.aggregationsLoading = true
       this.fetchStudyAggregations().then(() => {
-        this.nSubjectsRangeFilter.value = [
-          this.studyAggregations.nSubjectsMin,
-          this.studyAggregations.nSubjectsMax
-        ]
+        if (this.studyAggregations) {
+          this.nSubjectsRangeFilter.value = [
+            this.studyAggregations.nSubjectsMin,
+            this.studyAggregations.nSubjectsMax
+          ]
+        }
         this.aggregationsLoading = false
         this.$emit('fetch-study-aggregations-end')
       })

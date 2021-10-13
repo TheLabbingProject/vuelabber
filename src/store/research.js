@@ -24,7 +24,7 @@ import {
 const state = {
   studies: [],
   studyCount: 0,
-  studyAggregations: { nSubjectsMin: 0, nSubjectsMax: 1 },
+  studyAggregations: false,
   groups: [],
   groupCount: 0,
   subjects: [],
@@ -58,8 +58,12 @@ const mutations = {
   setStudies(state, studies) {
     state.studies = studies
   },
-  setSubjectAggregations(state, aggregations) {
-    state.studyAggregations = aggregations
+  setStudyAggregations(state, aggregations) {
+    if (typeof aggregations === 'string' || aggregations instanceof String) {
+      state.studyAggregations = false
+    } else {
+      state.studyAggregations = aggregations
+    }
   },
   setProcedures(state, procedures) {
     state.procedures = procedures
@@ -237,7 +241,7 @@ const actions = {
     return session
       .get(STUDY_AGGREGATIONS)
       .then(({ data }) => {
-        commit('setSubjectAggregations', data)
+        commit('setStudyAggregations', data)
       })
       .catch(console.error)
   },
