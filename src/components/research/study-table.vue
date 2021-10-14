@@ -27,7 +27,7 @@
       multi-sort
       :no-data-text="noDataText"
       :expanded.sync="expanded"
-      :headers="headers"
+      :headers="computedHeaders"
       :items="studies"
       :loading="loading"
       :options.sync="options"
@@ -134,11 +134,6 @@ export default {
     StudyInfoCard,
     StudyTableControls
   },
-  mounted() {
-    if (this.actionPermissions) {
-      this.headers.push(this.actionsHeader)
-    }
-  },
   data: () => ({
     title: 'Studies',
     newStudyButtonText: 'New Study',
@@ -187,13 +182,19 @@ export default {
   }),
   computed: {
     actionPermissions: function() {
-      return this.checkActionsPermissions(this.user)
+      return this.checkActionPermissions(this.user)
+    },
+    computedHeaders: function() {
+      if (this.actionPermissions) {
+        return [...this.headers, this.actionsHeader]
+      }
+      return this.headers
     },
     ...mapState('research', ['studies', 'studyCount']),
     ...mapState('auth', ['user'])
   },
   methods: {
-    checkActionsPermissions(user) {
+    checkActionPermissions(user) {
       return user.isStaff || user.isSuperuser
     },
     showDeleteStudyDialog(item) {

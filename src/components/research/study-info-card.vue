@@ -31,12 +31,14 @@
           <v-textarea v-model="study.description" label="Description" />
 
           <!-- Collaborators -->
-          <v-combobox
+          <v-autocomplete
             label="Collaborators"
-            v-model="selectedCollaborators"
+            v-model="study.collaborators"
             chips
             multiple
-            :items="possibleCollaborators"
+            item-text="username"
+            item-value="pk"
+            :items="users"
           />
         </v-form>
       </v-col>
@@ -87,6 +89,17 @@ import { required, maxLength } from 'vuelidate/lib/validators'
 import { mapGetters, mapState, mapActions } from 'vuex'
 import deleteDialog from '@/components/deleteDialog.vue'
 
+const cleanStudy = {
+  title: null,
+  description: null,
+  collaborators: [],
+  subjects: []
+}
+
+function cloneStudy(value) {
+  return Object.assign({}, value || cleanStudy)
+}
+
 export default {
   name: 'StudyInfoCard',
   components: {
@@ -98,25 +111,16 @@ export default {
   created() {
     this.study = cloneStudy(this.existingStudy)
     let query = { filters: {}, options: {} }
-    this.fetchUsers(query).then(
-      (this.selectedCollaborators = this.study.collaborators.map(collaborator =>
-        this.getCollaboratorName(this.getUserByUrl(collaborator))
-      ))
-    )
+    this.fetchUsers(query)
   },
   mixins: [validationMixin],
   data: () => ({
+    study: Object.assign({}, cleanStudy),
     deleteWanted: false,
     newStudyCardTitle: 'Create New Study',
     existingStudyCardTitle: 'Edit Existing Study'
   }),
   computed: {
-    data: () => ({
-      selectedCollaborators: []
-    }),
-    possibleCollaborators: function() {
-      return this.users.map(user => this.getCollaboratorName(user))
-    },
     cardTitle: function() {
       return this.existingStudy
         ? this.existingStudyCardTitle
@@ -148,11 +152,6 @@ export default {
       let username = this.parseCollaboratorUsername(collaborator)
       return this.getUserByUsername(username)
     },
-    fixCollaboratorsProperty: function() {
-      this.study.collaborators = this.selectedCollaborators.map(
-        collaborator => this.getUserFromCollaboratorChoice(collaborator).url
-      )
-    },
     closeDialog: function() {
       this.study = Object.assign({}, cleanStudy)
       this.$v.$reset()
@@ -161,7 +160,6 @@ export default {
     createNewStudy: function() {
       this.$v.study.$touch()
       if (this.$v.study.$error) return
-      this.fixCollaboratorsProperty()
       this.createStudy(this.study)
         .then(newStudy => this.$emit('created-study', newStudy))
         .then(() => this.closeDialog())
@@ -169,7 +167,6 @@ export default {
     updateExistingStudy() {
       this.$v.study.$touch()
       if (this.$v.study.$error) return
-      this.fixCollaboratorsProperty()
       this.updateStudy(this.study).then(this.closeDialog())
     },
     ...mapActions('accounts', ['fetchUsers']),
@@ -183,17 +180,6 @@ export default {
         : this.$v.study.$touch()
     }
   }
-}
-
-const cleanStudy = {
-  title: null,
-  description: null,
-  collaborators: [],
-  subjects: []
-}
-
-function cloneStudy(value) {
-  return Object.assign({}, value || cleanStudy)
 }
 </script>
 

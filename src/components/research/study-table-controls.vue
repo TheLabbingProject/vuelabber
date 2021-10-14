@@ -79,8 +79,6 @@
         </v-row>
       </v-col>
     </v-row>
-    <br /><br />
-    <hr />
   </v-container>
 </template>
 
