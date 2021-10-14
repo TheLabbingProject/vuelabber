@@ -51,7 +51,7 @@
                 multiple
                 v-model="newCollaborators"
                 :items="potentialCollaborators"
-                item-value="url"
+                item-value="pk"
                 item-text="username"
               >
               </v-autocomplete>
@@ -143,6 +143,8 @@ export default {
     addCollaboratorDialog: function(value) {
       if (value) {
         this.fetchPotentialCollaborators(this.study.id)
+      } else {
+        this.newCollaborators = []
       }
     }
   }
