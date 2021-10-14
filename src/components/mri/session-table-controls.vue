@@ -1,13 +1,13 @@
 <template>
   <v-container>
     <v-row class="px-4">
-      <v-col v-if="!subject">
+      <v-col v-if="showPersonalInformationFilters">
         <v-text-field v-model="filters.subjectIdNumber" label="Subject ID" />
       </v-col>
-      <v-col v-if="!subject">
+      <v-col v-if="showPersonalInformationFilters">
         <v-text-field v-model="filters.subjectFirstName" label="First Name" />
       </v-col>
-      <v-col v-if="!subject">
+      <v-col v-if="showPersonalInformationFilters">
         <v-text-field v-model="filters.subjectLastName" label="Last Name" />
       </v-col>
       <!-- Scan Date -->
@@ -171,6 +171,9 @@ export default {
       return Boolean(
         this.exportDestinations.length && this.selectedSessions.length
       )
+    },
+    showPersonalInformationFilters: function() {
+      return !this.subject && this.currentUser.isSuperuser
     },
     ...mapState('accounts', ['exportDestinations']),
     ...mapState('research', ['studies']),

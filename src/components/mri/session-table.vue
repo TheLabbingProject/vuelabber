@@ -227,7 +227,6 @@ export default {
   },
   mounted() {
     if (this.currentUser.isSuperuser && this.subject == undefined) {
-      console.log('true')
       this.headers = [...this.personalInformation, ...this.headers]
     }
   },
