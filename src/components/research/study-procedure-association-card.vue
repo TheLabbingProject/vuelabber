@@ -1,7 +1,9 @@
 <template>
   <v-tabs v-model="active">
     <!-- Create new procedure -->
-    <v-tab>New</v-tab>
+    <v-tab>
+      {{ newTabTitle }}
+    </v-tab>
     <v-tab-item>
       <v-card>
         <v-card-text>
@@ -28,21 +30,23 @@
           <v-spacer />
           <!-- Create new procedure -->
           <v-btn
-            color="success"
+            :color="createButton.color"
             :disabled="$v.procedure.$error"
             @click="createNewProcedure"
           >
-            Create
+            {{ createButton.label }}
           </v-btn>
 
           <!-- Cancel procedure creation/update -->
-          <v-btn color="error" @click="closeDialog">
-            Cancel
+          <v-btn :color="cancelButton.color" @click="closeDialog">
+            {{ cancelButton.label }}
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-tab-item>
-    <v-tab>Existing</v-tab>
+    <v-tab>
+      {{ existingTabTitle }}
+    </v-tab>
     <v-tab-item>
       <v-card>
         <v-card-text>
@@ -53,6 +57,8 @@
                   clearable
                   label="Procedure"
                   v-model="selectedProcedure"
+                  item-text="title"
+                  item-value="id"
                   :items="procedureItems"
                   :loading="loadingProcedureItems"
                   :search-input.sync="existingProcedureQuery"
@@ -68,13 +74,16 @@
         <v-card-actions>
           <v-spacer />
           <!-- Create new procedure -->
-          <v-btn color="success" @click="associateSelectedProcedure">
-            Associate
+          <v-btn
+            :color="associateButton.color"
+            @click="associateSelectedProcedure"
+          >
+            {{ associateButton.label }}
           </v-btn>
 
           <!-- Cancel procedure creation/update -->
-          <v-btn color="error" @click="closeDialog">
-            Cancel
+          <v-btn :color="cancelButton.color" @click="closeDialog">
+            {{ cancelButton.label }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -98,7 +107,12 @@ export default {
     procedure: { title: '', description: '' },
     selectedProcedure: null,
     loadingProcedureItems: false,
-    existingProcedureQuery: null
+    existingProcedureQuery: null,
+    newTabTitle: 'New',
+    existingTabTitle: 'Existing',
+    cancelButton: { label: 'Cancel', color: 'error' },
+    createButton: { label: 'Create', color: 'success' },
+    associateButton: { label: 'Associate', color: 'success' }
   }),
   computed: {
     titleErrors: function() {

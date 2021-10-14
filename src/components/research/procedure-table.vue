@@ -107,7 +107,6 @@ export default {
   },
   data: () => ({
     headers: [
-      { text: 'ID', value: 'id', align: 'left', width: 1 },
       { text: 'Title', value: 'title' },
       { text: 'Description', value: 'description' }
     ],
