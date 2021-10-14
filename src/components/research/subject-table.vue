@@ -341,10 +341,11 @@ export default {
   computed: {
     computedHeaders: function() {
       if (this.currentUser.isSuperuser) {
-        this.headers.splice.apply(
-          this.headers,
-          [1, 0].concat(this.personalInformationHeaders)
-        )
+        return [
+          this.headers[0],
+          ...this.personalInformationHeaders,
+          ...this.headers.slice(1)
+        ]
       }
       return this.headers
     },
