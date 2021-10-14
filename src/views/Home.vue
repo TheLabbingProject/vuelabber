@@ -32,7 +32,7 @@
 
         <!-- Cards -->
         <v-row>
-          <v-col cols="3" v-for="user in users" :key="`user-card-${user.id}`">
+          <v-col cols="3" v-for="user in users" :key="`user-card-${user.pk}`">
             <v-card
               hover
               color="grey lighten-2 pa-1"
