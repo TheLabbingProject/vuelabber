@@ -1,14 +1,14 @@
 <template>
   <v-container>
     <v-row>
-      <v-col>
+      <!-- <v-col>
         <v-text-field
           v-model="studyUidFilter.value"
           :disabled="loading"
           :hint="studyUidFilter.hint"
           :label="studyUidFilter.label"
         ></v-text-field>
-      </v-col>
+      </v-col> -->
       <v-col>
         <v-text-field
           v-model="studyDescriptionFilter.value"
