@@ -3,7 +3,7 @@
     <v-data-table
       dense
       item-key="id"
-      :headers="headers"
+      :headers="computedHeaders"
       :items="users"
       :loading="loading"
       :options.sync="options"
@@ -117,20 +117,15 @@ import { mapActions, mapState } from 'vuex'
 
 export default {
   name: 'UserTable',
-  mounted() {
-    if (this.staffPermissions) {
-      this.headers.push(this.removeHeader)
-    }
-  },
   components: {
     UserTableControls
   },
   props: ['study'],
   data: () => ({
     headers: [
-      { text: 'ID', value: 'id', align: 'left', width: 1 },
-      { text: 'First Name', value: 'firstName' },
+      { text: 'Username', value: 'username' },
       { text: 'Last Name', value: 'lastName' },
+      { text: 'First Name', value: 'firstName' },
       { text: 'Email', value: 'email' },
       { text: 'Institute', value: 'profile.institute' }
     ],
@@ -156,6 +151,12 @@ export default {
   computed: {
     staffPermissions: function() {
       return this.user.isStaff || this.user.isSuperuser
+    },
+    computedHeaders: function() {
+      if (this.staffPermissions) {
+        return [...this.headers, this.removeHeader]
+      }
+      return this.headers
     },
     ...mapState('accounts', ['users', 'userCount']),
     ...mapState('auth', ['user'])

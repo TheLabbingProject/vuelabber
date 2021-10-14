@@ -5,7 +5,11 @@ const getUserQueryString = ({ filters, options }) => {
     ''}&username_lookup=icontains&first_name=${filters.firstName ||
     ''}&first_name_lookup=icontains&last_name=${filters.lastName ||
     ''}&last_name_lookup=icontains&email=${filters.email ||
-    ''}&email_lookup=icontains&institute=${filters.institute || ''}${
+    ''}&email_lookup=icontains${
+    filters.institute
+      ? filters.institute.map(pk => `&institute=${pk}`).join('')
+      : ''
+  }${
     filters.study ? `&study=${filters.study}` : ''
   }&study_ne=${filters.studyNotEqual || ''}&page_size=${options.itemsPerPage ||
     100}&page=${options.page || 1}&ordering=${
