@@ -183,7 +183,7 @@ export default {
     removeCollaborator(user) {
       let updatedStudy = Object.assign({}, this.study)
       updatedStudy.collaborators = updatedStudy.collaborators.filter(
-        collaboratorUrl => collaboratorUrl != user.url
+        collaboratorId => collaboratorId != user.pk
       )
       this.patchStudy(updatedStudy).then(() => {
         this.$refs.controls.update()

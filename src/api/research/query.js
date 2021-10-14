@@ -34,7 +34,8 @@ const getEventQueryString = ({ filters, options }) => {
 }
 
 const getSubjectQueryString = ({ filters, options }) => {
-  return `?id=${filters.id || ''}&id_number=${filters.idNumber ||
+  return `?pk=${filters.pk ||
+    ''}&pk_lookup=icontains&id_number=${filters.idNumber ||
     ''}&id_number_lookup=icontains&first_name=${filters.firstName ||
     ''}&first_name_lookup=icontains&last_name=${filters.lastName ||
     ''}&last_name_lookup=icontains&sex=${filters.sex ||

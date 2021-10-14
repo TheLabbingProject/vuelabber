@@ -1,7 +1,9 @@
 <template>
-  <div>
-    <v-row class="px-3 pb-3">
-      <div class="title text-left">Subjects</div>
+  <v-container>
+    <v-row>
+      <div class="title text-left">
+        {{ title }}
+      </div>
       <v-spacer />
       <v-dialog
         v-model="createSubjectDialog"
@@ -9,7 +11,9 @@
         v-if="currentUser.isStaff"
       >
         <template v-slot:activator="{ on }">
-          <v-btn color="success" v-on="on">New Subject</v-btn>
+          <v-btn :color="newSubjectButton.color" v-on="on">
+            {{ newSubjectButton.label }}
+          </v-btn>
         </template>
         <subject-info-card
           :createMode="true"
@@ -26,7 +30,7 @@
       show-expand
       single-expand
       :expanded.sync="expanded"
-      :headers="headers"
+      :headers="computedHeaders"
       :items="subjects"
       :loading="loading"
       :options.sync="options"
@@ -259,7 +263,7 @@
         </td>
       </template>
     </v-data-table>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -278,10 +282,10 @@ export default {
     SubjectTableControls
   },
   data: () => ({
+    title: 'Subjects',
+    newSubjectButton: { label: 'New Subject', color: 'success' },
     headers: [
-      { text: 'Subject ID', value: 'idNumber', align: 'center', width: 120 },
-      { text: 'First Name', value: 'firstName' },
-      { text: 'Last Name', value: 'lastName' },
+      { text: 'Primary Key', value: 'id', align: 'center', width: 120 },
       { text: 'Date of Birth', value: 'dateOfBirth', align: 'center' },
       { text: 'Sex', value: 'sex', align: 'center' },
       // { text: 'Gender', value: 'gender', sortable: false },
@@ -305,6 +309,11 @@ export default {
       }
       // { text: 'Created', value: 'created', align: 'center' },
       // { text: 'Modified', value: 'modified', align: 'center' }
+    ],
+    personalInformationHeaders: [
+      { text: 'Subject ID', value: 'idNumber', align: 'center', width: 120 },
+      { text: 'First Name', value: 'firstName' },
+      { text: 'Last Name', value: 'lastName' }
     ],
     options: {
       itemsPerPage: 25,
@@ -330,6 +339,15 @@ export default {
     selectedSubjects: []
   }),
   computed: {
+    computedHeaders: function() {
+      if (this.currentUser.isSuperuser) {
+        this.headers.splice.apply(
+          this.headers,
+          [1, 0].concat(this.personalInformationHeaders)
+        )
+      }
+      return this.headers
+    },
     ...mapState('research', ['subjects', 'subjectCount']),
     ...mapState('auth', { currentUser: 'user' })
   },
