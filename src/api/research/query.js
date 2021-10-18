@@ -84,7 +84,8 @@ const getProcedureQueryString = ({ filters, options }) => {
 
 const getProcedureStepQueryString = ({ filters, options }) => {
   return `?id=${filters.id || ''}&index=${filters.index ||
-    ''}&procedure=${filters.procedure || ''}&page_size=${
+    ''}&event_type=${filters.eventType || ''}&procedure=${filters.procedure ||
+    ''}&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage
