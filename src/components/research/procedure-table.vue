@@ -96,7 +96,7 @@ import ProcedureTableControls from '@/components/research/procedure-table-contro
 import { mapActions, mapState } from 'vuex'
 
 export default {
-  name: 'UserTable',
+  name: 'ProcedureTable',
   components: { ProcedureStepTable, ProcedureTableControls },
   props: { study: Object, showControls: { type: Boolean, default: true } },
   mounted() {
