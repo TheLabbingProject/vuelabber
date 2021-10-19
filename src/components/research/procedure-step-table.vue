@@ -49,7 +49,27 @@
 
       <!-- Data model -->
       <template v-slot:[`item.eventInfo.modelName`]="{ item }">
-        {{ getDataModelDisplay(item.eventInfo) }}
+        <v-edit-dialog
+          v-if="item.eventInfo.type == 'MeasurementDefinition'"
+          :return-value.sync="item.eventInfo.contentType"
+          large
+          @save="updateEvent(item.eventInfo)"
+        >
+          <div>{{ getDataModelDisplay(item.eventInfo) }}</div>
+          <template v-slot:input>
+            <v-select
+              v-model="item.eventInfo.contentType"
+              label="Edit"
+              single-line
+              autofocus
+              clearable
+              :items="dataAcquisitionItems"
+            ></v-select>
+          </template>
+        </v-edit-dialog>
+        <div v-else>
+          {{ getDataModelDisplay(item.eventInfo) }}
+        </div>
       </template>
 
       <!-- Title -->
@@ -173,6 +193,16 @@ export default {
     }
   }),
   computed: {
+    dataAcquisitionItems: function() {
+      return [
+        {
+          text: 'MRI Session',
+          value: this.dataAcquisitionModels.find(
+            model => model.appLabel == 'django_mri' && model.model == 'session'
+          ).id
+        }
+      ]
+    },
     ...mapState('research', [
       'dataAcquisitionModels',
       'procedureSteps',

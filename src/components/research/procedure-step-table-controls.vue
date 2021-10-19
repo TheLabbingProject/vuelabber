@@ -12,10 +12,18 @@
           :items="eventTypeItems"
         />
       </v-col>
+      <v-col :cols="2">
+        <v-select
+          label="Data Model"
+          clearable
+          multiple
+          v-model="filters.dataModel"
+          :items="dataModelItems"
+        />
+      </v-col>
       <v-col>
         <v-text-field label="Description" v-model="filters.description" />
       </v-col>
-      <v-spacer />
       <div class="pa-4">
         <v-dialog
           v-model="eventAssociationDialog"
@@ -64,14 +72,16 @@ export default {
       title: '',
       description: '',
       procedure: '',
-      eventType: ''
+      eventType: '',
+      dataModel: ''
     },
     addEventButton: { label: 'Add Event', color: 'orange lighten-2' },
     eventAssociationDialog: false,
     eventTypeItems: [
       { text: 'Data Acquisition', value: 'measurementdefinition' },
       { text: 'Task', value: 'task' }
-    ]
+    ],
+    dataModelItems: [{ text: 'MRI Session', value: 'django_mri.Session' }]
   }),
   computed: {
     query: function() {

@@ -99,7 +99,7 @@ import { mapActions, mapState } from 'vuex'
 export default {
   name: 'StudyProcedureAssociationCard',
   props: {
-    study: { type: Object, default: undefined }
+    study: { type: Object, default: () => undefined }
   },
   mixins: [validationMixin],
   data: () => ({

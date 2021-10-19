@@ -1,7 +1,9 @@
 <template>
   <v-tabs v-model="active">
     <!-- Create new event -->
-    <v-tab>New</v-tab>
+    <v-tab>
+      {{ newEventAssociationTitle }}
+    </v-tab>
     <v-tab-item>
       <v-card>
         <v-card-text>
@@ -22,10 +24,13 @@
             <!-- Type -->
             <v-radio-group v-model="event.type" row>
               <v-radio
-                label="Data Acquisition"
-                value="MeasurementDefinition"
+                :label="acquistionRadioButton.label"
+                :value="acquistionRadioButton.value"
               ></v-radio>
-              <v-radio label="Task" value="Task"></v-radio>
+              <v-radio
+                :label="taskRadioButton.label"
+                :value="taskRadioButton.value"
+              ></v-radio>
             </v-radio-group>
 
             <!-- Data acquisition model selection -->
@@ -104,15 +109,24 @@ import { mapActions, mapState } from 'vuex'
 export default {
   name: 'EventAssociationCard',
   props: {
-    procedure: { type: Object, default: undefined }
+    procedure: Object
   },
   mixins: [validationMixin],
   data: () => ({
+    newEventAssociationTitle: 'New',
     active: 0,
     event: { title: '', description: '', type: 'MeasurementDefinition' },
     selectedEvent: null,
     loadingEventItems: false,
     existingEventQuery: null,
+    acquistionRadioButton: {
+      label: 'Data Acquisition',
+      value: 'MeasurementDefinition'
+    },
+    taskRadioButton: {
+      label: 'Task',
+      value: 'Task'
+    },
     dataModels: [
       {
         text: 'MRI Session',
