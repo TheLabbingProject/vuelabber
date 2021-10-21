@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <v-row class="px-4">
       <v-col v-if="showPersonalInformationFilters">
         <v-text-field v-model="filters.subjectIdNumber" label="Subject ID" />
