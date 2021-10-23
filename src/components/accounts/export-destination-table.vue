@@ -8,7 +8,7 @@
         <v-data-table
           dense
           item-key="id"
-          :headers="headers"
+          :headers="computedHeaders"
           :items="exportDestinations"
           :loading="loading"
           :options.sync="options"
@@ -220,7 +220,6 @@ export default {
   name: 'ExportDestinationTable',
   mounted() {
     if (this.editPermissions) {
-      this.headers.push(this.actionsHeader)
       this.fetchUsers({ filters: {}, options: {} })
       this.editedItem.users.push(this.user)
     }
@@ -268,12 +267,11 @@ export default {
     confirmDeleteButton: { label: 'OK', color: 'blue darken-1' }
   }),
   computed: {
+    isCurrentUser: function() {
+      return this.currentUser.pk === this.user.pk
+    },
     editPermissions: function() {
-      if (this.user && this.currentUser) {
-        let isCurrentUser = this.currentUser.pk === this.user.pk
-        return isCurrentUser || this.currentUser.isStaff
-      }
-      return false
+      return this.isCurrentUser || this.currentUser.isStaff
     },
     formTitle() {
       return this.editedIndex === -1
@@ -285,6 +283,13 @@ export default {
         ...user,
         disabled: user.pk === this.user.pk
       }))
+    },
+    computedHeaders() {
+      if (this.editPermissions) {
+        return [...this.headers, this.actionsHeader]
+      } else {
+        return this.headers
+      }
     },
     ...mapState('accounts', [
       'exportDestinations',
