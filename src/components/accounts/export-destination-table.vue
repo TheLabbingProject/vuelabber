@@ -2,7 +2,7 @@
   <v-container>
     <v-col>
       <v-row>
-        Export Destinations
+        {{ title }}
       </v-row>
       <v-row>
         <v-data-table
@@ -53,6 +53,7 @@
                           <v-text-field
                             v-model="editedItem.title"
                             label="Title"
+                            autofocus
                           ></v-text-field>
                         </v-col>
                       </v-row>
@@ -102,10 +103,13 @@
                           <!-- User Access -->
                           <v-combobox
                             label="Share with..."
-                            v-model="selectedUsers"
+                            v-model="editedItem.users"
                             chips
                             multiple
-                            :items="possibleUsers"
+                            :items="userItems"
+                            item-value="pk"
+                            item-text="username"
+                            hint="Share this export destination with other users."
                           />
                         </v-col>
                       </v-row>
@@ -114,31 +118,35 @@
 
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" text @click="close">
-                      Cancel
+                    <v-btn :color="cancelButton.color" text @click="close">
+                      {{ cancelButton.label }}
                     </v-btn>
-                    <v-btn color="blue darken-1" text @click="save">
-                      Save
+                    <v-btn :color="saveButton.color" text @click="save">
+                      {{ saveButton.label }}
                     </v-btn>
                   </v-card-actions>
                 </v-card>
               </v-dialog>
               <v-dialog v-model="dialogDelete" max-width="500px">
                 <v-card>
-                  <v-card-title class="text-h5"
-                    >Are you sure you want to delete this item?</v-card-title
-                  >
+                  <v-card-title class="text-h5">
+                    {{ deleteDialogText }}
+                  </v-card-title>
                   <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" text @click="closeDelete">
-                      Cancel
+                    <v-btn
+                      :color="cancelButton.color"
+                      text
+                      @click="closeDelete"
+                    >
+                      {{ cancelButton.label }}
                     </v-btn>
                     <v-btn
-                      color="blue darken-1"
+                      :color="confirmDeleteButton.color"
                       text
                       @click="deleteExportDestination(editedItem)"
                     >
-                      OK
+                      {{ confirmDeleteButton.label }}
                     </v-btn>
                     <v-spacer></v-spacer>
                   </v-card-actions>
@@ -204,7 +212,8 @@ const EMPTY_EXPORT_DESTINATION = {
   ip: '',
   username: '',
   password: '',
-  destination: ''
+  destination: '',
+  users: []
 }
 
 export default {
@@ -212,11 +221,8 @@ export default {
   mounted() {
     if (this.editPermissions) {
       this.headers.push(this.actionsHeader)
-      this.selectedUsers.push({
-        text: this.getUserRepresentation(this.currentUser),
-        value: this.currentUser.id
-      })
       this.fetchUsers({ filters: {}, options: {} })
+      this.editedItem.users.push(this.user)
     }
   },
   components: {
@@ -224,6 +230,7 @@ export default {
   },
   props: ['user'],
   data: () => ({
+    title: 'Export Destinations',
     headers: [
       { text: 'Title', value: 'title' },
       { text: 'Description', value: 'description' },
@@ -255,12 +262,15 @@ export default {
     editItemFormTitle: 'Edit Export Destination',
     reachableExportDestinationColor: 'green',
     unreachableExportDestinationColor: 'red',
-    selectedUsers: []
+    deleteDialogText: 'Are you sure you want to delete this item?',
+    cancelButton: { label: 'Cancel', color: 'blue darken-1' },
+    saveButton: { label: 'Save', color: 'blue darken-1' },
+    confirmDeleteButton: { label: 'OK', color: 'blue darken-1' }
   }),
   computed: {
     editPermissions: function() {
       if (this.user && this.currentUser) {
-        let isCurrentUser = this.currentUser.id === this.user.id
+        let isCurrentUser = this.currentUser.pk === this.user.pk
         return isCurrentUser || this.currentUser.isStaff
       }
       return false
@@ -270,10 +280,10 @@ export default {
         ? this.newItemFormTitle
         : this.editItemFormTitle
     },
-    possibleUsers: function() {
+    userItems() {
       return this.users.map(user => ({
-        text: this.getUserRepresentation(user),
-        value: user.id
+        ...user,
+        disabled: user.pk === this.user.pk
       }))
     },
     ...mapState('accounts', [
@@ -292,8 +302,6 @@ export default {
     }
   },
   methods: {
-    getUserRepresentation: user =>
-      `${user.firstName} ${user.lastName} [${user.username}]`,
     itemStatusColor(item) {
       return item.status
         ? this.reachableExportDestinationColor
@@ -302,10 +310,6 @@ export default {
     editItem(item) {
       this.editedIndex = this.exportDestinations.indexOf(item)
       this.editedItem = Object.assign({}, item)
-      this.selectedUsers = this.editedItem.users.map(user => ({
-        text: this.getUserRepresentation(user),
-        value: this.user.id
-      }))
       this.dialog = true
     },
     deleteItem(item) {
@@ -328,11 +332,15 @@ export default {
       })
     },
     save() {
-      this.editedItem.userIds = this.selectedUsers.map(user => user.value)
+      let exportDestination = Object.assign({}, this.editedItem)
+      exportDestination['userIds'] = exportDestination.users.map(
+        user => user.pk
+      )
+      delete exportDestination['users']
       if (this.editedIndex > -1) {
-        this.patchExportDestination(this.editedItem)
+        this.patchExportDestination(exportDestination)
       } else {
-        this.createExportDestination(this.editedItem)
+        this.createExportDestination(exportDestination)
       }
       this.close()
     },
