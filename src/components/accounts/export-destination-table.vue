@@ -144,7 +144,7 @@
                     <v-btn
                       :color="confirmDeleteButton.color"
                       text
-                      @click="deleteExportDestination(editedItem)"
+                      @click="removeExportDestination(editedItem)"
                     >
                       {{ confirmDeleteButton.label }}
                     </v-btn>
@@ -317,6 +317,12 @@ export default {
       this.editedItem = Object.assign({}, item)
       this.dialogDelete = true
     },
+    removeExportDestination(item) {
+      this.deleteExportDestination(item).then(() => {
+        this.$refs['controls'].update()
+        this.dialogDelete = false
+      })
+    },
     close() {
       this.dialog = false
       this.$nextTick(() => {
@@ -338,9 +344,13 @@ export default {
       )
       delete exportDestination['users']
       if (this.editedIndex > -1) {
-        this.patchExportDestination(exportDestination)
+        this.patchExportDestination(exportDestination).then(() =>
+          this.$refs['controls'].update()
+        )
       } else {
-        this.createExportDestination(exportDestination)
+        this.createExportDestination(exportDestination).then(() =>
+          this.$refs['controls'].update()
+        )
       }
       this.close()
     },
