@@ -2,36 +2,36 @@
   <v-row class="px-4" align="baseline">
     <v-col>
       <v-text-field
-        label="ID"
-        v-model="filters.taskId"
-        hint="Unique task identifier"
+        v-model="taskIdFilter.value"
         autofocus
+        :label="taskIdFilter.label"
+        :hint="taskIdFilter.hint"
       />
     </v-col>
     <v-col>
       <v-text-field
-        label="Task Name"
-        v-model="filters.taskName"
-        hint="Name of the assigned task, usually in the format 'app.task-name'"
+        v-model="taskNameFilter.value"
+        :hint="taskNameFilter.hint"
+        :label="taskNameFilter.label"
       />
     </v-col>
     <v-col>
       <v-text-field
-        label="Worker"
-        v-model="filters.worker"
-        hint="Worker process identifier in the format 'worker@host'"
+        v-model="workerFilter.value"
+        :hint="workerFilter.hint"
+        :label="workerFilter.label"
       />
     </v-col>
     <v-col>
       <v-select
+        v-model="statusFilter.value"
         chips
         deletable-chips
         dense
         multiple
+        :hint="statusFilter.hint"
         :items="stateSelectOptions"
-        :label="stateSelectLabel"
-        v-model="filters.status"
-        hint="Current task state"
+        :label="statusFilter.label"
       />
     </v-col>
     <v-col :cols="1" v-if="showDeleteButton">
@@ -62,21 +62,36 @@ const STATE_SELECT_OPTIONS = [
 
 export default {
   name: 'TaskTableControls',
-  props: { options: Object, selectedTasks: Array },
+  props: { options: Object, selectedTasks: Array, parent: Object },
   mounted() {
     this.update()
   },
   data: () => ({
-    filters: {
-      taskId: '',
-      taskName: '',
-      status: [],
-      worker: ''
+    taskIdFilter: { label: 'ID', hint: 'Unique task identifier', value: '' },
+    taskNameFilter: {
+      label: 'Task Name',
+      hint: "Name of the assigned task, usually in the format 'app.task-name'",
+      value: ''
     },
+    workerFilter: {
+      label: 'Worker',
+      hint: "Worker process identifier in the format 'worker@host'",
+      value: ''
+    },
+    statusFilter: { label: 'Status', hint: '', value: [] },
     stateSelectLabel: 'Status',
     stateSelectOptions: STATE_SELECT_OPTIONS
   }),
   computed: {
+    filters: function() {
+      return {
+        taskId: this.taskIdFilter.value,
+        taskName: this.taskNameFilter.value,
+        status: this.statusFilter.value,
+        worker: this.workerFilter.value,
+        parent: this.parent.taskId
+      }
+    },
     query: function() {
       let options = Object.assign({}, this.options)
       options.sortBy = options.sortBy.map(field => camelToSnake(field))
@@ -88,7 +103,6 @@ export default {
     disableDeleteButton: function() {
       return !this.selectedTasks.length
     },
-    ...mapState('accounts', ['tasks']),
     ...mapState('auth', ['user'])
   },
   methods: {

@@ -40,7 +40,8 @@ const getExportDestinationQueryString = ({ filters, options }) => {
 }
 
 const getTaskResultQueryString = ({ filters, options }) => {
-  return `?id=${filters.id || ''}&task_id=${filters.taskId ||
+  return `?id=${filters.id || ''}&parent=${filters.parent ||
+    ''}&parent_lookup=exact&task_id=${filters.taskId ||
     ''}&task_id_lookup=icontains&task_name=${filters.taskName ||
     ''}&task_name_lookup=icontains&worker=${filters.worker ||
     ''}&worker_lookup=icontains${

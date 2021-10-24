@@ -8,10 +8,10 @@
       ref="taskTable"
       multi-sort
       :headers="headers"
-      :items="tasks"
+      :items="tasks[parent.taskId]"
       :loading="loading"
       :options.sync="options"
-      :server-items-length="taskCount"
+      :server-items-length="taskCount[parent.taskId]"
       :expanded.sync="expanded"
       :footer-props="{
         itemsPerPageOptions
@@ -22,6 +22,7 @@
         <task-table-controls
           :options="options"
           :selectedTasks="selectedTasks"
+          :parent="parent"
           @fetch-tasks-start="loading = true"
           @fetch-tasks-end="loading = false"
           @task-delete-end="handleTaskDeletion"
@@ -87,7 +88,7 @@ export default {
     TaskTableControls,
     TaskInfo
   },
-  props: ['study'],
+  props: { parent: { type: Object, default: () => ({ taskId: 'NULL' }) } },
   data: () => ({
     headers: [
       { text: 'Task ID', value: 'taskId', align: 'center' },
