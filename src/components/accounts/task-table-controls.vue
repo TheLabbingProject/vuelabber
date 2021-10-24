@@ -115,9 +115,7 @@ export default {
     deleteSelectedTasks() {
       this.$emit('task-delete-start')
       let promises = this.selectedTasks.map(task => this.deleteTask(task))
-      Promise.all(promises)
-        .then(() => this.$emit('task-delete-end'))
-        .catch(console.log)
+      Promise.all(promises).then(() => this.$emit('task-delete-end'))
     },
     ...mapActions('accounts', ['deleteTask', 'fetchTasks'])
   },
