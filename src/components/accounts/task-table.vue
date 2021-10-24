@@ -8,10 +8,10 @@
       ref="taskTable"
       multi-sort
       :headers="headers"
-      :items="tasks[parent.taskId]"
+      :items="tasks[parentKey]"
       :loading="loading"
       :options.sync="options"
-      :server-items-length="taskCount[parent.taskId]"
+      :server-items-length="taskCount[parentKey]"
       :expanded.sync="expanded"
       :footer-props="{
         itemsPerPageOptions
@@ -88,7 +88,10 @@ export default {
     TaskTableControls,
     TaskInfo
   },
-  props: { parent: { type: Object, default: () => ({ taskId: 'NULL' }) } },
+  props: { parent: Object },
+  mounted() {
+    this.isMounted = true
+  },
   data: () => ({
     headers: [
       { text: 'Task ID', value: 'taskId', align: 'center' },
@@ -127,11 +130,18 @@ export default {
     selectedTasks: [],
     deleteSnackbar: false,
     deleteSnackbarTimeout: 2500,
-    deleteSnackbarText: ''
+    deleteSnackbarText: '',
+    isMounted: false
   }),
   computed: {
     adminPermissions: function() {
       return this.user.isSuperuser
+    },
+    parentKey: function() {
+      if (!this.isMounted) {
+        return
+      }
+      return this.$refs.controls.taskParent
     },
     ...mapState('accounts', ['tasks', 'taskCount']),
     ...mapState('auth', ['user'])
