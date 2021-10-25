@@ -15,6 +15,7 @@
           :disabled="loading"
           :hint="studyDescriptionFilter.hint"
           :label="studyDescriptionFilter.label"
+          autofocus
         ></v-text-field>
       </v-col>
       <!-- Date -->

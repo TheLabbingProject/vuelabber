@@ -3,7 +3,11 @@
     <v-row class="px-5">
       <!-- Patient UID -->
       <v-col>
-        <v-text-field :label="uidFilter.label" v-model="uidFilter.value" />
+        <v-text-field
+          :label="uidFilter.label"
+          v-model="uidFilter.value"
+          autofocus
+        />
       </v-col>
 
       <!-- First Name -->

@@ -2,7 +2,11 @@
   <v-container fluid>
     <v-row class="px-4">
       <v-col v-if="showPersonalInformationFilters">
-        <v-text-field v-model="filters.subjectIdNumber" label="Subject ID" />
+        <v-text-field
+          v-model="filters.subjectIdNumber"
+          label="Subject ID"
+          autofocus
+        />
       </v-col>
       <v-col v-if="showPersonalInformationFilters">
         <v-text-field v-model="filters.subjectFirstName" label="First Name" />

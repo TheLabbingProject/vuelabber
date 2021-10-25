@@ -7,6 +7,7 @@
           label="Study Description"
           type="text"
           v-model="filters.studyDescription"
+          autofocus
         />
       </v-col>
       <!-- Date -->

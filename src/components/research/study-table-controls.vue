@@ -2,7 +2,11 @@
   <v-container>
     <v-row class="px-4 align-left">
       <v-col :cols="2">
-        <v-text-field v-model="titleFilter.value" :label="titleFilter.label" />
+        <v-text-field
+          autofocus
+          v-model="titleFilter.value"
+          :label="titleFilter.label"
+        />
       </v-col>
       <v-col>
         <v-text-field

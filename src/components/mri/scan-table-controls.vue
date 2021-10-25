@@ -1,10 +1,11 @@
 <template>
   <v-col>
     <!-- Subject Information -->
-    <v-row class="px-4 justify-space-between align-center" v-if="!subject">
+    <v-row v-if="!subject">
       <!-- Subject ID Number -->
       <v-col>
         <v-text-field
+          autofocus
           clearable
           v-model="filters.subjectIdNumber"
           label="Subject ID"
@@ -29,7 +30,7 @@
     </v-row>
 
     <!-- Scan Information -->
-    <v-row class="px-4 justify-space-between align-center">
+    <v-row>
       <!-- Number -->
       <v-col>
         <v-text-field clearable v-model="filters.number" label="Scan Number" />
