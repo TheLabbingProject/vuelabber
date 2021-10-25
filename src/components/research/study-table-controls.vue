@@ -21,7 +21,7 @@
           :loading="loadingCollaborators"
           @update:search-input="updateCollaborators"
           item-text="username"
-          item-value="id"
+          item-value="pk"
         />
       </v-col>
       <v-col :cols="2">
