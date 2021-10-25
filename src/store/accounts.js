@@ -16,12 +16,12 @@ import {
 const state = {
   users: [],
   labs: [],
-  tasks: [],
+  tasks: {},
   institutionNames: [],
   potentialCollaborators: [],
   exportDestinations: [],
   userCount: 0,
-  taskCount: 0,
+  taskCount: {},
   exportDestinationCount: 0
 }
 
@@ -47,11 +47,11 @@ const mutations = {
   setUserCount(state, count) {
     state.userCount = count
   },
-  setTasks(state, tasks) {
-    state.tasks = tasks
+  setTasks(state, { tasks, parent }) {
+    state.tasks[parent] = tasks
   },
-  setTaskCount(state, count) {
-    state.taskCount = count
+  setTaskCount(state, { count, parent }) {
+    state.taskCount[parent] = count
   },
   setPotentialCollaborators(state, potentialCollaborators) {
     state.potentialCollaborators = potentialCollaborators
@@ -200,8 +200,14 @@ const actions = {
     return session
       .get(URL)
       .then(({ data }) => {
-        commit('setTasks', data.results)
-        commit('setTaskCount', data.count)
+        commit('setTasks', {
+          tasks: data.results,
+          parent: query.filters.parent
+        })
+        commit('setTaskCount', {
+          count: data.count,
+          parent: query.filters.parent
+        })
       })
       .catch(console.error)
   },

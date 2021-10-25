@@ -39,6 +39,11 @@
         />
       </v-col>
     </v-row>
+    <v-row v-if="task.meta && task.meta.children">
+      <v-col>
+        <task-table :parent="task" />
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -46,6 +51,7 @@
 export default {
   name: 'TaskInfo',
   props: { task: Object },
+  components: { TaskTable: () => import('./task-table.vue') },
   computed: {
     taskMeta: function() {
       return this.jsonify(this.task.meta)
