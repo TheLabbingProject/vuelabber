@@ -71,7 +71,7 @@ export default {
   methods: {
     update() {
       this.$emit('fetch-procedures-start')
-      this.fetchProcedures(this.query).then(() => {
+      this.fetchProcedures({ query: this.query }).then(() => {
         this.$emit('fetch-procedures-end')
       })
     },

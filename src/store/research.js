@@ -245,24 +245,18 @@ const actions = {
       })
       .catch(console.error)
   },
-  fetchProcedures({ commit }, query) {
+  fetchProcedures({ commit }, { query, queryItems = false } = {}) {
     let queryString = getProcedureQueryString(query)
     let URL = `${PROCEDURES}/${queryString}`
     return session
       .get(URL)
       .then(({ data }) => {
-        commit('setProcedures', data.results)
-        commit('setProcedureCount', data.count)
-      })
-      .catch(console.error)
-  },
-  fetchProcedureItems({ commit }, query) {
-    let queryString = getProcedureQueryString(query)
-    let URL = `${PROCEDURES}/items/${queryString}`
-    return session
-      .get(URL)
-      .then(({ data }) => {
-        commit('setProcedureItems', data.results)
+        if (queryItems) {
+          commit('setProcedureItems', data.results)
+        } else {
+          commit('setProcedures', data.results)
+          commit('setProcedureCount', data.count)
+        }
       })
       .catch(console.error)
   },
@@ -273,16 +267,6 @@ const actions = {
       .get(URL)
       .then(({ data }) => {
         commit('setMeasurementDefinitions', data.results)
-      })
-      .catch(console.error)
-  },
-  fetchEventItems({ commit }, query) {
-    let queryString = getEventQueryString(query)
-    let URL = `${EVENTS}/items/${queryString}`
-    return session
-      .get(URL)
-      .then(({ data }) => {
-        commit('setEventItems', data.results)
       })
       .catch(console.error)
   },
@@ -308,14 +292,28 @@ const actions = {
       })
       .catch(console.error)
   },
-  fetchEvents({ commit }, query) {
+  fetchEvents({ commit }, { query, queryItems = false } = {}) {
     let queryString = getEventQueryString(query)
     return session
       .get(`${EVENTS}/${queryString}`)
       .then(({ data }) => {
-        commit('setEvents', data.results)
-        commit('setEventCount', data.count)
+        if (queryItems) {
+          commit('setEventItems', data.results)
+        } else {
+          commit('setEvents', data.results)
+          commit('setEventCount', data.count)
+        }
         return data.results
+      })
+      .catch(console.error)
+  },
+  fetchEventItems({ commit }, query) {
+    let queryString = getEventQueryString(query)
+    let URL = `${EVENTS}/items/${queryString}`
+    return session
+      .get(URL)
+      .then(({ data }) => {
+        commit('setEventItems', data.results)
       })
       .catch(console.error)
   },

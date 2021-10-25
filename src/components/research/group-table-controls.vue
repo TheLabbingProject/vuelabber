@@ -1,22 +1,11 @@
 <template>
-  <div>
+  <v-container>
     <v-row class="px-4 align-left" v-if="showControls">
-      <v-col class="pl-8" :cols="1" style="max-width: 80px;">
-        <v-text-field label="ID" v-model="filters.id" />
-      </v-col>
       <v-col :cols="2">
-        <v-text-field
-          label="Title"
-          v-model="filters.title"
-          :disabled="Boolean(filters.id)"
-        />
+        <v-text-field label="Title" v-model="filters.title" />
       </v-col>
       <v-col>
-        <v-text-field
-          label="Description"
-          v-model="filters.description"
-          :disabled="Boolean(filters.id)"
-        />
+        <v-text-field label="Description" v-model="filters.description" />
       </v-col>
       <div class="pa-4">
         <v-dialog
@@ -37,7 +26,7 @@
         </v-dialog>
       </div>
     </v-row>
-  </div>
+  </v-container>
 </template>
 <script>
 import { mapActions, mapState } from 'vuex'

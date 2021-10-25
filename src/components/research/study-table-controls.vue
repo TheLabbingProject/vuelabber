@@ -138,11 +138,10 @@ export default {
     },
     updateProcedures(value) {
       this.loadingProcedures = true
-      this.fetchProcedures({ filters: { title: value }, options: {} }).then(
-        () => {
-          this.loadingProcedures = false
-        }
-      )
+      let query = { filters: { title: value }, options: {} }
+      this.fetchProcedures({ query }).then(() => {
+        this.loadingProcedures = false
+      })
     },
     updateStudyAggregations() {
       this.$emit('fetch-study-aggregations-start')

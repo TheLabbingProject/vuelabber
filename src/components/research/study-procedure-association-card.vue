@@ -17,6 +17,7 @@
                 :counter="255"
                 :error-messages="titleErrors"
                 @blur="checkIfValid()"
+                autofocus
               />
 
               <!-- Description -->
@@ -60,10 +61,11 @@
                   item-text="title"
                   item-value="id"
                   :items="procedureItems"
-                  :loading="loadingProcedureItems"
+                  :loading="loadingProcedures"
                   :search-input.sync="existingProcedureQuery"
                   @focus="updateProcedureItems"
                   @update:list-index="updateProcedureItems"
+                  autofocus
                 />
               </v-col>
             </v-form>
@@ -106,7 +108,7 @@ export default {
     active: 0,
     procedure: { title: '', description: '' },
     selectedProcedure: null,
-    loadingProcedureItems: false,
+    loadingProcedures: false,
     existingProcedureQuery: null,
     newTabTitle: 'New',
     existingTabTitle: 'Existing',
@@ -179,14 +181,14 @@ export default {
         filters: { title: value, excludeStudy: this.study.id },
         options: {}
       }
-      this.loadingProcedureItems = true
-      this.fetchProcedureItems(query).then(
-        () => (this.loadingProcedureItems = false)
+      this.loadingProcedures = true
+      this.fetchProcedures({ query, queryItems: true }).then(
+        () => (this.loadingProcedures = false)
       )
     },
     ...mapActions('research', [
       'createProcedure',
-      'fetchProcedureItems',
+      'fetchProcedures',
       'patchStudy'
     ])
   }

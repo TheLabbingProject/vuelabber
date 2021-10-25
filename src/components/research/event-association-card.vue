@@ -16,6 +16,7 @@
               :counter="255"
               :error-messages="titleErrors"
               @blur="checkIfValid()"
+              autofocus
             />
 
             <!-- Description -->
@@ -74,10 +75,13 @@
                 label="Event"
                 v-model="selectedEvent"
                 :items="eventItems"
+                item-text="title"
+                item-value="id"
                 :loading="loadingEventItems"
                 :search-input.sync="existingEventQuery"
                 @focus="updateEventItems"
                 @update:list-index="updateEventItems"
+                autofocus
               />
             </v-col>
           </v-form>
@@ -210,12 +214,14 @@ export default {
         options: {}
       }
       this.loadingEventItems = true
-      this.fetchEventItems(query).then(() => (this.loadingEventItems = false))
+      this.fetchEvents({ query, queryItems: true }).then(
+        () => (this.loadingEventItems = false)
+      )
     },
     ...mapActions('research', [
       'createEvent',
       'createProcedureStep',
-      'fetchEventItems',
+      'fetchEvents',
       'patchProcedure'
     ])
   }

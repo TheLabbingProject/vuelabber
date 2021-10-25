@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <v-container>
     <v-data-table
       dense
       item-key="id"
-      :headers="headers"
+      :headers="computedHeaders"
       :items="groups"
       :loading="loading"
       :options.sync="options"
@@ -31,7 +31,7 @@
         </v-btn>
       </template>
     </v-data-table>
-  </div>
+  </v-container>
 </template>
 <script>
 import { mapActions, mapState } from 'vuex'
@@ -41,17 +41,8 @@ export default {
   name: 'GroupTable',
   components: { GroupTableControls },
   props: { study: Object, showControls: { type: Boolean, default: true } },
-  mounted() {
-    if (!this.study) {
-      this.headers.splice(1, 0, this.studyHeader)
-    }
-    if (this.user.isStaff) {
-      this.headers.push(this.deleteHeader)
-    }
-  },
   data: () => ({
     headers: [
-      { text: 'ID', value: 'id', align: 'center', width: 80 },
       { text: 'Title', value: 'title', align: 'left', width: 270 },
       { text: 'Description', value: 'description', align: 'left' }
     ],
@@ -73,6 +64,16 @@ export default {
     loading: false
   }),
   computed: {
+    computedHeaders: function() {
+      let headers = this.headers.slice()
+      if (this.user.isStaff) {
+        headers = [...headers, this.deleteHeader]
+      }
+      if (!this.study) {
+        headers = [this.studyHeader, ...headers]
+      }
+      return headers
+    },
     ...mapState('research', ['groups', 'groupCount']),
     ...mapState('auth', ['user'])
   },
