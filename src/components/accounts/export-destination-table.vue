@@ -220,8 +220,13 @@ export default {
   name: 'ExportDestinationTable',
   mounted() {
     if (this.editPermissions) {
-      this.fetchUsers({ filters: {}, options: {} })
-      this.editedItem.users.push(this.user)
+      this.fetchUsers({ filters: {}, options: {} }).then(() => {
+        if (
+          !this.editedItem.users.map(user => user.id).includes(this.user.id)
+        ) {
+          this.editedItem.users.push(this.user)
+        }
+      })
     }
   },
   components: {
