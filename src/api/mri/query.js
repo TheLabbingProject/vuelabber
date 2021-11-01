@@ -16,7 +16,13 @@ const getScanQueryString = ({ filters, options }) => {
     ''}&created_after=&created_before=&scan_time_after=${filters.afterDate ||
     ''}&scan_time_before=${filters.beforeDate ||
     ''}&echo_time=&inversion_time=&repetition_time=&institution_name=&is_updated_from_dicom=&dicom__id=${filters.dicomId ||
-    ''}&sequence_type=${filters.sequenceType || ''}&session=${filters.session ||
+    ''}${
+    filters.sequenceType
+      ? filters.sequenceType
+          .map(identifier => `&sequence_type=${identifier}`)
+          .join('')
+      : ''
+  }&session=${filters.session ||
     ''}&subject_id_number=${filters.subjectIdNumber ||
     ''}&subject_id_number_lookup=icontains&subject_first_name=${filters.subjectFirstName ||
     ''}&subject_first_name_lookup=icontains&subject_last_name=${filters.subjectLastName ||

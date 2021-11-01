@@ -92,6 +92,7 @@
         <v-select
           chips
           clearable
+          dense
           multiple
           label="Sequence Type"
           v-model="filters.sequenceType"
@@ -130,9 +131,9 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
-import { createSelectItems } from '@/components/utils'
 import { SCANS } from '@/api/mri/endpoints.js'
 import { SERIES } from '@/api/dicom/endpoints.js'
+import { SEQUENCE_TYPE_ITEMS } from '@/components/utils.js'
 
 export default {
   name: 'ScanTableControls',
@@ -169,15 +170,11 @@ export default {
       subjectLastName: ''
     },
     afterDateMenu: false,
-    beforeDateMenu: false
+    beforeDateMenu: false,
+    sequenceTypeItems: SEQUENCE_TYPE_ITEMS
   }),
   // TODO: ADD SUBJECT FILTERS
   computed: {
-    sequenceTypeItems: function() {
-      let items = createSelectItems(this.sequenceTypes, 'title', 'id')
-      items.push({ text: 'Undefined', value: -1 })
-      return items
-    },
     parsedOptions: function() {
       let options = Object.assign({}, this.options)
       options['sortBy'] = options['sortBy'].map(item => {
@@ -209,7 +206,7 @@ export default {
     dicomDownloadUrl: function() {
       return `${SERIES}/to_zip/${this.selectedDicomIdsString}/`
     },
-    ...mapState('mri', ['sequenceTypes', 'scans'])
+    ...mapState('mri', ['scans'])
   },
   methods: {
     update() {

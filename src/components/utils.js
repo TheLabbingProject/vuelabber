@@ -38,3 +38,46 @@ export function isInteger(n) {
 export function isFloat(n) {
   return Number(n) === n && n % 1 !== 0
 }
+
+export const SEQUENCE_TYPE_ITEMS = [
+  { text: 'DWI', value: 'dwi' },
+  {
+    text: 'DWI Fieldmap',
+    value: 'dwi_fieldmap'
+  },
+  {
+    text: 'FLAIR',
+    value: 'flair'
+  },
+  { text: 'fMRI', value: 'bold' },
+  {
+    text: 'fMRI Fieldmap',
+    value: 'func_fieldmap'
+  },
+  {
+    text: 'fMRI SBRef',
+    value: 'func_sbref'
+  },
+  { text: 'IR-EPI', value: 'ir_epi' },
+  { text: 'Localizer', value: 'localizer' },
+  { text: 'MPRAGE', value: 'mprage' },
+  {
+    text: 'T2-weighted',
+    value: 't2w'
+  },
+  { text: 'Unknown', value: 'null' }
+]
+
+export const SEQUENCE_TYPE_STYLING = {
+  dwi: { color: 'purple' },
+  dwi_fieldmap: { color: 'purple', textColor: 'white' },
+  flair: { color: 'grey lighten-1', textColor: 'black' },
+  bold: { color: 'orange' },
+  func_fieldmap: { color: 'orange', textColor: 'white' },
+  func_sbref: { color: 'orange', textColor: 'white' },
+  ir_epi: { color: 'teal' },
+  localizer: { color: 'blue-grey' },
+  mprage: { color: 'green' },
+  t2w: { color: 'grey darken-1', textColor: 'white' },
+  null: { color: 'grey' }
+}

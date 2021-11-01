@@ -28,10 +28,10 @@ const getSeriesQueryString = ({ filters, options }) => {
     ''}&study_description=${filters.studyDescription ||
     ''}&modality=${filters.modality || ''}&description=${filters.description ||
     ''}&description_lookup=icontains&protocol_name=&number=${filters.number ||
-    ''}&created_after_date=${filters.afterDate ||
-    ''}&created_before_date=${filters.beforeDate || ''}&date=${filters.date ||
-    ''}&created_after_time=${filters.afterTime ||
-    ''}&created_before_time=${filters.beforeTime || ''}&echo_time_min=${
+    ''}&date_after=${filters.afterDate ||
+    ''}&date_before=${filters.beforeDate ||
+    ''}&time_after=${filters.afterTime ||
+    ''}&time_before=${filters.beforeTime || ''}&echo_time_min=${
     filters.echoTime && 'min' in filters.echoTime ? filters.echoTime.min : ''
   }&echo_time_max=${
     filters.echoTime && 'max' in filters.echoTime ? filters.echoTime.max : ''
@@ -74,16 +74,19 @@ const getSeriesQueryString = ({ filters, options }) => {
     ''}&institution_name=${filters.institutionName ||
     ''}&pulse_sequence_name=${filters.pulseSequenceName ||
     ''}&sequence_name=${filters.sequenceName ||
-    ''}&patient__id=${filters.patientId ||
-    ''}&header_fields=${filters.headerFields || ''}&page_size=${
+    ''}&patient__id=${filters.patientId || ''}${
+    filters.sequenceType
+      ? filters.sequenceType
+          .map(identifier => `&sequence_type=${identifier}`)
+          .join('')
+      : ''
+  }&header_fields=${filters.headerFields || ''}&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage
         : 10000
       : 100
-  }&page=${options.page || 1}&ordering=${
-    options.descending ? '-' + options.sortBy : options.sortBy
-  }`
+  }&page=${options.page || 1}&ordering=${parseOrdering(options)}`
 }
 
 const getStudyQueryString = ({ filters, options }) => {

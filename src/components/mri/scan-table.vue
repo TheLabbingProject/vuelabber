@@ -93,30 +93,14 @@
 
       <!-- Sequence Type -->
       <template v-slot:[`item.sequenceType`]="{ item }">
-        <!-- Existing -->
-        <div v-if="item.sequenceType" class="py-1">
-          <v-dialog v-model="sequenceTypeDialog[item.id]" width="800px">
-            <template v-slot:activator="{ on }">
-              <v-btn small class="info" v-on="on">{{
-                item.sequenceType.title
-              }}</v-btn>
-            </template>
-            <protocol-information :scan="item" />
-          </v-dialog>
-        </div>
-        <!-- Create -->
-        <div v-else class="py-1">
-          <v-dialog v-model="sequenceTypeDialog[item.id]" width="400px">
-            <template v-slot:activator="{ on }">
-              <v-btn small class="warning" v-on="on">Create</v-btn>
-            </template>
-            <edit-sequence-type
-              :fromScan="item"
-              @close-dialog="sequenceTypeDialog[item.id] = false"
-              @created-sequence-type="update"
-            />
-          </v-dialog>
-        </div>
+        <v-chip
+          class="ma-1"
+          label
+          :color="getSequenceTypeColor(item.sequenceType)"
+          :text-color="getSequenceTypeTextColor(item.sequenceType)"
+        >
+          {{ getSequenceTypeText(item.sequenceType) }}
+        </v-chip>
       </template>
 
       <!-- Spatial Resolution -->
@@ -162,10 +146,12 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex'
+import {
+  SEQUENCE_TYPE_STYLING,
+  SEQUENCE_TYPE_ITEMS
+} from '@/components/utils.js'
 import { scanPreviewScript } from '@/api/mri/endpoints'
-import EditSequenceType from '@/components/mri/edit-sequence-type.vue'
 import GroupAssociation from '@/components/mri/group-association.vue'
-import ProtocolInformation from '@/components/dicom/protocol-information.vue'
 import RunTable from '@/components/analysis/run-table.vue'
 // import ScanUpload from '@/components/mri/scan-upload.vue'
 import ScanTableControls from '@/components/mri/scan-table-controls.vue'
@@ -178,15 +164,12 @@ export default {
     session: { type: Object, default: undefined }
   },
   components: {
-    EditSequenceType,
     GroupAssociation,
-    ProtocolInformation,
     RunTable,
     ScanTableControls
     // ScanUpload
   },
   mounted() {
-    this.fetchSequenceTypes()
     let groupQuery = { filters: {}, options: {} }
     this.fetchGroups(groupQuery)
     if (this.subject != undefined) {
@@ -205,7 +188,6 @@ export default {
     }
   },
   data: () => ({
-    sequenceTypeDialog: {},
     headers: [
       { text: 'Subject ID', value: 'subject.idNumber', align: 'center' },
       { text: 'First Name', value: 'subject.firstName', align: 'center' },
@@ -248,7 +230,9 @@ export default {
     scanPreviewKey: 0,
     editSubjectDialog: {},
     previewMessage: '',
-    showPreview: false
+    showPreview: false,
+    sequenceStyle: SEQUENCE_TYPE_STYLING,
+    sequenceItems: SEQUENCE_TYPE_ITEMS
   }),
   computed: {
     scanPreviewId: function() {
@@ -299,7 +283,23 @@ export default {
         this.previewMessage = ''
       })
     },
-    ...mapActions('mri', ['fetchSequenceTypes', 'updateScan']),
+    getSequenceTypeText(sequenceTypeValue) {
+      let sequence = this.sequenceItems.find(
+        sequence => sequenceTypeValue == sequence.value
+      )
+      return sequence ? sequence.text : 'Unknown'
+    },
+    getSequenceTypeColor(sequenceTypeValue) {
+      return sequenceTypeValue in this.sequenceStyle
+        ? this.sequenceStyle[sequenceTypeValue].color
+        : 'grey'
+    },
+    getSequenceTypeTextColor(sequenceTypeValue) {
+      return sequenceTypeValue in this.sequenceStyle
+        ? this.sequenceStyle[sequenceTypeValue].textColor
+        : 'black'
+    },
+    ...mapActions('mri', ['updateScan']),
     ...mapActions('research', ['fetchGroups'])
   }
 }

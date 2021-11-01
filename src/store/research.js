@@ -307,16 +307,6 @@ const actions = {
       })
       .catch(console.error)
   },
-  fetchEventItems({ commit }, query) {
-    let queryString = getEventQueryString(query)
-    let URL = `${EVENTS}/items/${queryString}`
-    return session
-      .get(URL)
-      .then(({ data }) => {
-        commit('setEventItems', data.results)
-      })
-      .catch(console.error)
-  },
   fetchGroups({ commit }, { filters, options }) {
     let queryString = getGroupQueryString({ filters, options })
     return session

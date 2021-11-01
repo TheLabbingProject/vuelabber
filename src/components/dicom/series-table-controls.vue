@@ -143,6 +143,17 @@
           :items="sequenceVariantItems"
         />
       </v-col>
+      <v-col>
+        <v-select
+          chips
+          clearable
+          dense
+          multiple
+          label="Sequence Type"
+          v-model="filters.sequenceType"
+          :items="sequenceTypeItems"
+        />
+      </v-col>
     </v-row>
     <v-row>
       <!-- Echo Time -->
@@ -276,12 +287,12 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import { scanningSequences, sequenceVariants } from '@/components/mri/utils'
+import { SEQUENCE_TYPE_ITEMS } from '@/components/utils.js'
 
 export default {
   name: 'SeriesTableControls',
   props: { options: Object, patient: Object },
   created() {
-    this.fetchSequenceTypes()
     this.fetchManufacturers()
     if (this.patient) this.filters.patientId = this.patient.id
     this.update()
@@ -308,7 +319,8 @@ export default {
       inversionTime: {},
       repetitionTime: {},
       sequenceVariant: null,
-      scanningSequence: null
+      scanningSequence: null,
+      sequenceType: ''
     },
     headerFieldsData: null,
     counter: 0,
@@ -318,7 +330,8 @@ export default {
     afterTimeMenu: false,
     beforeTimeMenu: false,
     scanningSequenceItems: Object.keys(scanningSequences),
-    sequenceVariantItems: Object.keys(sequenceVariants)
+    sequenceVariantItems: Object.keys(sequenceVariants),
+    sequenceTypeItems: SEQUENCE_TYPE_ITEMS
   }),
   computed: {
     dates: function() {
@@ -353,7 +366,7 @@ export default {
       this.counter++
     },
     ...mapActions('dicom', ['fetchSeries', 'fetchManufacturers', 'getCSV']),
-    ...mapActions('mri', ['fetchSequenceTypes', 'fetchScans'])
+    ...mapActions('mri', ['fetchScans'])
   },
   watch: {
     filters: {

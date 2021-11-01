@@ -32,16 +32,7 @@
 
       <!-- Sequence Type -->
       <template v-slot:item.sequenceType="{ item }">
-        <div class="py-1">
-          <v-dialog v-model="protocolInformationDialog[item.id]" width="800px">
-            <template v-slot:activator="{ on }">
-              <v-btn small class="info" v-on="on">{{
-                getSequenceTypeTitle(item)
-              }}</v-btn>
-            </template>
-            <protocol-information :series="item" />
-          </v-dialog>
-        </div>
+        {{ item.sequenceType }}
       </template>
 
       <!-- Spatial Resolution -->
@@ -77,14 +68,13 @@
 <script>
 import { mapGetters, mapState } from 'vuex'
 import { formatSpatialResolution } from '@/components/dicom/utils'
-import ProtocolInformation from './protocol-information.vue'
 import SeriesTableControls from '@/components/dicom/series-table-controls.vue'
 import ScanInfo from '@/components/mri/scan-info.vue'
 
 export default {
   name: 'SeriesTable',
   props: { patient: Object },
-  components: { ProtocolInformation, ScanInfo, SeriesTableControls },
+  components: { ScanInfo, SeriesTableControls },
   data: () => ({
     protocolInformationDialog: {},
     scanInfoDialog: {},
@@ -112,7 +102,6 @@ export default {
       {
         text: 'Sequence Type',
         value: 'sequenceType',
-        sortable: false,
         align: 'center',
         width: '15%'
       },
@@ -141,8 +130,7 @@ export default {
   }),
   computed: {
     ...mapState('dicom', ['seriesList', 'seriesCount']),
-    ...mapState('mri', ['sequenceTypes']),
-    ...mapGetters('mri', ['getDicomSeriesSequenceType', 'getScanByDicomSeries'])
+    ...mapGetters('mri', ['getScanByDicomSeries'])
   },
   methods: {
     getSequenceTypeTitle(series) {
