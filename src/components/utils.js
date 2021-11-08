@@ -42,8 +42,8 @@ export function isFloat(n) {
 export const SEQUENCE_TYPE_ITEMS = [
   { text: 'DWI', value: 'dwi' },
   {
-    text: 'DWI Fieldmap',
-    value: 'dwi_fieldmap'
+    text: 'DWI SBRef',
+    value: 'dwi_sbref'
   },
   {
     text: 'FLAIR',
@@ -69,15 +69,15 @@ export const SEQUENCE_TYPE_ITEMS = [
 ]
 
 export const SEQUENCE_TYPE_STYLING = {
-  dwi: { color: 'purple' },
-  dwi_fieldmap: { color: 'purple', textColor: 'white' },
+  dwi: { color: 'purple', textColor: 'white' },
+  dwi_sbref: { color: 'purple', textColor: 'black' },
   flair: { color: 'grey lighten-1', textColor: 'black' },
-  bold: { color: 'orange' },
-  func_fieldmap: { color: 'orange', textColor: 'white' },
-  func_sbref: { color: 'orange', textColor: 'white' },
-  ir_epi: { color: 'teal' },
+  bold: { color: 'orange', textColor: 'white' },
+  func_fieldmap: { color: 'orange', textColor: 'black' },
+  func_sbref: { color: 'orange', textColor: 'black' },
+  ir_epi: { color: 'teal', textColor: 'white' },
   localizer: { color: 'blue-grey' },
-  mprage: { color: 'green' },
+  mprage: { color: 'green', textColor: 'white' },
   t2w: { color: 'grey darken-1', textColor: 'white' },
   null: { color: 'grey' }
 }
