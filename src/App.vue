@@ -107,19 +107,6 @@
           </v-list-item>
         </v-list-group>
 
-        <!-- Tasks -->
-        <v-list-item :to="tasksItem.destination" class="drawer-link">
-          <v-list-item-icon>
-            <v-icon>
-              {{ tasksItem.icon }}
-            </v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title>
-              {{ tasksItem.label }}
-            </v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
         <!-- Advanced Options -->
         <v-list-group
           no-action
@@ -132,18 +119,6 @@
             </v-list-item-title>
           </template>
 
-          <!-- Sequence Types -->
-          <v-list-item :to="sequenceTypesItem.destination" class="drawer-link">
-            <v-list-item-title>
-              {{ sequenceTypesItem.label }}
-            </v-list-item-title>
-            <v-list-item-icon>
-              <v-icon>
-                {{ sequenceTypesItem.icon }}
-              </v-icon>
-            </v-list-item-icon>
-          </v-list-item>
-
           <!-- DICOM -->
           <v-list-item :to="dicomBrowserItem.destination" class="drawer-link">
             <v-list-item-title>
@@ -154,6 +129,19 @@
                 {{ dicomBrowserItem.icon }}
               </v-icon>
             </v-list-item-icon>
+          </v-list-item>
+
+          <!-- Tasks -->
+          <v-list-item :to="tasksItem.destination" class="drawer-link">
+            <v-list-item-title>
+              {{ tasksItem.label }}
+            </v-list-item-title>
+            <v-list-item-icon>
+              <v-icon>
+                {{ tasksItem.icon }}
+              </v-icon>
+            </v-list-item-icon>
+            <v-list-item-content> </v-list-item-content>
           </v-list-item>
 
           <!-- BrainBrowser -->
