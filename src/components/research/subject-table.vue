@@ -340,14 +340,14 @@ export default {
   }),
   computed: {
     computedHeaders: function() {
-      if (this.currentUser.isSuperuser) {
-        return [
-          this.headers[0],
-          ...this.personalInformationHeaders,
-          ...this.headers.slice(1)
-        ]
-      }
-      return this.headers
+      // if (this.currentUser.isSuperuser) {
+      return [
+        this.headers[0],
+        ...this.personalInformationHeaders,
+        ...this.headers.slice(1)
+      ]
+      // }
+      // return this.headers
     },
     ...mapState('research', ['subjects', 'subjectCount']),
     ...mapState('auth', { currentUser: 'user' })

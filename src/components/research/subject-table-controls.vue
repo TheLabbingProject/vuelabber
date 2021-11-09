@@ -238,7 +238,8 @@ export default {
       )
     },
     showPersonalInformationFilters: function() {
-      return this.user.isStaff
+      // return this.user.isStaff
+      return true
     },
     ...mapState('accounts', ['exportDestinations']),
     ...mapState('auth', ['user']),
