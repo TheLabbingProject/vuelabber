@@ -22,7 +22,8 @@ import {
   getInputsQueryString,
   getOutputDefinitionQueryString,
   getOutputsQueryString,
-  getOutputSpecificationQueryString
+  getOutputSpecificationQueryString,
+  getRunQueryString
 } from '@/api/analysis/query'
 import session from '@/api/session'
 
@@ -36,6 +37,7 @@ const state = {
   outputSpecifications: [],
   outputDefinitions: [],
   runs: [],
+  runCount: 0,
   inputs: [],
   inputCount: 0,
   outputs: [],
@@ -91,6 +93,9 @@ const mutations = {
   },
   setRuns(state, runs) {
     state.runs = runs
+  },
+  setRunCount(state, count) {
+    state.runCount = count
   },
   setInputs(state, inputs) {
     state.inputs = inputs
@@ -171,10 +176,14 @@ const actions = {
       .then(({ data }) => commit('setOutputDefinitions', data.results))
       .catch(console.error)
   },
-  fetchRuns({ commit }) {
+  fetchRuns({ commit }, query) {
+    let queryString = getRunQueryString(query)
     return session
-      .get(RUNS)
-      .then(({ data }) => commit('setRuns', data.results))
+      .get(`${RUNS}/${queryString}`)
+      .then(({ data }) => {
+        commit('setRuns', data.results)
+        commit('setRunCount', data.count)
+      })
       .catch(console.error)
   },
   fetchInputs({ commit }, query) {

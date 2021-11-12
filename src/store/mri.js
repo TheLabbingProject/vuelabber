@@ -2,8 +2,6 @@
 import {
   IRB_APPROVALS,
   SCANS,
-  SEQUENCE_TYPES,
-  SEQUENCE_TYPE_DEFINITIONS,
   SESSIONS
 } from '@/api/mri/endpoints'
 import {

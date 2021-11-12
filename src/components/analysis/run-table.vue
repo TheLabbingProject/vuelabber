@@ -1,87 +1,107 @@
 <template>
-  <v-data-table
-    item-key="id"
-    show-expand
-    single-expand
-    :expanded.sync="expanded"
-    :headers="headers"
-    :items="runs"
-    :loading="loading"
-  >
-    <template v-slot:item.analysis="{ item }">
-      <router-link
-        class="nav-link"
-        :to="{
-          name: 'analysisInformation',
-          params: { analysisId: item.analysisVersion.analysis.id }
+  <v-container fluid>
+    <v-col>
+      <v-data-table
+        item-key="id"
+        show-expand
+        single-expand
+        multi-sort
+        :expanded.sync="expanded"
+        :headers="headers"
+        :items="runs"
+        :loading="loading"
+        :options.sync="options"
+        :server-items-length="runCount"
+        :footer-props="{
+          itemsPerPageOptions
         }"
       >
-        {{ item.analysisVersion.analysis.title }}
-      </router-link>
-    </template>
+        <template v-slot:top>
+          <run-table-controls
+            ref="controls"
+            :options="options"
+            :scan="scan"
+            @fetch-run-start="loading = true"
+            @fetch-run-end="loading = false"
+          ></run-table-controls>
+        </template>
+        <template v-slot:item.analysis="{ item }">
+          <router-link
+            class="nav-link"
+            :to="{
+              name: 'analysisInformation',
+              params: { analysisId: item.analysisVersion.analysis.id }
+            }"
+          >
+            {{ item.analysisVersion.analysis.title }}
+          </router-link>
+        </template>
 
-    <template v-slot:item.analysisVersion="{ item }">
-      {{ item.analysisVersion.title }}
-    </template>
+        <template v-slot:item.analysisVersion="{ item }">
+          {{ item.analysisVersion.title }}
+        </template>
 
-    <template v-slot:item.startTime="{ item }">
-      {{ item.startTime | formatDateTime }}
-    </template>
+        <template v-slot:item.startTime="{ item }">
+          {{ item.startTime | formatDateTime }}
+        </template>
 
-    <template v-slot:item.endTime="{ item }">
-      {{ item.endTime | formatDateTime }}
-    </template>
+        <template v-slot:item.endTime="{ item }">
+          {{ item.endTime | formatDateTime }}
+        </template>
 
-    <template v-slot:item.duration="{ item }">
-      {{ formatDuration(item.duration) }}
-    </template>
+        <template v-slot:item.duration="{ item }">
+          {{ formatDuration(item.duration) }}
+        </template>
 
-    <template v-slot:item.user="{ item }">
-      {{ item.user ? item.user.fullName : '' }}
-    </template>
+        <template v-slot:item.user="{ item }">
+          {{ item.user ? item.user.fullName : '' }}
+        </template>
 
-    <template v-slot:item.status="{ item }">
-      <v-icon small :color="statusColor[item.status]">
-        circle
-      </v-icon>
-    </template>
-
-    <template v-slot:item.download="{ item }">
-      <div v-if="item.status == 'SUCCESS'">
-        <a :href="downloadZip(item)">
-          <v-icon>
-            download
+        <template v-slot:item.status="{ item }">
+          <v-icon small :color="statusColor[item.status]">
+            circle
           </v-icon>
-        </a>
-      </div>
-    </template>
+        </template>
 
-    <template v-slot:expanded-item="{ item, headers }">
-      <td class="pa-2 blue lighten-5" :colspan="headers.length">
-        <v-row>
-          <v-col>
-            <div class="subtitle-1 text-left pl-3">
-              Input
-            </div>
-            <hr />
-            <run-input-information :run="item" />
-          </v-col>
-          <v-col>
-            <div class="subtitle-1 text-left pl-3">
-              Output
-            </div>
-            <hr />
-            <run-output-information :run="item" />
-          </v-col>
-        </v-row>
-      </td>
-    </template>
-  </v-data-table>
+        <template v-slot:item.download="{ item }">
+          <div v-if="item.status == 'SUCCESS'">
+            <a :href="downloadZip(item)">
+              <v-icon>
+                download
+              </v-icon>
+            </a>
+          </div>
+        </template>
+
+        <template v-slot:expanded-item="{ item, headers }">
+          <td class="pa-2 blue lighten-5" :colspan="headers.length">
+            <v-row>
+              <v-col>
+                <div class="subtitle-1 text-left pl-3">
+                  Input
+                </div>
+                <hr />
+                <run-input-information :run="item" />
+              </v-col>
+              <v-col>
+                <div class="subtitle-1 text-left pl-3">
+                  Output
+                </div>
+                <hr />
+                <run-output-information :run="item" />
+              </v-col>
+            </v-row>
+          </td>
+        </template>
+      </v-data-table>
+    </v-col>
+  </v-container>
 </template>
 
 <script>
 import { mapActions, mapState } from 'vuex'
 import RunInputInformation from '@/components/analysis/run-input-information.vue'
+import RunTableControls from '@/components/analysis/run-table-controls.vue'
 import RunOutputInformation from '@/components/analysis/run-output-information.vue'
 import { RUNS } from '@/api/analysis/endpoints.js'
 
@@ -90,20 +110,7 @@ export default {
   props: {
     scan: { type: Object, default: null }
   },
-  components: { RunInputInformation, RunOutputInformation },
-  mounted() {
-    if (this.scan != null) {
-      this.loading = true
-      this.fetchScanRunSet(this.scan.id).then(() => {
-        this.loading = false
-      })
-    } else {
-      this.loading = true
-      this.fetchRuns().then(() => {
-        this.loading = false
-      })
-    }
-  },
+  components: { RunInputInformation, RunOutputInformation, RunTableControls },
   data: () => ({
     expanded: [],
     loading: false,
@@ -118,10 +125,16 @@ export default {
       { text: 'Status', value: 'status', align: 'center' },
       { text: 'Download', value: 'download', align: 'center', sortable: false }
     ],
+    options: {
+      itemsPerPage: 25,
+      page: 1,
+      sortBy: ['startTime'],
+      sortDesc: [true]
+    },
     statusColor: { STARTED: 'orange', SUCCESS: 'green', FAILURE: 'red' }
   }),
   computed: {
-    ...mapState('analysis', ['runs'])
+    ...mapState('analysis', ['runs', 'runCount'])
   },
   methods: {
     formatDuration: function(d) {
@@ -144,7 +157,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" sc{}oped>
 .nav-link {
   text-decoration: none;
 }

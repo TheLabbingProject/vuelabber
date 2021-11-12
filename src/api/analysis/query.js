@@ -1,12 +1,4 @@
-const parseOrdering = options => {
-  return options.sortBy && options.sortDesc
-    ? options.sortBy
-        .map((value, index) => {
-          return options.sortDesc[index] ? '-' + value : value
-        })
-        .join(',')
-    : ''
-}
+import { parseOrdering } from '@/api/utils.js'
 
 const getCategoryQueryString = ({ filters, pagination }) => {
   return `?id=${filters.id || ''}&title=${filters.title ||
@@ -27,8 +19,9 @@ const getAnalysisQueryString = ({ filters, options }) => {
   return `?id=${filters.id || ''}&title=${filters.title ||
     ''}&title_lookup=icontains&description${filters.description ||
     ''}=&description_lookup=icontains&created_after=${filters.createdAfter ||
-    ''}&created_before=${filters.createdBefore ||
-    ''}&category=${filters.category || ''}&page_size=${
+    ''}&created_before=${filters.createdBefore || ''}${
+    filters.hasRuns == undefined ? '' : `&has_runs=${filters.hasRuns}`
+  }&category=${filters.category || ''}&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage
@@ -126,6 +119,29 @@ const getOutputsQueryString = ({ filters, options }) => {
   }&page=${options.page || 1}&ordering=${parseOrdering(options)}`
 }
 
+const getRunQueryString = ({ filters, options }) => {
+  let analysisFilter = filters.analysis
+    .map(analysisId => `&analysis=${analysisId}`)
+    .join('')
+  let analysisVersionFilter = filters.analysisVersion
+    .map(analysisVersionId => `&analysis_version=${analysisVersionId}`)
+    .join('')
+  let statusFilter = filters.status
+    .map(statusCode => `&status=${statusCode}`)
+    .join('')
+  return `?id=${filters.id ||
+    ''}${analysisFilter}${analysisVersionFilter}${statusFilter}&start_time_after=${filters.startTimeAfter ||
+    ''}&start_time_before=${filters.startTimeBefore ||
+    ''}&end_time_after=${filters.endTimeAfter ||
+    ''}&end_time_before=${filters.startTimeBefore || ''}&page_size=${
+    options.itemsPerPage
+      ? options.itemsPerPage != -1
+        ? options.itemsPerPage
+        : 10000
+      : 100
+  }&page=${options.page || 1}&ordering=${parseOrdering(options)}`
+}
+
 export {
   getCategoryQueryString,
   getAnalysisQueryString,
@@ -135,5 +151,6 @@ export {
   getInputsQueryString,
   getOutputDefinitionQueryString,
   getOutputsQueryString,
-  getOutputSpecificationQueryString
+  getOutputSpecificationQueryString,
+  getRunQueryString
 }
