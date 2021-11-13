@@ -21,6 +21,7 @@
     "dns": "^0.2.2",
     "document-ready": "^2.0.2",
     "faker": "^4.1.0",
+    "file-saver": "^2.0.5",
     "luxon": "^1.21.3",
     "material-design-icons-iconfont": "^5.0.1",
     "moment": "^2.24.0",

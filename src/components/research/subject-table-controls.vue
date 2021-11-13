@@ -1,70 +1,69 @@
 <template>
   <v-container fluid>
-    <v-col>
-      <v-row>
-        <v-col :cols="1">
-          <v-text-field autofocus label="Primary Key" v-model="filters.pk" />
-        </v-col>
-        <v-col v-if="showPersonalInformationFilters">
-          <v-text-field label="ID Number" v-model="filters.idNumber" />
-        </v-col>
-        <v-col v-if="showPersonalInformationFilters">
-          <v-text-field label="First Name" v-model="filters.firstName" />
-        </v-col>
-        <v-col v-if="showPersonalInformationFilters">
-          <v-text-field label="Last Name" v-model="filters.lastName" />
-        </v-col>
-        <v-col :cols="3">
-          <v-row class="align-center">
-            <v-col>
-              <v-menu v-model="bornAfterMenu" :close-on-content-click="false">
-                <template v-slot:activator="{ on }">
-                  <v-text-field
-                    clearable
-                    readonly
-                    label="Born After"
-                    prepend-icon="event"
-                    v-model="filters.bornAfter"
-                    v-on="on"
-                  ></v-text-field>
-                </template>
-                <v-date-picker
+    <v-row class="pt-3">
+      <v-col :cols="1">
+        <v-text-field autofocus label="Primary Key" v-model="filters.pk" />
+      </v-col>
+      <v-col v-if="showPersonalInformationFilters">
+        <v-text-field label="ID Number" v-model="filters.idNumber" />
+      </v-col>
+      <v-col v-if="showPersonalInformationFilters">
+        <v-text-field label="First Name" v-model="filters.firstName" />
+      </v-col>
+      <v-col v-if="showPersonalInformationFilters">
+        <v-text-field label="Last Name" v-model="filters.lastName" />
+      </v-col>
+      <v-col :cols="3">
+        <v-row class="align-center">
+          <v-col>
+            <v-menu v-model="bornAfterMenu" :close-on-content-click="false">
+              <template v-slot:activator="{ on }">
+                <v-text-field
+                  clearable
+                  readonly
+                  label="Born After"
+                  prepend-icon="event"
                   v-model="filters.bornAfter"
-                  @input="bornAfterMenu = false"
-                  scrollable
-                ></v-date-picker>
-              </v-menu>
-            </v-col>
-            <v-col>
-              <v-menu v-model="bornBeforeMenu" :close-on-content-click="false">
-                <template v-slot:activator="{ on }">
-                  <v-text-field
-                    clearable
-                    readonly
-                    label="Born Before"
-                    v-model="filters.bornBefore"
-                    v-on="on"
-                  ></v-text-field>
-                </template>
-                <v-date-picker
+                  v-on="on"
+                ></v-text-field>
+              </template>
+              <v-date-picker
+                v-model="filters.bornAfter"
+                @input="bornAfterMenu = false"
+                scrollable
+              ></v-date-picker>
+            </v-menu>
+          </v-col>
+          <v-col>
+            <v-menu v-model="bornBeforeMenu" :close-on-content-click="false">
+              <template v-slot:activator="{ on }">
+                <v-text-field
+                  clearable
+                  readonly
+                  label="Born Before"
                   v-model="filters.bornBefore"
-                  @input="bornBeforeMenu = false"
-                  scrollable
-                ></v-date-picker>
-              </v-menu>
-            </v-col>
-          </v-row>
-        </v-col>
+                  v-on="on"
+                ></v-text-field>
+              </template>
+              <v-date-picker
+                v-model="filters.bornBefore"
+                @input="bornBeforeMenu = false"
+                scrollable
+              ></v-date-picker>
+            </v-menu>
+          </v-col>
+        </v-row>
+      </v-col>
 
-        <v-col :cols="1">
-          <v-select
-            clearable
-            label="Sex"
-            v-model="filters.sex"
-            :items="sexItems"
-          />
-        </v-col>
-        <!-- <v-col :cols="1">
+      <v-col :cols="1">
+        <v-select
+          clearable
+          label="Sex"
+          v-model="filters.sex"
+          :items="sexItems"
+        />
+      </v-col>
+      <!-- <v-col :cols="1">
       <v-select
         clearable
         label="Gender"
@@ -72,7 +71,7 @@
         :items="genderItems"
       />
     </v-col> -->
-        <!-- <v-col :cols="2">
+      <!-- <v-col :cols="2">
       <v-select
         clearable
         label="Dominant Hand"
@@ -80,114 +79,118 @@
         :items="dominantHandItems"
       />
     </v-col> -->
-      </v-row>
-      <v-row>
-        <v-col>
-          <v-autocomplete
-            label="Study"
-            clearable
-            multiple
-            v-model="filters.studies"
-            :items="studies"
-            item-value="id"
-            item-text="title"
-          />
-        </v-col>
+    </v-row>
+    <v-row class="my-0">
+      <v-col>
+        <v-autocomplete
+          label="Study"
+          clearable
+          multiple
+          v-model="filters.studies"
+          :items="studies"
+          item-value="id"
+          item-text="title"
+        />
+      </v-col>
 
-        <!-- Session time -->
-        <v-col :cols="4">
-          <v-row class="align-center">
-            <v-col>
-              <v-menu
-                v-model="sessionTimeAfterMenu"
-                :close-on-content-click="false"
-              >
-                <template v-slot:activator="{ on }">
-                  <v-text-field
-                    clearable
-                    readonly
-                    label="Scanned After"
-                    prepend-icon="event"
-                    v-model="filters.mriSessionAfter"
-                    v-on="on"
-                  ></v-text-field>
-                </template>
-                <v-date-picker
-                  v-model="filters.mriSessionAfter"
-                  @input="sessionTimeAfterMenu = false"
-                  scrollable
-                ></v-date-picker>
-              </v-menu>
-            </v-col>
-            <v-col>
-              <v-menu
-                v-model="sessionBeforeMenu"
-                :close-on-content-click="false"
-              >
-                <template v-slot:activator="{ on }">
-                  <v-text-field
-                    clearable
-                    readonly
-                    label="Scanned Before"
-                    v-model="filters.mriSessionBefore"
-                    v-on="on"
-                  ></v-text-field>
-                </template>
-                <v-date-picker
-                  v-model="filters.mriSessionBefore"
-                  @input="sessionBeforeMenu = false"
-                  scrollable
-                ></v-date-picker>
-              </v-menu>
-            </v-col>
-          </v-row>
-        </v-col>
-        <v-spacer />
-        <div class="py-1">
-          <v-dialog v-model="exportSubjectDataDialog" max-width="500px">
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                color="primary"
-                class="mb-2"
-                v-bind="attrs"
-                v-on="on"
-                :disabled="!allowExport"
-                :dark="allowExport"
-              >
-                Export
-              </v-btn>
-            </template>
-            <export-subject-data-card
-              :selectedSubjects="selectedSubjects"
-              @close-subject-export-dialog="closeSubjectExportDialog"
-              @subject-export-started="showExportSnackbar"
-            />
-          </v-dialog>
-        </div>
-
-        <v-snackbar v-model="exportSnackbar" :timeout="exportSnackbarTimeout">
-          {{ exportSnackbarText }}
-          <template v-slot:action="{ attrs }">
-            <v-btn
-              color="blue"
-              text
-              v-bind="attrs"
-              @click="exportSnackbar = false"
+      <!-- Session time -->
+      <v-col :cols="4">
+        <v-row class="align-center">
+          <v-col>
+            <v-menu
+              v-model="sessionTimeAfterMenu"
+              :close-on-content-click="false"
             >
-              Close
+              <template v-slot:activator="{ on }">
+                <v-text-field
+                  clearable
+                  readonly
+                  label="Scanned After"
+                  prepend-icon="event"
+                  v-model="filters.mriSessionAfter"
+                  v-on="on"
+                ></v-text-field>
+              </template>
+              <v-date-picker
+                v-model="filters.mriSessionAfter"
+                @input="sessionTimeAfterMenu = false"
+                scrollable
+              ></v-date-picker>
+            </v-menu>
+          </v-col>
+          <v-col>
+            <v-menu v-model="sessionBeforeMenu" :close-on-content-click="false">
+              <template v-slot:activator="{ on }">
+                <v-text-field
+                  clearable
+                  readonly
+                  label="Scanned Before"
+                  v-model="filters.mriSessionBefore"
+                  v-on="on"
+                ></v-text-field>
+              </template>
+              <v-date-picker
+                v-model="filters.mriSessionBefore"
+                @input="sessionBeforeMenu = false"
+                scrollable
+              ></v-date-picker>
+            </v-menu>
+          </v-col>
+        </v-row>
+      </v-col>
+      <v-spacer />
+      <v-col :cols="1">
+        <v-btn class="info" @click="toCsv">CSV</v-btn>
+      </v-col>
+      <v-col :cols="1">
+        <v-dialog v-model="exportSubjectDataDialog" max-width="500px">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              color="primary"
+              class="mb-2"
+              v-bind="attrs"
+              v-on="on"
+              :disabled="!allowExport"
+              :dark="allowExport"
+            >
+              Export
             </v-btn>
           </template>
-        </v-snackbar>
-      </v-row>
-    </v-col>
+          <export-subject-data-card
+            :selectedSubjects="selectedSubjects"
+            @close-subject-export-dialog="closeSubjectExportDialog"
+            @subject-export-started="showExportSnackbar"
+          />
+        </v-dialog>
+      </v-col>
+
+      <v-snackbar v-model="exportSnackbar" :timeout="exportSnackbarTimeout">
+        {{ exportSnackbarText }}
+        <template v-slot:action="{ attrs }">
+          <v-btn
+            color="blue"
+            text
+            v-bind="attrs"
+            @click="exportSnackbar = false"
+          >
+            Close
+          </v-btn>
+        </template>
+      </v-snackbar>
+    </v-row>
   </v-container>
 </template>
 
 <script>
+import session from '@/api/session'
+import { getSubjectQueryString } from '@/api/research/query'
+import { SUBJECTS_CSV } from '@/api/research/endpoints'
+
 import { mapActions, mapState } from 'vuex'
 import { sexOptions, genderOptions, dominantHandOptions } from './choices.js'
 import { createSelectItems } from '@/components/utils'
 import ExportSubjectDataCard from '@/components/research/export-subject-data-card'
+var FileSaver = require('file-saver')
 
 export default {
   name: 'SubjectTableControls',
@@ -241,19 +244,49 @@ export default {
       // return this.user.isStaff
       return true
     },
+    computedOptions: function() {
+      let options = Object.assign({}, this.options)
+      options['sortBy'] = options['sortBy'].map(
+        key => this.snakeCaseNames[key] || key
+      )
+      return options
+    },
+    query: function() {
+      return { filters: this.filters, options: this.computedOptions }
+    },
     ...mapState('accounts', ['exportDestinations']),
     ...mapState('auth', ['user']),
     ...mapState('research', ['studies'])
   },
   methods: {
+    toCsv: function() {
+      let queryString = getSubjectQueryString(this.query)
+      let URL = `${SUBJECTS_CSV}/${queryString}`
+      return session
+        .get(URL, { responseType: 'blob' })
+        .then(response => {
+          // Log somewhat to show that the browser actually exposes the custom HTTP header
+          const fileNameHeader = 'x-suggested-filename'
+          const suggestedFileName = response.headers[fileNameHeader]
+          const effectiveFileName =
+            suggestedFileName === undefined ? 'subjects.csv' : suggestedFileName
+          console.log(
+            `Received header [${fileNameHeader}]: ${suggestedFileName}, effective fileName: ${effectiveFileName}`
+          )
+
+          // Let the user save the file.
+          FileSaver.saveAs(response.data, effectiveFileName)
+        })
+        .catch(response => {
+          console.error(
+            'Could not Download the CSV report from the backend.',
+            response
+          )
+        })
+    },
     update() {
       this.$emit('fetch-subjects-start')
-      let options = Object.assign({}, this.options)
-      options['sortBy'] = options['sortBy'].map(
-        key => this.snakeCaseNames[key] || key
-      )
-      let query = { filters: this.filters, options: options }
-      this.fetchSubjects(query).then(() => {
+      this.fetchSubjects(this.query).then(() => {
         this.$emit('fetch-subjects-end')
       })
     },
