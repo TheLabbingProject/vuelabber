@@ -26,7 +26,11 @@ const getScanQueryString = ({ filters, options }) => {
     ''}&subject_id_number=${filters.subjectIdNumber ||
     ''}&subject_id_number_lookup=icontains&subject_first_name=${filters.subjectFirstName ||
     ''}&subject_first_name_lookup=icontains&subject_last_name=${filters.subjectLastName ||
-    ''}&subject_last_name_lookup=icontains&page_size=${
+    ''}&subject_last_name_lookup=icontains${
+    filters.studyGroups
+      ? filters.studyGroups.map(group => `&study_groups=${group}`).join('')
+      : ''
+  }&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage

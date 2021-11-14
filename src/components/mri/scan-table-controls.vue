@@ -87,20 +87,40 @@
         </v-row>
       </v-col>
 
+      <v-col class="pt-0">
+        <v-select
+          v-model="filters.studyGroups"
+          label="Study Group"
+          chips
+          small-chips
+          clearable
+          multiple
+          deletable-chips
+          item-value="id"
+          :items="computedGroups"
+          :loading="loadingStudyGroups"
+          :menu-props="menuProps"
+        ></v-select>
+      </v-col>
+
       <!-- Sequence Type -->
       <v-col class="pt-0">
         <v-select
           chips
+          small-chips
           clearable
-          dense
           multiple
+          deletable-chips
           label="Sequence Type"
           v-model="filters.sequenceType"
           :items="sequenceTypeItems"
+          :menu-props="menuProps"
         />
       </v-col>
+
+      <!-- Download -->
       <v-col class="pt-0 px-0">
-        <div>
+        <v-container flex>
           <span class="px-1">
             <v-btn
               small
@@ -123,7 +143,7 @@
               NIfTI
             </v-btn>
           </span>
-        </div>
+        </v-container>
       </v-col>
     </v-row>
   </v-container>
@@ -167,13 +187,16 @@ export default {
       session: '',
       subjectIdNumber: '',
       subjectFirstName: '',
-      subjectLastName: ''
+      subjectLastName: '',
+      studyGroups: []
     },
     afterDateMenu: false,
     beforeDateMenu: false,
-    sequenceTypeItems: SEQUENCE_TYPE_ITEMS
+    sequenceTypeItems: SEQUENCE_TYPE_ITEMS,
+    loadingStudyGroups: false,
+    studyGroupQuery: { filters: {}, options: {} },
+    menuProps: { offsetY: true, auto: true }
   }),
-  // TODO: ADD SUBJECT FILTERS
   computed: {
     parsedOptions: function() {
       let options = Object.assign({}, this.options)
@@ -206,7 +229,14 @@ export default {
     dicomDownloadUrl: function() {
       return `${SERIES}/to_zip/${this.selectedDicomIdsString}/`
     },
-    ...mapState('mri', ['scans'])
+    computedGroups: function() {
+      return this.groups.map(group => ({
+        ...group,
+        text: `${group.study.title}|${group.title}`
+      }))
+    },
+    ...mapState('mri', ['scans']),
+    ...mapState('research', ['groups'])
   },
   methods: {
     update() {
@@ -216,10 +246,17 @@ export default {
         this.$emit('fetch-scans-end')
       })
     },
+    updateStudyGroups() {
+      this.loadingStudyGroups = true
+      this.fetchGroups(this.studyGroupQuery).then(() => {
+        this.loadingStudyGroups = false
+      })
+    },
     downloadDicom() {
       return
     },
-    ...mapActions('mri', ['fetchScans'])
+    ...mapActions('mri', ['fetchScans']),
+    ...mapActions('research', ['fetchGroups'])
   },
   watch: {
     subject: function(selectedSubject) {
