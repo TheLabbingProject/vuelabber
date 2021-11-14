@@ -1,7 +1,7 @@
 <template>
-  <v-col>
+  <v-container fluid>
     <!-- Subject Information -->
-    <v-row v-if="!subject">
+    <v-row v-if="!subject" class="pt-1">
       <!-- Subject ID Number -->
       <v-col>
         <v-text-field
@@ -32,12 +32,12 @@
     <!-- Scan Information -->
     <v-row>
       <!-- Number -->
-      <v-col>
+      <v-col class="pt-0">
         <v-text-field clearable v-model="filters.number" label="Scan Number" />
       </v-col>
 
       <!-- Description -->
-      <v-col>
+      <v-col class="pt-0">
         <v-text-field
           clearable
           v-model="filters.description"
@@ -45,7 +45,7 @@
         />
       </v-col>
       <!-- Date -->
-      <v-col :cols="4">
+      <v-col class="pt-0" :cols="4">
         <v-row class="align-center">
           <!-- After Date -->
           <v-col>
@@ -88,7 +88,7 @@
       </v-col>
 
       <!-- Sequence Type -->
-      <v-col>
+      <v-col class="pt-0">
         <v-select
           chips
           clearable
@@ -99,7 +99,7 @@
           :items="sequenceTypeItems"
         />
       </v-col>
-      <v-col>
+      <v-col class="pt-0 px-0">
         <div>
           <span class="px-1">
             <v-btn
@@ -126,7 +126,7 @@
         </div>
       </v-col>
     </v-row>
-  </v-col>
+  </v-container>
 </template>
 
 <script>
