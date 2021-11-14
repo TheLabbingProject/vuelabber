@@ -10,7 +10,6 @@
         :headers="headers"
         :items="runs"
         :loading="loading"
-        :options.sync="options"
         :server-items-length="runCount"
         :footer-props="{
           itemsPerPageOptions
@@ -108,12 +107,13 @@ import { RUNS } from '@/api/analysis/endpoints.js'
 export default {
   name: 'RunTable',
   props: {
-    scan: { type: Object, default: null }
+    scan: { type: Object }
   },
   components: { RunInputInformation, RunOutputInformation, RunTableControls },
   data: () => ({
     expanded: [],
     loading: false,
+    itemsPerPageOptions: [10, 25, 50, -1],
     headers: [
       { text: 'ID', value: 'id', width: 100 },
       { text: 'Analysis', value: 'analysis' },

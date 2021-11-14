@@ -23,11 +23,7 @@ export default {
   props: { options: Object, scan: Object },
   created() {
     this.fetchAnalyses({ filters: { hasRuns: true }, options: {} })
-    if (this.scan == undefined) {
-      this.update()
-    } else {
-      this.fetchScanRunSet(this.scan.id)
-    }
+    this.update()
   },
   data: () => ({
     analysisFilter: { label: 'Analysis', value: [] }
@@ -52,12 +48,15 @@ export default {
   methods: {
     update: function() {
       this.$emit('fetch-run-start')
-      let fetch = this.scan
-        ? this.fetchScanRunSet(this.scan.id)
-        : this.fetchRuns(this.query)
-      return fetch.then(() => {
-        this.$emit('fetch-run-end')
-      })
+      if (this.scan != undefined) {
+        this.fetchScanRunSet(this.scan.id).then(() => {
+          this.$emit('fetch-run-end')
+        })
+      } else {
+        this.fetchRuns(this.query).then(() => {
+          this.$emit('fetch-run-end')
+        })
+      }
     },
     ...mapActions('analysis', ['fetchAnalyses', 'fetchRuns']),
     ...mapActions('mri', ['fetchScanRunSet'])

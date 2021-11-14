@@ -1,9 +1,5 @@
 /* eslint-disable */
-import {
-  IRB_APPROVALS,
-  SCANS,
-  SESSIONS
-} from '@/api/mri/endpoints'
+import { IRB_APPROVALS, SCANS, SESSIONS } from '@/api/mri/endpoints'
 import {
   getIrbApprovalQueryString,
   getScanQueryString,
@@ -193,7 +189,8 @@ const actions = {
     return session
       .get(`${SCANS}/${scanId}/runs`)
       .then(({ data }) => {
-        commit('analysis/setRuns', data, { root: true })
+        commit('analysis/setRuns', data.results, { root: true })
+        commit('analysis/setRunCount', data.count, { root: true })
       })
       .catch(console.error)
   }
