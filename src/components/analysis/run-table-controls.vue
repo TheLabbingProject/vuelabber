@@ -1,14 +1,25 @@
 <template>
-  <v-container>
+  <v-container flex>
     <v-row>
       <v-col>
         <v-select
-          multiple
-          :label="analysisFilter.label"
           v-model="analysisFilter.value"
           :items="analyses"
+          :label="analysisFilter.label"
           item-text="title"
           item-value="id"
+          multiple
+        />
+      </v-col>
+      <v-col>
+        <v-select
+          v-model="analysisVersionFilter.value"
+          :disabled="analysisFilter.value.length == 0"
+          :items="analysisVersions"
+          :label="analysisVersionFilter.label"
+          item-text="title"
+          item-value="id"
+          multiple
         />
       </v-col>
     </v-row>
@@ -22,17 +33,20 @@ export default {
   name: 'RunTableControls',
   props: { options: Object, scan: Object },
   created() {
-    this.fetchAnalyses({ filters: { hasRuns: true }, options: {} })
+    this.updateAnalysis()
     this.update()
   },
   data: () => ({
-    analysisFilter: { label: 'Analysis', value: [] }
+    analysisFilter: { label: 'Analysis', value: [] },
+    analysisVersionFilter: { label: 'Version', value: [] },
+    loadingAnalyses: false,
+    loadingAnalysisVersions: false
   }),
   computed: {
     filters: function() {
       return {
         analysis: this.analysisFilter.value,
-        analysisVersion: [],
+        analysisVersion: this.analysisVersionFilter.value,
         status: [],
         startTimeAfter: '',
         startTimeBefore: '',
@@ -43,7 +57,7 @@ export default {
     query: function() {
       return { filters: this.filters, options: this.options }
     },
-    ...mapState('analysis', ['analyses'])
+    ...mapState('analysis', ['analyses', 'analysisVersions'])
   },
   methods: {
     update: function() {
@@ -58,7 +72,33 @@ export default {
         })
       }
     },
-    ...mapActions('analysis', ['fetchAnalyses', 'fetchRuns']),
+    updateAnalysis: function() {
+      this.$emit('fetch-analyses-start')
+      this.loadingAnalyses = true
+      this.fetchAnalyses({
+        filters: { hasRuns: true },
+        options: {}
+      }).then(() => {
+        this.loadingAnalyses = false
+      })
+      this.$emit('fetch-analyses-end')
+    },
+    updateAnalysisVersions: function() {
+      this.$emit('fetch-analysis-versions-start')
+      this.loadingAnalysisVersions = true
+      this.fetchAnalysisVersions({
+        filters: { analysis: this.analysisFilter.value },
+        options: {}
+      }).then(() => {
+        this.loadingAnalysisVersions = false
+      })
+      this.$emit('fetch-analysis-versions-end')
+    },
+    ...mapActions('analysis', [
+      'fetchAnalyses',
+      'fetchAnalysisVersions',
+      'fetchRuns'
+    ]),
     ...mapActions('mri', ['fetchScanRunSet'])
   },
   watch: {
@@ -73,6 +113,9 @@ export default {
         this.update()
       },
       deep: true
+    },
+    'filters.analysis': function() {
+      this.updateAnalysisVersions()
     }
   }
 }

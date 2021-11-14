@@ -74,9 +74,9 @@ export default {
   },
   props: { analysisId: [String, Number] },
   created() {
-    let filters = { analysis: this.analysisId }
+    let filters = { analysis: [this.analysisId] }
     let options = { filters: filters, pagination: {} }
-    this.fetchAnalysisVersions(options)
+    this.fetchAnalysisVersions({ filters, options: {} })
     this.fetchInputSpecifications(options)
     this.fetchOutputSpecifications(options)
   },

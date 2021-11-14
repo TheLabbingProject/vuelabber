@@ -30,20 +30,17 @@ const getAnalysisQueryString = ({ filters, options }) => {
   }&page=${options.page || 1}&ordering=${parseOrdering(options)}`
 }
 
-const getAnalysisVersionQueryString = ({ filters, pagination }) => {
-  return `?id=${filters.id || ''}&analysis=${filters.analysis ||
-    ''}&title=${filters.title ||
+const getAnalysisVersionQueryString = ({ filters, options }) => {
+  return `?id=${filters.id || ''}${
+    filters.analysis
+      ? filters.analysis.map(analysisId => `&analysis=${analysisId}`).join('')
+      : ''
+  }&title=${filters.title ||
     ''}&title_lookup=icontains&description=${filters.description ||
     ''}&description_lookup=icontains&created_after=${filters.createdAfter ||
     ''}&created_before=${filters.createdBefore ||
-    ''}&page_size=${pagination.itemsPerPage || 100}&page=${pagination.page ||
-    1}&ordering=${
-    pagination.sortBy
-      ? pagination.descending
-        ? '-' + pagination.sortBy
-        : pagination.sortBy
-      : ''
-  }`
+    ''}&page_size=${options.itemsPerPage || 100}&page=${options.page ||
+    1}&ordering=${parseOrdering(options)}`
 }
 
 const getInputSpecificationQueryString = ({ filters, pagination }) => {

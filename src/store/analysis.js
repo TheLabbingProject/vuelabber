@@ -131,8 +131,8 @@ const actions = {
       })
       .catch(console.error)
   },
-  fetchAnalysisVersions({ commit }, options) {
-    let queryString = getAnalysisVersionQueryString(options)
+  fetchAnalysisVersions({ commit }, query) {
+    let queryString = getAnalysisVersionQueryString(query)
     return session
       .get(`${ANALYSIS_VERSIONS}/${queryString}`)
       .then(({ data }) => commit('setAnalysisVersions', data.results))
