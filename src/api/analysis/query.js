@@ -38,8 +38,9 @@ const getAnalysisVersionQueryString = ({ filters, options }) => {
   }&title=${filters.title ||
     ''}&title_lookup=icontains&description=${filters.description ||
     ''}&description_lookup=icontains&created_after=${filters.createdAfter ||
-    ''}&created_before=${filters.createdBefore ||
-    ''}&page_size=${options.itemsPerPage || 100}&page=${options.page ||
+    ''}&created_before=${filters.createdBefore || ''}${
+    filters.hasRuns == undefined ? '' : `&has_runs=${filters.hasRuns}`
+  }&page_size=${options.itemsPerPage || 100}&page=${options.page ||
     1}&ordering=${parseOrdering(options)}`
 }
 

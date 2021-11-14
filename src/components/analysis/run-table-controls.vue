@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapMutations, mapState } from 'vuex'
 
 export default {
   name: 'RunTableControls',
@@ -87,7 +87,7 @@ export default {
       this.$emit('fetch-analysis-versions-start')
       this.loadingAnalysisVersions = true
       this.fetchAnalysisVersions({
-        filters: { analysis: this.analysisFilter.value },
+        filters: { analysis: this.filters.analysis, hasRuns: true },
         options: {}
       }).then(() => {
         this.loadingAnalysisVersions = false
@@ -99,7 +99,8 @@ export default {
       'fetchAnalysisVersions',
       'fetchRuns'
     ]),
-    ...mapActions('mri', ['fetchScanRunSet'])
+    ...mapActions('mri', ['fetchScanRunSet']),
+    ...mapMutations('analysis', ['setAnalysisVersions'])
   },
   watch: {
     filters: {
@@ -114,8 +115,13 @@ export default {
       },
       deep: true
     },
-    'filters.analysis': function() {
-      this.updateAnalysisVersions()
+    'analysisFilter.value': function(newValue) {
+      if (newValue.length == 0) {
+        this.analysisVersionFilter.value = []
+        this.setAnalysisVersions([])
+      } else {
+        this.updateAnalysisVersions()
+      }
     }
   }
 }
