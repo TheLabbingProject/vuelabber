@@ -45,6 +45,7 @@ export const SEQUENCE_TYPE_ITEMS = [
     text: 'DWI SBRef',
     value: 'dwi_sbref'
   },
+  { text: 'DWI (derived)', value: 'dwi_derived' },
   {
     text: 'FLAIR',
     value: 'flair'
@@ -65,12 +66,14 @@ export const SEQUENCE_TYPE_ITEMS = [
     text: 'T2-weighted',
     value: 't2w'
   },
+  { text: 'Physio Log', value: 'physio_log' },
   { text: 'Unknown', value: 'null' }
 ]
 
 export const SEQUENCE_TYPE_STYLING = {
   dwi: { color: 'purple', textColor: 'white' },
   dwi_sbref: { color: 'purple', textColor: 'black' },
+  dwi_derived: { color: 'purple lighten-1', textColor: 'grey' },
   flair: { color: 'grey lighten-1', textColor: 'black' },
   bold: { color: 'orange', textColor: 'white' },
   func_fieldmap: { color: 'orange', textColor: 'black' },
@@ -79,5 +82,6 @@ export const SEQUENCE_TYPE_STYLING = {
   localizer: { color: 'blue-grey' },
   mprage: { color: 'green', textColor: 'white' },
   t2w: { color: 'grey darken-1', textColor: 'white' },
+  physio_log: { color: 'grey', textColor: 'white' },
   null: { color: 'grey' }
 }
