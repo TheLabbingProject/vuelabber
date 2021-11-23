@@ -45,6 +45,10 @@ export const SEQUENCE_TYPE_ITEMS = [
     text: 'DWI SBRef',
     value: 'dwi_sbref'
   },
+  {
+    text: 'DWI Fieldmap',
+    value: 'dwi_fieldmap'
+  },
   { text: 'DWI (derived)', value: 'dwi_derived' },
   {
     text: 'FLAIR',
@@ -74,6 +78,7 @@ export const SEQUENCE_TYPE_STYLING = {
   dwi: { color: 'purple', textColor: 'white' },
   dwi_sbref: { color: 'purple', textColor: 'black' },
   dwi_derived: { color: 'purple lighten-1', textColor: 'grey' },
+  dwi_fieldmap: { color: 'purple', textColor: 'white' },
   flair: { color: 'grey lighten-1', textColor: 'black' },
   bold: { color: 'orange', textColor: 'white' },
   func_fieldmap: { color: 'orange', textColor: 'black' },
