@@ -88,8 +88,6 @@ export default {
     dicomExportCheckboxLabel: 'DICOM',
     niftiExportCheckbox: true,
     niftiExportCheckboxLabel: 'NIfTI',
-    jsonSidecar: true,
-    jsonSidecarLabel: 'Include JSON sidecar',
     loadingExportDestinations: false,
     selectDestinationLabel: 'Select destination',
     selectedExportDestination: null
