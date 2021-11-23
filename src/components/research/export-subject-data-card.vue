@@ -37,18 +37,6 @@
                 dense
                 class="py-0"
               />
-              <v-container v-if="niftiExportCheckbox">
-                <v-row class="align-center">
-                  <v-col class="py-0">
-                    <v-checkbox
-                      v-model="jsonSidecar"
-                      :label="jsonSidecarLabel"
-                      dense
-                      class="py-0"
-                    />
-                  </v-col>
-                </v-row>
-              </v-container>
             </v-col>
           </v-row>
         </v-col>
@@ -111,8 +99,6 @@ export default {
     dicomExportCheckboxLabel: 'DICOM',
     niftiExportCheckbox: true,
     niftiExportCheckboxLabel: 'NIfTI',
-    jsonSidecar: true,
-    jsonSidecarLabel: 'Include JSON sidecar',
     loadingExportDestinations: false,
     selectDestinationLabel: 'Select destination',
     selectedExportDestination: null
@@ -165,7 +151,6 @@ export default {
       }
       if (this.mriExportCheckbox) {
         data['mri'] = {
-          include_json: this.jsonSidecar,
           file_format: this.fileFormat
         }
       }

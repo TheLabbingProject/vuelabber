@@ -28,18 +28,6 @@
                 dense
                 class="py-0"
               />
-              <v-container v-if="niftiExportCheckbox">
-                <v-row class="align-center">
-                  <v-col class="py-0">
-                    <v-checkbox
-                      v-model="jsonSidecar"
-                      :label="jsonSidecarLabel"
-                      dense
-                      class="py-0"
-                    />
-                  </v-col>
-                </v-row>
-              </v-container>
             </v-col>
           </v-row>
         </v-col>
@@ -146,7 +134,6 @@ export default {
         app_label: 'django_mri',
         model_name: 'Session',
         instance_id: this.selectedSessions.map(session => session.id),
-        include_json: this.jsonSidecar,
         file_format: this.fileFormat
       }
       this.exportDataInstance(data)
