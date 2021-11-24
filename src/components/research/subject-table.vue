@@ -29,6 +29,7 @@
       show-select
       show-expand
       single-expand
+      multi-sort
       :expanded.sync="expanded"
       :headers="computedHeaders"
       :items="subjects"
