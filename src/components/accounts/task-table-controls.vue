@@ -37,6 +37,13 @@
     <v-col>
       <v-switch v-model="nestedMode" :label="nestedModeSwitchLabel"></v-switch>
     </v-col>
+    <v-col :cols="1">
+      <v-btn class="info" @click="update">
+        <v-icon>
+          refresh
+        </v-icon>
+      </v-btn>
+    </v-col>
     <v-col :cols="1" v-if="showDeleteButton">
       <v-btn
         color="error"

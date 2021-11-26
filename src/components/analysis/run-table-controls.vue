@@ -22,6 +22,13 @@
           multiple
         />
       </v-col>
+      <v-col :cols="1">
+        <v-btn class="info" @click="update">
+          <v-icon>
+            refresh
+          </v-icon>
+        </v-btn>
+      </v-col>
     </v-row>
   </v-container>
 </template>

@@ -10,6 +10,7 @@
         :headers="headers"
         :items="runs"
         :loading="loading"
+        :options.sync="options"
         :server-items-length="runCount"
         :footer-props="{
           itemsPerPageOptions
