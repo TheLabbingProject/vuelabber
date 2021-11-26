@@ -75,22 +75,31 @@
 
         <template v-slot:expanded-item="{ item, headers }">
           <td class="pa-2 blue lighten-5" :colspan="headers.length">
-            <v-row>
-              <v-col>
-                <div class="subtitle-1 text-left pl-3">
-                  Input
-                </div>
-                <hr />
-                <run-input-information :run="item" />
-              </v-col>
-              <v-col>
-                <div class="subtitle-1 text-left pl-3">
-                  Output
-                </div>
-                <hr />
-                <run-output-information :run="item" />
-              </v-col>
-            </v-row>
+            <v-container flex>
+              <v-row v-if="item.traceback">
+                <v-textarea
+                  outlined
+                  label="traceback"
+                  v-model="item.traceback"
+                ></v-textarea>
+              </v-row>
+              <v-row>
+                <v-col>
+                  <div class="subtitle-1 text-left pl-3">
+                    Input
+                  </div>
+                  <hr />
+                  <run-input-information :run="item" />
+                </v-col>
+                <v-col>
+                  <div class="subtitle-1 text-left pl-3">
+                    Output
+                  </div>
+                  <hr />
+                  <run-output-information :run="item" />
+                </v-col>
+              </v-row>
+            </v-container>
           </td>
         </template>
       </v-data-table>
