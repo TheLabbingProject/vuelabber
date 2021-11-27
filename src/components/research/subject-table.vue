@@ -1,6 +1,6 @@
 <template>
   <v-container fluid class="pa-0">
-    <v-col class="px-0">
+    <v-col class="px-0 pt-1">
       <v-data-table
         v-model="selectedSubjects"
         dense

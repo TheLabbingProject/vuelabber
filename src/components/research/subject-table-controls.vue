@@ -1,6 +1,6 @@
 <template>
   <v-container fluid class="pa-0">
-    <v-col>
+    <v-col class="pb-0">
       <v-row>
         <v-col :cols="1">
           <v-text-field
