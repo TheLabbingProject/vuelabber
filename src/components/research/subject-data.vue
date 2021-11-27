@@ -1,5 +1,5 @@
 <template>
-  <v-col>
+  <v-container fluid>
     <v-tabs v-model="active">
       <v-tab>
         {{ mriTabTitle }}
@@ -9,7 +9,7 @@
         <session-table :subject="subject" :studyFilter="studyFilter" />
       </v-tab-item>
     </v-tabs>
-  </v-col>
+  </v-container>
 </template>
 
 <script>
