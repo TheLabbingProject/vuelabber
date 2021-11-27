@@ -57,7 +57,7 @@
         </v-row>
       </v-col>
       <v-col :cols="2">
-        <v-select
+        <v-autocomplete
           v-model="filters.studyIdIn"
           label="Associated Studies"
           :items="studies"
@@ -65,6 +65,8 @@
           item-value="id"
           multiple
           clearable
+          small-chips
+          deletable-chips
         />
       </v-col>
       <!-- Comments -->
@@ -119,12 +121,18 @@ import ExportSessionCard from '@/components/mri/export-session-card'
 
 export default {
   name: 'SessionTableControls',
-  props: ['subject', 'options', 'selectedSessions'],
+  props: {
+    subject: Object,
+    options: Object,
+    selectedSessions: Array,
+    studyFilter: { type: Array, default: () => [] }
+  },
   components: { ExportSessionCard },
   mounted() {
     if (this.subject) {
       this.$set(this.filters, 'subject', this.subject.id)
     }
+    this.filters.studyIdIn = this.studyFilter
     this.update()
     this.fetchStudies({ filters: {}, options: {} }).then(() =>
       this.fetchExportDestinations({

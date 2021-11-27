@@ -2,30 +2,44 @@
   <v-container flex>
     <v-row>
       <v-col>
-        <v-select
+        <v-autocomplete
           v-model="analysisFilter.value"
           :items="analyses"
           :label="analysisFilter.label"
           item-text="title"
           item-value="id"
           multiple
+          clearable
+          deletable-chips
+          small-chips
         />
       </v-col>
       <v-col>
-        <v-select
+        <v-autocomplete
           v-model="analysisVersionFilter.value"
           :disabled="analysisFilter.value.length == 0"
-          :items="analysisVersions"
+          :items="analysisVersionItems"
           :label="analysisVersionFilter.label"
-          item-text="title"
           item-value="id"
           multiple
+          clearable
+          deletable-chips
+          small-chips
+        />
+      </v-col>
+      <v-col>
+        <v-autocomplete
+          v-model="statusFilter.value"
+          :items="statusFilter.items"
+          :label="statusFilter.label"
+          multiple
+          clearable
         />
       </v-col>
       <v-col :cols="1">
-        <v-btn class="info" @click="update">
+        <v-btn :class="refreshButton.class" @click="update">
           <v-icon>
-            refresh
+            {{ refreshButton.icon }}
           </v-icon>
         </v-btn>
       </v-col>
@@ -46,15 +60,25 @@ export default {
   data: () => ({
     analysisFilter: { label: 'Analysis', value: [] },
     analysisVersionFilter: { label: 'Version', value: [] },
+    statusFilter: {
+      label: 'Status',
+      value: [],
+      items: [
+        { text: 'Started', value: 'STARTED' },
+        { text: 'Success', value: 'SUCCESS' },
+        { text: 'Failure', value: 'FAILURE' }
+      ]
+    },
     loadingAnalyses: false,
-    loadingAnalysisVersions: false
+    loadingAnalysisVersions: false,
+    refreshButton: { icon: 'refresh', class: 'info' }
   }),
   computed: {
     filters: function() {
       return {
         analysis: this.analysisFilter.value,
         analysisVersion: this.analysisVersionFilter.value,
-        status: [],
+        status: this.statusFilter.value,
         startTimeAfter: '',
         startTimeBefore: '',
         endTimeAfter: '',
@@ -63,6 +87,12 @@ export default {
     },
     query: function() {
       return { filters: this.filters, options: this.options }
+    },
+    analysisVersionItems: function() {
+      return this.analysisVersions.map(version => ({
+        text: `${version.analysis.title} v${version.title}`,
+        ...version
+      }))
     },
     ...mapState('analysis', ['analyses', 'analysisVersions'])
   },

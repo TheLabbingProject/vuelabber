@@ -52,6 +52,7 @@
         <session-table-controls
           ref="controls"
           :subject="subject"
+          :studyFilter="studyFilter"
           :options="options"
           :selectedSessions="selected"
           @fetch-sessions-start="loading = true"
@@ -219,7 +220,7 @@ import BASE_URL from '@/api/base_url.js'
 
 export default {
   name: 'SessionTable',
-  props: ['subject'],
+  props: { subject: Object, studyFilter: Array },
   components: {
     ScanTable,
     SessionTableControls

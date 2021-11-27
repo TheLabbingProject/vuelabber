@@ -56,7 +56,7 @@
       </v-col>
 
       <v-col :cols="1">
-        <v-select
+        <v-autocomplete
           clearable
           label="Sex"
           v-model="filters.sex"
@@ -90,6 +90,8 @@
           :items="studies"
           item-value="id"
           item-text="title"
+          deletable-chips
+          small-chips
         />
       </v-col>
 

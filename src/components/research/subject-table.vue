@@ -46,6 +46,7 @@
           :selectedSubjects="selectedSubjects"
           @fetch-subjects-start="loading = true"
           @fetch-subjects-end="loading = false"
+          ref="controls"
         />
       </template>
 
@@ -259,7 +260,10 @@
 
       <template v-slot:expanded-item="{ item, headers }">
         <td :colspan="headers.length" class="subject-data pa-0 ma-0">
-          <subject-data :subject="item" />
+          <subject-data
+            :subject="item"
+            :studyFilter="$refs.controls.filters.studies"
+          />
           <hr />
         </td>
       </template>
