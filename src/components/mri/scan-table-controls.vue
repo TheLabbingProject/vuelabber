@@ -130,32 +130,66 @@
           />
         </v-col>
 
-        <!-- Download -->
-        <v-col class="pt-0 px-0">
-          <v-container fluid class="pa-0">
-            <span class="px-1">
+        <!-- Download Button -->
+        <v-col :cols="1" class="pt-0 px-0 text-right">
+          <div>
+            <v-dialog v-model="downloadScanDialog" max-width="500px">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  color="primary"
+                  v-bind="attrs"
+                  v-on="on"
+                  small
+                  :disabled="!allowExport"
+                  :dark="allowExport"
+                >
+                  Download
+                </v-btn>
+              </template>
+              <download-scan-card
+                :selectedScans="selectedScans"
+                @close-scan-download-dialog="closeScanDownloadDialog"
+              />
+            </v-dialog>
+          </div>
+        </v-col>
+        <!-- Export Button -->
+        <v-col :cols="1" class="pt-0">
+          <div>
+            <v-dialog v-model="exportScanDialog" max-width="500px">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  color="primary"
+                  v-bind="attrs"
+                  v-on="on"
+                  small
+                  :disabled="!allowExport"
+                  :dark="allowExport"
+                >
+                  Export
+                </v-btn>
+              </template>
+              <export-scan-card
+                :selectedScans="selectedScans"
+                @close-scan-export-dialog="closeScanExportDialog"
+                @scan-export-started="showExportSnackbar"
+              />
+            </v-dialog>
+          </div>
+
+          <v-snackbar v-model="exportSnackbar" :timeout="exportSnackbarTimeout">
+            {{ exportSnackbarText }}
+            <template v-slot:action="{ attrs }">
               <v-btn
-                small
-                rounded
-                color="indigo lighten-3"
-                :disabled="!selectedScans.length"
-                :href="dicomDownloadUrl"
+                color="blue"
+                text
+                v-bind="attrs"
+                @click="exportSnackbar = false"
               >
-                DICOM
+                Close
               </v-btn>
-            </span>
-            <span class="px-1">
-              <v-btn
-                small
-                rounded
-                color="indigo lighten-3"
-                :disabled="!selectedScans.length"
-                :href="niftiDownloadUrl"
-              >
-                NIfTI
-              </v-btn>
-            </span>
-          </v-container>
+            </template>
+          </v-snackbar>
         </v-col>
       </v-row>
     </v-col>
@@ -167,9 +201,12 @@ import { mapState, mapActions } from 'vuex'
 import { SCANS } from '@/api/mri/endpoints.js'
 import { SERIES } from '@/api/dicom/endpoints.js'
 import { SEQUENCE_TYPE_ITEMS } from '@/components/utils.js'
+import ExportScanCard from '@/components/mri/export-scan-card'
+import DownloadScanCard from '@/components/mri/download-scan-card'
 
 export default {
   name: 'ScanTableControls',
+  components: { DownloadScanCard, ExportScanCard },
   props: {
     options: Object,
     subject: Object,
@@ -208,7 +245,12 @@ export default {
     sequenceTypeItems: SEQUENCE_TYPE_ITEMS,
     loadingStudyGroups: false,
     studyGroupQuery: { filters: {}, options: {} },
-    menuProps: { offsetY: true, auto: true }
+    menuProps: { offsetY: true, auto: true },
+    exportScanDialog: false,
+    exportSnackbar: false,
+    exportSnackbarTimeout: 5000,
+    exportSnackbarText: '',
+    downloadScanDialog: false
   }),
   computed: {
     parsedOptions: function() {
@@ -248,6 +290,12 @@ export default {
         text: `${group.study.title}|${group.title}`
       }))
     },
+    allowExport: function() {
+      return Boolean(
+        this.exportDestinations.length && this.selectedScans.length
+      )
+    },
+    ...mapState('accounts', ['exportDestinations']),
     ...mapState('mri', ['scans']),
     ...mapState('research', ['groups'])
   },
@@ -265,8 +313,18 @@ export default {
         this.loadingStudyGroups = false
       })
     },
-    downloadDicom() {
-      return
+    closeScanExportDialog() {
+      this.exportScanDialog = false
+    },
+    showExportSnackbar(nScans, nExportDestinations) {
+      let exportDestinationsText =
+        'destination' + (nExportDestinations > 1 ? 's' : '')
+      let scanText = 'scan' + (nScans > 1 ? 's' : '')
+      this.exportSnackbarText = `Data export successfully started! (${nScans} ${scanText}, ${nExportDestinations} ${exportDestinationsText})`
+      this.exportSnackbar = true
+    },
+    closeScanDownloadDialog() {
+      this.downloadScanDialog = false
     },
     ...mapActions('mri', ['fetchScans']),
     ...mapActions('research', ['fetchGroups'])

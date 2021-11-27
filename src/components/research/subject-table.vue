@@ -250,10 +250,7 @@
 
         <template v-slot:expanded-item="{ item, headers }">
           <td :colspan="headers.length" class="subject-data pa-0 ma-0">
-            <subject-data
-              :subject="item"
-              :studyFilter="$refs.controls.filters.studies"
-            />
+            <subject-data :subject="item" :studyFilter="studyFilter" />
             <hr />
           </td>
         </template>
@@ -365,6 +362,9 @@ export default {
         ]
       }
       return this.headers
+    },
+    studyFilter: function() {
+      return this.$refs.controls ? this.$refs.controls.filters.studies : []
     },
     ...mapState('research', ['subjects', 'subjectCount']),
     ...mapState('auth', { currentUser: 'user' })

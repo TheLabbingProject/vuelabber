@@ -235,7 +235,7 @@ export default {
       sex: '',
       gender: '',
       dominantHand: '',
-      studies: '',
+      studies: [],
       mriSessionAfter: '',
       mriSessionBefore: ''
     },
