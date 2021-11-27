@@ -75,7 +75,7 @@
 
         <template v-slot:expanded-item="{ item, headers }">
           <td class="pa-2 blue lighten-5" :colspan="headers.length">
-            <v-container flex>
+            <v-container fluid>
               <v-row v-if="item.traceback">
                 <v-textarea
                   outlined

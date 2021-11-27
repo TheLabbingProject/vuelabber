@@ -1,5 +1,5 @@
 <template>
-  <v-container flex>
+  <v-container fluid>
     <v-row>
       <v-col>
         <v-autocomplete

@@ -1,5 +1,5 @@
 <template>
-  <v-container flex class="pt-2 px-0">
+  <v-container fluid class="pt-2 px-0">
     <v-col class="py-0">
       <v-row>
         <div class="title text-left">

@@ -1,42 +1,5 @@
 <template>
-  <div>
-    <v-col v-if="currentUser.isStaff">
-      <!-- <hr />
-      <br /> -->
-      <v-expansion-panels>
-        <!-- Scan Upload -->
-        <!-- <v-expansion-panel>
-          <v-expansion-panel-header>
-            <div class="text-center">Upload</div>
-          </v-expansion-panel-header>
-          <v-expansion-panel-content>
-            <v-card>
-              <v-card-text>
-                <scan-upload
-                  :subject="subject"
-                  @file-upload-complete="update()"
-                />
-              </v-card-text>
-            </v-card>
-          </v-expansion-panel-content>
-        </v-expansion-panel> -->
-
-        <!-- Study Group Association -->
-        <v-expansion-panel>
-          <v-expansion-panel-header>
-            <div class="text-center">Study Group Association</div>
-          </v-expansion-panel-header>
-          <v-expansion-panel-content>
-            <v-card>
-              <v-card-text>
-                <group-association :selectedScans="selectedScans" />
-              </v-card-text>
-            </v-card>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </v-expansion-panels>
-    </v-col>
-
+  <v-container fluid class="pa-0">
     <!-- Scan Preview -->
     <!-- <div :key="scanPreviewKey" :hidden="!showPreview">
       <div>
@@ -70,15 +33,57 @@
       :server-items-length="scanCount"
     >
       <template v-slot:top>
-        <scan-table-controls
-          ref="controls"
-          :options="options"
-          :subject="subject"
-          :session="session"
-          :selectedScans="selectedScans"
-          @fetch-scans-start="loading = true"
-          @fetch-scans-end="loading = false"
-        />
+        <v-container>
+          <v-col>
+            <v-row>
+              <scan-table-controls
+                ref="controls"
+                :options="options"
+                :subject="subject"
+                :session="session"
+                :selectedScans="selectedScans"
+                @fetch-scans-start="loading = true"
+                @fetch-scans-end="loading = false"
+              />
+            </v-row>
+            <v-row v-if="currentUser.isStaff" class="py-1">
+              <v-expansion-panels>
+                <!-- Scan Upload -->
+                <!-- <v-expansion-panel>
+          <v-expansion-panel-header>
+            <div class="text-center">Upload</div>
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <v-card>
+              <v-card-text>
+                <scan-upload
+                  :subject="subject"
+                  @file-upload-complete="update()"
+                />
+              </v-card-text>
+            </v-card>
+          </v-expansion-panel-content>
+        </v-expansion-panel> -->
+
+                <!-- Study Group Association -->
+                <v-expansion-panel>
+                  <v-expansion-panel-header color="indigo lighten-5">
+                    <div class="text-center">
+                      Study Group Association
+                    </div>
+                  </v-expansion-panel-header>
+                  <v-expansion-panel-content>
+                    <v-card>
+                      <v-card-text>
+                        <group-association :selectedScans="selectedScans" />
+                      </v-card-text>
+                    </v-card>
+                  </v-expansion-panel-content>
+                </v-expansion-panel>
+              </v-expansion-panels>
+            </v-row>
+          </v-col>
+        </v-container>
       </template>
 
       <!-- Date -->
@@ -141,7 +146,7 @@
         </td>
       </template>
     </v-data-table>
-  </div>
+  </v-container>
 </template>
 
 <script>

@@ -1,18 +1,27 @@
 <template>
   <v-container fluid>
-    <v-row class="px-4">
+    <v-row class="px-2">
       <v-col v-if="showPersonalInformationFilters">
         <v-text-field
+          dense
           v-model="filters.subjectIdNumber"
           label="Subject ID"
           autofocus
         />
       </v-col>
       <v-col v-if="showPersonalInformationFilters">
-        <v-text-field v-model="filters.subjectFirstName" label="First Name" />
+        <v-text-field
+          v-model="filters.subjectFirstName"
+          label="First Name"
+          dense
+        />
       </v-col>
       <v-col v-if="showPersonalInformationFilters">
-        <v-text-field v-model="filters.subjectLastName" label="Last Name" />
+        <v-text-field
+          v-model="filters.subjectLastName"
+          label="Last Name"
+          dense
+        />
       </v-col>
       <!-- Scan Date -->
       <v-col :cols="4">
@@ -22,6 +31,7 @@
             <v-menu v-model="afterDateMenu" :close-on-content-click="false">
               <template v-slot:activator="{ on }">
                 <v-text-field
+                  dense
                   clearable
                   readonly
                   label="Scanned After"
@@ -41,6 +51,7 @@
             <v-menu v-model="beforeDateMenu" :close-on-content-click="false">
               <template v-slot:activator="{ on }">
                 <v-text-field
+                  dense
                   v-model="filters.beforeDate"
                   label="Scanned Before"
                   readonly
@@ -64,6 +75,7 @@
           item-text="title"
           item-value="id"
           multiple
+          dense
           clearable
           small-chips
           deletable-chips
@@ -71,18 +83,19 @@
       </v-col>
       <!-- Comments -->
       <v-col>
-        <v-text-field v-model="filters.comments" label="Comments" />
+        <v-text-field v-model="filters.comments" label="Comments" dense />
       </v-col>
 
       <!-- Export Button -->
       <v-col :cols="1">
-        <div class="pt-3 text-right">
+        <div class="text-right">
           <v-dialog v-model="exportSessionDataDialog" max-width="500px">
             <template v-slot:activator="{ on, attrs }">
               <v-btn
                 color="primary"
                 v-bind="attrs"
                 v-on="on"
+                small
                 :disabled="!allowExport"
                 :dark="allowExport"
               >

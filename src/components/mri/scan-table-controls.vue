@@ -1,151 +1,164 @@
 <template>
-  <v-container fluid>
-    <!-- Subject Information -->
-    <v-row v-if="!subject" class="pt-1">
-      <!-- Subject ID Number -->
-      <v-col>
-        <v-text-field
-          autofocus
-          clearable
-          v-model="filters.subjectIdNumber"
-          label="Subject ID"
-        />
-      </v-col>
-      <!-- Subject First Name -->
-      <v-col>
-        <v-text-field
-          clearable
-          v-model="filters.subjectFirstName"
-          label="First Name"
-        />
-      </v-col>
-      <!-- Subject Last Name -->
-      <v-col>
-        <v-text-field
-          clearable
-          v-model="filters.subjectLastName"
-          label="Last Name"
-        />
-      </v-col>
-    </v-row>
+  <v-container fluid class="pa-0">
+    <v-col class="pa-0">
+      <!-- Subject Information -->
+      <v-row v-if="!subject" class="pa-0">
+        <!-- Subject ID Number -->
+        <v-col>
+          <v-text-field
+            autofocus
+            clearable
+            v-model="filters.subjectIdNumber"
+            label="Subject ID"
+            dense
+          />
+        </v-col>
+        <!-- Subject First Name -->
+        <v-col>
+          <v-text-field
+            clearable
+            v-model="filters.subjectFirstName"
+            label="First Name"
+            dense
+          />
+        </v-col>
+        <!-- Subject Last Name -->
+        <v-col>
+          <v-text-field
+            clearable
+            v-model="filters.subjectLastName"
+            label="Last Name"
+            dense
+          />
+        </v-col>
+      </v-row>
 
-    <!-- Scan Information -->
-    <v-row>
-      <!-- Number -->
-      <v-col class="pt-0">
-        <v-text-field clearable v-model="filters.number" label="Scan Number" />
-      </v-col>
+      <!-- Scan Information -->
+      <v-row>
+        <!-- Number -->
+        <v-col class="pt-0">
+          <v-text-field
+            clearable
+            v-model="filters.number"
+            label="Scan Number"
+            dense
+          />
+        </v-col>
 
-      <!-- Description -->
-      <v-col class="pt-0">
-        <v-text-field
-          clearable
-          v-model="filters.description"
-          label="Scan Description"
-        />
-      </v-col>
-      <!-- Date -->
-      <v-col class="pt-0" :cols="4">
-        <v-row class="align-center">
-          <!-- After Date -->
-          <v-col>
-            <v-menu v-model="afterDateMenu" :close-on-content-click="false">
-              <template v-slot:activator="{ on }">
-                <v-text-field
-                  clearable
-                  readonly
-                  label="Scanned After"
-                  prepend-icon="event"
+        <!-- Description -->
+        <v-col class="pt-0">
+          <v-text-field
+            clearable
+            v-model="filters.description"
+            label="Scan Description"
+            dense
+          />
+        </v-col>
+        <!-- Date -->
+        <v-col class="pt-0" :cols="4">
+          <v-row class="align-center">
+            <!-- After Date -->
+            <v-col>
+              <v-menu v-model="afterDateMenu" :close-on-content-click="false">
+                <template v-slot:activator="{ on }">
+                  <v-text-field
+                    clearable
+                    readonly
+                    label="Scanned After"
+                    prepend-icon="event"
+                    v-model="filters.afterDate"
+                    v-on="on"
+                    dense
+                  ></v-text-field>
+                </template>
+                <v-date-picker
                   v-model="filters.afterDate"
-                  v-on="on"
-                ></v-text-field>
-              </template>
-              <v-date-picker
-                v-model="filters.afterDate"
-                @input="afterDateMenu = false"
-              ></v-date-picker>
-            </v-menu> </v-col
-          >-
-          <!-- Before Date -->
-          <v-col>
-            <v-menu v-model="beforeDateMenu" :close-on-content-click="false">
-              <template v-slot:activator="{ on }">
-                <v-text-field
+                  @input="afterDateMenu = false"
+                ></v-date-picker>
+              </v-menu> </v-col
+            >-
+            <!-- Before Date -->
+            <v-col>
+              <v-menu v-model="beforeDateMenu" :close-on-content-click="false">
+                <template v-slot:activator="{ on }">
+                  <v-text-field
+                    v-model="filters.beforeDate"
+                    label="Scanned Before"
+                    readonly
+                    clearable
+                    v-on="on"
+                    dense
+                  ></v-text-field>
+                </template>
+                <v-date-picker
                   v-model="filters.beforeDate"
-                  label="Scanned Before"
-                  readonly
-                  clearable
-                  v-on="on"
-                ></v-text-field>
-              </template>
-              <v-date-picker
-                v-model="filters.beforeDate"
-                @input="beforeDateMenu = false"
-              ></v-date-picker>
-            </v-menu>
-          </v-col>
-        </v-row>
-      </v-col>
+                  @input="beforeDateMenu = false"
+                ></v-date-picker>
+              </v-menu>
+            </v-col>
+          </v-row>
+        </v-col>
 
-      <v-col class="pt-0">
-        <v-select
-          v-model="filters.studyGroups"
-          label="Study Group"
-          chips
-          small-chips
-          clearable
-          multiple
-          deletable-chips
-          item-value="id"
-          :items="computedGroups"
-          :loading="loadingStudyGroups"
-          :menu-props="menuProps"
-        ></v-select>
-      </v-col>
+        <v-col class="pt-0">
+          <v-autocomplete
+            v-model="filters.studyGroups"
+            label="Study Group"
+            small-chips
+            clearable
+            multiple
+            deletable-chips
+            item-value="id"
+            :items="computedGroups"
+            :loading="loadingStudyGroups"
+            :menu-props="menuProps"
+            dense
+          ></v-autocomplete>
+        </v-col>
 
-      <!-- Sequence Type -->
-      <v-col class="pt-0">
-        <v-select
-          chips
-          small-chips
-          clearable
-          multiple
-          deletable-chips
-          label="Sequence Type"
-          v-model="filters.sequenceType"
-          :items="sequenceTypeItems"
-          :menu-props="menuProps"
-        />
-      </v-col>
+        <!-- Sequence Type -->
+        <v-col class="pt-0">
+          <v-autocomplete
+            small-chips
+            dense
+            clearable
+            multiple
+            deletable-chips
+            label="Sequence Type"
+            v-model="filters.sequenceType"
+            :items="sequenceTypeItems"
+            :menu-props="menuProps"
+          />
+        </v-col>
 
-      <!-- Download -->
-      <v-col class="pt-0 px-0">
-        <v-container flex>
-          <span class="px-1">
-            <v-btn
-              small
-              rounded
-              color="indigo lighten-3"
-              :disabled="!selectedScans.length"
-              :href="dicomDownloadUrl"
-            >
-              DICOM
-            </v-btn>
-          </span>
-          <span class="px-1">
-            <v-btn
-              small
-              rounded
-              color="indigo lighten-3"
-              :disabled="!selectedScans.length"
-              :href="niftiDownloadUrl"
-            >
-              NIfTI
-            </v-btn>
-          </span>
-        </v-container>
-      </v-col>
-    </v-row>
+        <!-- Download -->
+        <v-col class="pt-0 px-0">
+          <v-container fluid class="pa-0">
+            <span class="px-1">
+              <v-btn
+                small
+                rounded
+                color="indigo lighten-3"
+                :disabled="!selectedScans.length"
+                :href="dicomDownloadUrl"
+              >
+                DICOM
+              </v-btn>
+            </span>
+            <span class="px-1">
+              <v-btn
+                small
+                rounded
+                color="indigo lighten-3"
+                :disabled="!selectedScans.length"
+                :href="niftiDownloadUrl"
+              >
+                NIfTI
+              </v-btn>
+            </span>
+          </v-container>
+        </v-col>
+      </v-row>
+    </v-col>
   </v-container>
 </template>
 

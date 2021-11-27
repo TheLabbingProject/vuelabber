@@ -1,19 +1,23 @@
 <template>
-  <v-col>
-    <v-tabs v-model="active">
-      <!-- Sessions -->
-      <v-tab ripple>Sessions</v-tab>
-      <v-tab-item>
-        <session-table />
-      </v-tab-item>
+  <v-container fluid class="pa-0">
+    <v-row>
+      <v-col class="pt-0">
+        <v-tabs v-model="active">
+          <!-- Sessions -->
+          <v-tab ripple>Sessions</v-tab>
+          <v-tab-item>
+            <session-table />
+          </v-tab-item>
 
-      <!-- Scans -->
-      <v-tab ripple>Scans</v-tab>
-      <v-tab-item>
-        <scan-table />
-      </v-tab-item>
-    </v-tabs>
-  </v-col>
+          <!-- Scans -->
+          <v-tab ripple>Scans</v-tab>
+          <v-tab-item>
+            <scan-table />
+          </v-tab-item>
+        </v-tabs>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
