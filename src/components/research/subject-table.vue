@@ -1,194 +1,182 @@
 <template>
-  <v-container fluid>
-    <v-row>
-      <div class="title text-left">
-        {{ title }}
-      </div>
-      <v-spacer />
-      <v-dialog
-        v-model="createSubjectDialog"
-        width="600px"
-        v-if="currentUser.isStaff"
+  <v-container fluid class="pa-0">
+    <v-col class="px-0">
+      <v-data-table
+        v-model="selectedSubjects"
+        dense
+        item-key="id"
+        show-select
+        show-expand
+        single-expand
+        multi-sort
+        :expanded.sync="expanded"
+        :headers="computedHeaders"
+        :items="subjects"
+        :loading="loading"
+        :options.sync="options"
+        :server-items-length="subjectCount"
+        :footer-props="{
+          itemsPerPageOptions
+        }"
       >
-        <template v-slot:activator="{ on }">
-          <v-btn :color="newSubjectButton.color" v-on="on">
-            {{ newSubjectButton.label }}
-          </v-btn>
+        <template v-slot:top>
+          <subject-table-controls
+            :options="options"
+            :selectedSubjects="selectedSubjects"
+            @fetch-subjects-start="loading = true"
+            @fetch-subjects-end="loading = false"
+            ref="controls"
+          />
         </template>
-        <subject-info-card
-          :createMode="true"
-          @close-subject-dialog="closeSubjectDialog(false)"
-          :key="subjectDialog"
-        />
-      </v-dialog>
-    </v-row>
-    <v-data-table
-      v-model="selectedSubjects"
-      dense
-      item-key="id"
-      show-select
-      show-expand
-      single-expand
-      multi-sort
-      :expanded.sync="expanded"
-      :headers="computedHeaders"
-      :items="subjects"
-      :loading="loading"
-      :options.sync="options"
-      :server-items-length="subjectCount"
-      :footer-props="{
-        itemsPerPageOptions
-      }"
-    >
-      <template v-slot:top>
-        <subject-table-controls
-          :options="options"
-          :selectedSubjects="selectedSubjects"
-          @fetch-subjects-start="loading = true"
-          @fetch-subjects-end="loading = false"
-          ref="controls"
-        />
-      </template>
 
-      <!-- ID Number -->
-      <template v-slot:[`item.idNumber`]="{ item }" v-if="currentUser.isStaff">
-        <v-edit-dialog
-          :return-value.sync="item.idNumber"
-          large
-          @save="saveSubject(item, 'idNumber')"
+        <!-- ID Number -->
+        <template
+          v-slot:[`item.idNumber`]="{ item }"
+          v-if="currentUser.isStaff"
         >
-          <div>{{ item.idNumber }}</div>
-          <template v-slot:input>
-            <v-text-field
-              v-model="item.idNumber"
-              label="Edit"
-              single-line
-              autofocus
-            ></v-text-field>
-          </template>
-        </v-edit-dialog>
-      </template>
+          <v-edit-dialog
+            :return-value.sync="item.idNumber"
+            large
+            @save="saveSubject(item, 'idNumber')"
+          >
+            <div>{{ item.idNumber }}</div>
+            <template v-slot:input>
+              <v-text-field
+                v-model="item.idNumber"
+                label="Edit"
+                single-line
+                autofocus
+              ></v-text-field>
+            </template>
+          </v-edit-dialog>
+        </template>
 
-      <!-- First Name -->
-      <template v-slot:[`item.firstName`]="{ item }" v-if="currentUser.isStaff">
-        <v-edit-dialog
-          :return-value.sync="item.firstName"
-          large
-          @save="saveSubject(item, 'firstName')"
+        <!-- First Name -->
+        <template
+          v-slot:[`item.firstName`]="{ item }"
+          v-if="currentUser.isStaff"
         >
-          <div>{{ item.firstName }}</div>
-          <template v-slot:input>
-            <v-text-field
-              v-model="item.firstName"
-              label="Edit"
-              single-line
-              autofocus
-            ></v-text-field>
-          </template>
-        </v-edit-dialog>
-      </template>
+          <v-edit-dialog
+            :return-value.sync="item.firstName"
+            large
+            @save="saveSubject(item, 'firstName')"
+          >
+            <div>{{ item.firstName }}</div>
+            <template v-slot:input>
+              <v-text-field
+                v-model="item.firstName"
+                label="Edit"
+                single-line
+                autofocus
+              ></v-text-field>
+            </template>
+          </v-edit-dialog>
+        </template>
 
-      <!-- Last Name -->
-      <template v-slot:[`item.lastName`]="{ item }" v-if="currentUser.isStaff">
-        <v-edit-dialog
-          :return-value.sync="item.lastName"
-          large
-          @save="saveSubject(item, 'lastName')"
+        <!-- Last Name -->
+        <template
+          v-slot:[`item.lastName`]="{ item }"
+          v-if="currentUser.isStaff"
         >
-          <div>{{ item.lastName }}</div>
-          <template v-slot:input>
-            <v-text-field
-              v-model="item.lastName"
-              label="Edit"
-              single-line
-              autofocus
-            ></v-text-field>
-          </template>
-        </v-edit-dialog>
-      </template>
+          <v-edit-dialog
+            :return-value.sync="item.lastName"
+            large
+            @save="saveSubject(item, 'lastName')"
+          >
+            <div>{{ item.lastName }}</div>
+            <template v-slot:input>
+              <v-text-field
+                v-model="item.lastName"
+                label="Edit"
+                single-line
+                autofocus
+              ></v-text-field>
+            </template>
+          </v-edit-dialog>
+        </template>
 
-      <!-- Date of Birth -->
-      <template
-        v-slot:[`item.dateOfBirth`]="{ item }"
-        v-if="currentUser.isStaff"
-      >
-        <v-edit-dialog
-          :return-value.sync="item.dateOfBirth"
-          large
-          @save="saveSubject(item, 'dateOfBirth')"
+        <!-- Date of Birth -->
+        <template
+          v-slot:[`item.dateOfBirth`]="{ item }"
+          v-if="currentUser.isStaff"
         >
-          <div>
-            {{ item.dateOfBirth | formatDate }}
-          </div>
-          <template v-slot:input>
-            <v-date-picker
-              v-model="item.dateOfBirth"
-              @input="dateOfBirthMenu = false"
-              scrollable
-            >
-              <template v-slot:default>
-                <v-btn color="orange" @click="item.dateOfBirth = null">
-                  Clear
-                </v-btn>
-              </template>
-            </v-date-picker>
-          </template>
-        </v-edit-dialog>
-      </template>
-      <template v-slot:[`item.dateOfBirth`]="{ item }" v-else>
-        {{ item.dateOfBirth | formatDate }}
-      </template>
+          <v-edit-dialog
+            :return-value.sync="item.dateOfBirth"
+            large
+            @save="saveSubject(item, 'dateOfBirth')"
+          >
+            <div>
+              {{ item.dateOfBirth | formatDate }}
+            </div>
+            <template v-slot:input>
+              <v-date-picker
+                v-model="item.dateOfBirth"
+                @input="dateOfBirthMenu = false"
+                scrollable
+              >
+                <template v-slot:default>
+                  <v-btn color="orange" @click="item.dateOfBirth = null">
+                    Clear
+                  </v-btn>
+                </template>
+              </v-date-picker>
+            </template>
+          </v-edit-dialog>
+        </template>
+        <template v-slot:[`item.dateOfBirth`]="{ item }" v-else>
+          {{ item.dateOfBirth | formatDate }}
+        </template>
 
-      <!-- Sex -->
-      <template v-if="currentUser.isStaff" v-slot:[`item.sex`]="{ item }">
-        <v-edit-dialog
-          :return-value.sync="item.sex"
-          large
-          @save="saveSubject(item, 'sex')"
-        >
-          <div>
-            {{ getDisplay(item.sex, sexOptions) }}
-          </div>
-          <template v-slot:input>
-            <v-select
-              clearable
-              label="Edit"
-              v-model="item.sex"
-              :items="sexItems"
-            />
-          </template>
-        </v-edit-dialog>
-      </template>
-      <template v-else v-slot:[`item.sex`]="{ item }">
-        {{ getDisplay(item.sex, sexOptions) }}
-      </template>
+        <!-- Sex -->
+        <template v-if="currentUser.isStaff" v-slot:[`item.sex`]="{ item }">
+          <v-edit-dialog
+            :return-value.sync="item.sex"
+            large
+            @save="saveSubject(item, 'sex')"
+          >
+            <div>
+              {{ getDisplay(item.sex, sexOptions) }}
+            </div>
+            <template v-slot:input>
+              <v-select
+                clearable
+                label="Edit"
+                v-model="item.sex"
+                :items="sexItems"
+              />
+            </template>
+          </v-edit-dialog>
+        </template>
+        <template v-else v-slot:[`item.sex`]="{ item }">
+          {{ getDisplay(item.sex, sexOptions) }}
+        </template>
 
-      <!-- Gender -->
-      <template v-if="currentUser.isStaff" v-slot:[`item.gender`]="{ item }">
-        <v-edit-dialog
-          :return-value.sync="item.gender"
-          large
-          @save="saveSubject(item, 'gender')"
-        >
-          <div>
-            {{ getDisplay(item.gender, genderOptions) }}
-          </div>
-          <template v-slot:input>
-            <v-select
-              clearable
-              label="Edit"
-              v-model="item.gender"
-              :items="genderItems"
-            />
-          </template>
-        </v-edit-dialog>
-      </template>
-      <template v-else v-slot:[`item.gender`]="{ item }">
-        {{ getDisplay(item.gender, genderOptions) }}
-      </template>
+        <!-- Gender -->
+        <template v-if="currentUser.isStaff" v-slot:[`item.gender`]="{ item }">
+          <v-edit-dialog
+            :return-value.sync="item.gender"
+            large
+            @save="saveSubject(item, 'gender')"
+          >
+            <div>
+              {{ getDisplay(item.gender, genderOptions) }}
+            </div>
+            <template v-slot:input>
+              <v-select
+                clearable
+                label="Edit"
+                v-model="item.gender"
+                :items="genderItems"
+              />
+            </template>
+          </v-edit-dialog>
+        </template>
+        <template v-else v-slot:[`item.gender`]="{ item }">
+          {{ getDisplay(item.gender, genderOptions) }}
+        </template>
 
-      <!-- Dominant Hand -->
-      <!-- <template
+        <!-- Dominant Hand -->
+        <!-- <template
         v-if="currentUser.isStaff"
         v-slot:[`item.dominantHand`]="{ item }"
       >
@@ -214,11 +202,11 @@
         {{ getDisplay(item.dominantHand, dominantHandOptions) }}
       </template> -->
 
-      <template v-slot:[`item.latestMriSessionTime`]="{ item }">
-        {{ item.latestMriSessionTime | formatDateTime }}
-      </template>
+        <template v-slot:[`item.latestMriSessionTime`]="{ item }">
+          {{ item.latestMriSessionTime | formatDateTime }}
+        </template>
 
-      <!-- <template v-slot:[`item.created`]="{ item }">
+        <!-- <template v-slot:[`item.created`]="{ item }">
         {{ item.created | formatDateTime }}
       </template>
 
@@ -226,48 +214,51 @@
         {{ item.modified | formatDateTime }}
       </template> -->
 
-      <template v-slot:[`item.studies`]="{ item }">
-        <v-row no-gutters>
-          <template v-for="n in Array(item.studies.length).keys()">
-            <v-col class="py-1" :key="n">
-              <v-chip class="pa-1" small>
-                <div class="pa-1">
-                  {{ item.studies[n].title }}
-                </div>
-              </v-chip>
-            </v-col>
-            <v-responsive
-              v-if="n === 2"
-              :key="`width-${n}`"
-              width="100%"
-            ></v-responsive>
-          </template>
-        </v-row>
-      </template>
+        <template v-slot:[`item.studies`]="{ item }">
+          <v-row no-gutters>
+            <template v-for="n in Array(item.studies.length).keys()">
+              <v-col class="py-1" :key="n">
+                <v-chip class="pa-1" small>
+                  <div class="pa-1">
+                    {{ item.studies[n].title }}
+                  </div>
+                </v-chip>
+              </v-col>
+              <v-responsive
+                v-if="n === 2"
+                :key="`width-${n}`"
+                width="100%"
+              ></v-responsive>
+            </template>
+          </v-row>
+        </template>
 
-      <!-- Edit dialog -->
-      <template v-slot:[`item.edit`]="{ item }" v-if="currentUser.isStaff">
-        <v-dialog v-model="editSubjectDialog[item.id]" width="600px">
-          <template v-slot:activator="{ on }">
-            <v-icon v-on="on">edit</v-icon>
-          </template>
-          <subject-info-card
-            :existingSubject="item"
-            @close-subject-dialog="true, item"
-          />
-        </v-dialog>
-      </template>
+        <!-- Edit dialog -->
+        <template v-slot:[`item.edit`]="{ item }" v-if="currentUser.isStaff">
+          <v-dialog v-model="editSubjectDialog[item.id]" width="600px">
+            <template v-slot:activator="{ on }">
+              <v-icon v-on="on">edit</v-icon>
+            </template>
+            <subject-info-card
+              :existingSubject="item"
+              :editMode="true"
+              @close-subject-dialog="closeSubjectDialog(true, item)"
+              ref="infoCard"
+            />
+          </v-dialog>
+        </template>
 
-      <template v-slot:expanded-item="{ item, headers }">
-        <td :colspan="headers.length" class="subject-data pa-0 ma-0">
-          <subject-data
-            :subject="item"
-            :studyFilter="$refs.controls.filters.studies"
-          />
-          <hr />
-        </td>
-      </template>
-    </v-data-table>
+        <template v-slot:expanded-item="{ item, headers }">
+          <td :colspan="headers.length" class="subject-data pa-0 ma-0">
+            <subject-data
+              :subject="item"
+              :studyFilter="$refs.controls.filters.studies"
+            />
+            <hr />
+          </td>
+        </template>
+      </v-data-table>
+    </v-col>
   </v-container>
 </template>
 
@@ -290,30 +281,51 @@ export default {
     title: 'Subjects',
     newSubjectButton: { label: 'New Subject', color: 'success' },
     headers: [
-      { text: 'Primary Key', value: 'id', align: 'center', width: 120 },
-      { text: 'Date of Birth', value: 'dateOfBirth', align: 'center' },
-      { text: 'Sex', value: 'sex', align: 'center' },
+      {
+        text: 'Primary Key',
+        value: 'id',
+        align: 'center',
+        width: 120,
+        sortable: true
+      },
+      {
+        text: 'Date of Birth',
+        value: 'dateOfBirth',
+        align: 'center',
+        sortable: true
+      },
+      { text: 'Sex', value: 'sex', align: 'center', sortable: true },
       // { text: 'Gender', value: 'gender', sortable: false },
       // { text: 'Dominant Hand', value: 'dominantHand' },
       {
         text: 'Latest MRI Session',
         value: 'latestMriSessionTime',
-        align: 'center'
+        align: 'center',
+        sortable: true
       },
       {
         text: 'MRI Session Count',
         value: 'mriSessionCount',
         align: 'center',
-        width: 160
+        width: 160,
+        sortable: true
       },
       {
         text: 'Study Association',
         value: 'studies',
         align: 'center',
-        width: 200
-      }
+        width: 200,
+        sortable: false
+      },
       // { text: 'Created', value: 'created', align: 'center' },
-      // { text: 'Modified', value: 'modified', align: 'center' }
+      // { text: 'Modified', value: 'modified', align: 'center' },
+      {
+        text: 'Edit',
+        value: 'edit',
+        align: 'center',
+        width: 100,
+        sortable: false
+      }
     ],
     personalInformationHeaders: [
       { text: 'Subject ID', value: 'idNumber', align: 'center', width: 120 },

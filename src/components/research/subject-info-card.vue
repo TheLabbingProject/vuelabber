@@ -6,7 +6,7 @@
         <span class="white--text">
           Subject Information
         </span>
-        <span v-if="existingSubject" class="grey--text text--lighten-1">
+        <span v-if="subject.id" class="grey--text text--lighten-1">
           {{ `#${subject.id}` }}
         </span>
       </div>
@@ -113,13 +113,13 @@
               @input="dob_menu = false"
             ></v-date-picker>
           </v-menu>
-          <br />
+          <!-- <br />
           <object-table
             title="Custom attributes"
             :editable="editable"
             :existingObject="subject.customAttributes"
             @update-object="updateCustomAttributes"
-          />
+          /> -->
         </v-form>
       </v-col>
     </v-card-text>
@@ -129,7 +129,7 @@
       <!-- View/Edit mode switch -->
       <div v-if="currentUser.isStaff" px-3>
         <v-switch
-          v-if="existingSubject || subjectId"
+          v-if="!createMode"
           v-model="editable"
           :label="editable ? 'Edit Mode' : 'View Mode'"
         />
@@ -140,7 +140,7 @@
       <v-btn
         color="warning"
         text
-        v-if="editable && (existingSubject || subjectId)"
+        v-if="editable && (existingSubject.id || subjectId)"
         :disabled="!currentUser.isStaff"
         @click="updateExistingSubject"
       >
@@ -151,7 +151,7 @@
       <v-btn
         color="success"
         text
-        v-if="!existingSubject && !subjectId && currentUser.isStaff"
+        v-if="!existingSubject.id && !subjectId && currentUser.isStaff"
         @click="createNewSubject"
       >
         Create
@@ -176,30 +176,27 @@ import faker from 'faker'
 import { mapActions, mapState } from 'vuex'
 import { sexOptions, genderOptions, dominantHandOptions } from './choices.js'
 import { createSelectItems } from '@/components/utils'
-import ObjectTable from '@/components/object-table.vue'
+// import ObjectTable from '@/components/object-table.vue'
 import deleteDialog from '@/components/deleteDialog.vue'
-import { isEmptyObject } from '@/utils'
 
 export default {
   name: 'SubjectInfoCard',
-  components: { ObjectTable, deleteDialog },
+  components: { deleteDialog },
   props: {
     existingSubject: {
       type: Object,
-      default: function() {
-        return {}
-      }
+      default: () => Object.assign({}, cleanSubject)
     },
-    createMode: { type: Boolean, default: false },
-    subjectId: { type: Number, default: 0 }
+    subjectId: { type: Number, default: 0 },
+    editMode: { type: Boolean, default: false }
   },
   created() {
-    if (isEmptyObject(this.existingSubject)) {
+    if (this.existingSubject.id != undefined) {
       this.subject = Object.assign({}, this.existingSubject)
-      this.editable = false
     } else if (this.subjectId != 0) {
       this.fetchSubjectById()
     }
+    this.editable = this.createMode || this.editMode
   },
   data: () => ({
     selectedSubjectRepresentation: '',
@@ -219,6 +216,9 @@ export default {
     }
   }),
   computed: {
+    createMode: function() {
+      return !(this.existingSubject.id || this.subjectId)
+    },
     formattedDate: function() {
       return formatDate(this.subject.dateOfBirth)
     },
@@ -286,6 +286,9 @@ export default {
     ])
   },
   watch: {
+    createMode: function(subjectCreation) {
+      this.editable = subjectCreation
+    },
     editable: function(isEditable) {
       if (!isEditable) {
         if (this.subjectId == 0) {
