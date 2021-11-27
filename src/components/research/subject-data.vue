@@ -5,7 +5,6 @@
         {{ mriTabTitle }}
       </v-tab>
       <v-tab-item>
-        <br />
         <session-table :subject="subject" :studyFilter="studyFilter" />
       </v-tab-item>
     </v-tabs>
