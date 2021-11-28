@@ -7,6 +7,7 @@ const LABS = `${RESEARCH_API}/laboratory`
 const STUDIES = `${RESEARCH_API}/study`
 const STUDY_AGGREGATIONS = `${STUDIES}/aggregate`
 const SUBJECTS = `${RESEARCH_API}/subject`
+const SUBJECT_INFO_PLOT = `${SUBJECTS}/plot_summary`
 const SUBJECTS_CSV = `${SUBJECTS}/to_csv`
 const EXPORT_SUBJECT_DATA = `${SUBJECTS}/export/`
 const PROCEDURES = `${RESEARCH_API}/procedure`
@@ -26,5 +27,6 @@ export {
   STUDIES,
   STUDY_AGGREGATIONS,
   SUBJECTS,
+  SUBJECT_INFO_PLOT,
   SUBJECTS_CSV
 }

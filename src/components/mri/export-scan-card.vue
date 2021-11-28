@@ -41,7 +41,7 @@
           </v-row>
           <v-row align="center">
             <v-col>
-              <v-select
+              <v-autocomplete
                 v-model="selectedExportDestination"
                 multiple
                 item-value="id"

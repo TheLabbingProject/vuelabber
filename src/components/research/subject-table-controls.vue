@@ -1,6 +1,12 @@
 <template>
   <v-container fluid class="pa-0">
     <v-col class="pb-0">
+      <v-row v-if="infoSummaryLoaded" :key="plotScriptLoaded">
+        <span v-html="plots.subject.summary.tag"></span>
+        <script2>
+          {{ plots.subject.summary.js }}
+        </script2>
+      </v-row>
       <v-row>
         <v-col :cols="1">
           <v-text-field
@@ -221,6 +227,7 @@ export default {
       .then(() => this.fetchExportDestinations({ filters: {}, options: {} }))
   },
   data: () => ({
+    plotScriptLoaded: 0,
     bornAfterMenu: false,
     bornBeforeMenu: false,
     sessionTimeAfterMenu: false,
@@ -273,9 +280,14 @@ export default {
     query: function() {
       return { filters: this.filters, options: this.computedOptions }
     },
+    infoSummaryLoaded: function() {
+      return Boolean(
+        this.plots.subject.summary.js && this.plots.subject.summary.tag
+      )
+    },
     ...mapState('accounts', ['exportDestinations']),
     ...mapState('auth', ['user']),
-    ...mapState('research', ['studies'])
+    ...mapState('research', ['studies', 'plots'])
   },
   methods: {
     toCsv: function() {
@@ -307,6 +319,11 @@ export default {
       this.$emit('fetch-subjects-start')
       this.fetchSubjects(this.query).then(() => {
         this.$emit('fetch-subjects-end')
+        this.fetchSubjectsInfoPlot(this.query).then(() => {
+          // this.$nextTick(() => {
+          //   this.plotScriptLoaded++
+          // })
+        })
       })
     },
     showExportSnackbar(nSubjects, nExportDestinations) {
@@ -322,7 +339,8 @@ export default {
     ...mapActions('research', [
       'fetchStudies',
       'fetchSubjects',
-      'exportSubjectData'
+      'exportSubjectData',
+      'fetchSubjectsInfoPlot'
     ]),
     ...mapActions('accounts', ['fetchExportDestinations'])
   },
@@ -336,6 +354,12 @@ export default {
     options: {
       handler() {
         this.update()
+      },
+      deep: true
+    },
+    'plots.subject.summary': {
+      handler() {
+        this.plotScriptLoaded++
       },
       deep: true
     }

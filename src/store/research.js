@@ -9,7 +9,8 @@ import {
   PROCEDURES,
   STUDIES,
   STUDY_AGGREGATIONS,
-  SUBJECTS
+  SUBJECTS,
+  SUBJECT_INFO_PLOT
 } from '@/api/research/endpoints'
 import {
   getDataAcquisitionQueryString,
@@ -28,7 +29,7 @@ const state = {
   groups: [],
   groupCount: 0,
   subjects: [],
-  plots: { subject: {} },
+  plots: { subject: { summary: {} } },
   subjectCount: 0,
   procedures: [],
   procedureCount: 0,
@@ -208,6 +209,11 @@ const mutations = {
     plots.subject.dateOfBirth = script
     state.plots = plots
   },
+  setSubjectsInfoPlot(state, script) {
+    var plots = Object.assign({}, state.plots)
+    plots.subject.summary = script
+    state.plots = plots
+  },
   setSubjectCount(state, count) {
     state.subjectCount = count
   },
@@ -289,6 +295,16 @@ const actions = {
         commit('setSubjects', data.results)
         commit('setSubjectCount', data.count)
         return data.results
+      })
+      .catch(console.error)
+  },
+  fetchSubjectsInfoPlot({ commit }, query) {
+    let queryString = getSubjectQueryString(query)
+    return session
+      .get(`${SUBJECT_INFO_PLOT}/${queryString}`)
+      .then(({ data }) => {
+        commit('setSubjectsInfoPlot', data)
+        return data
       })
       .catch(console.error)
   },
@@ -498,6 +514,12 @@ const actions = {
       .catch(console.error)
   },
   fetchSubjectsDateOfBirthPlot({ commit }) {
+    return session
+      .get(`${SUBJECTS}/plot/`)
+      .then(({ data }) => commit('setSubjectDateOfBirthPlot', data))
+      .catch(console.error)
+  },
+  fetchSubjectsPlot({ commit }) {
     return session
       .get(`${SUBJECTS}/plot/`)
       .then(({ data }) => commit('setSubjectDateOfBirthPlot', data))
