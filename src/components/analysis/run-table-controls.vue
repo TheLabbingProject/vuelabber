@@ -1,7 +1,7 @@
 <template>
-  <v-container fluid>
+  <v-container fluid class="pa-0">
     <v-row>
-      <v-col>
+      <v-col class="pt-0">
         <v-autocomplete
           v-model="analysisFilter.value"
           :items="analyses"
@@ -14,7 +14,7 @@
           small-chips
         />
       </v-col>
-      <v-col>
+      <v-col class="pt-0">
         <v-autocomplete
           v-model="analysisVersionFilter.value"
           :disabled="analysisFilter.value.length == 0"
@@ -27,7 +27,7 @@
           small-chips
         />
       </v-col>
-      <v-col>
+      <v-col class="pt-0">
         <v-autocomplete
           v-model="statusFilter.value"
           :items="statusFilter.items"
@@ -36,8 +36,8 @@
           clearable
         />
       </v-col>
-      <v-col :cols="1">
-        <v-btn :class="refreshButton.class" @click="update">
+      <v-col :cols="1" class="text-center">
+        <v-btn :class="refreshButton.class" @click="update" small>
           <v-icon>
             {{ refreshButton.icon }}
           </v-icon>

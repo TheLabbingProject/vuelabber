@@ -1,11 +1,12 @@
 <template>
   <v-container fluid>
-    <v-col>
+    <v-col class="pa-0">
       <v-data-table
         item-key="id"
         show-expand
         single-expand
         multi-sort
+        dense
         :expanded.sync="expanded"
         :headers="headers"
         :items="runs"
