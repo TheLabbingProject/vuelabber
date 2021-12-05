@@ -236,9 +236,9 @@ export default {
       page: 1,
       sortBy: [],
       sortDesc: [],
-      itemsPerPage: 25
+      itemsPerPage: 100
     },
-    itemsPerPageOptions: [10, 25, 50, -1],
+    itemsPerPageOptions: [25, 50, 100, 200, -1],
     loading: false,
     scanPreviewKey: 0,
     editSubjectDialog: {},
