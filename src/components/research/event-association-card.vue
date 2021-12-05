@@ -210,7 +210,7 @@ export default {
     updateEventItems() {
       let value = this.existingEventQuery == null ? '' : this.existingEventQuery
       let query = {
-        filters: { title: value, excludeProcedure: this.procedure.id },
+        filters: { title: value, excludeProcedure: [this.procedure.id] },
         options: {}
       }
       this.loadingEventItems = true

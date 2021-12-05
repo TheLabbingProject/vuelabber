@@ -5,7 +5,13 @@
         {{ mriTabTitle }}
       </v-tab>
       <v-tab-item>
-        <session-table :subject="subject" :studyFilter="studyFilter" />
+        <session-table
+          :subject="subject"
+          :studyFilter="studyFilter"
+          :procedureFilter="procedureFilter"
+          :acquisitionFilter="acquisitionFilter"
+          :groupFilter="groupFilter"
+        />
       </v-tab-item>
     </v-tabs>
   </v-container>
@@ -18,7 +24,10 @@ export default {
   name: 'SubjectData',
   props: {
     subject: Object,
-    studyFilter: Array
+    studyFilter: Array,
+    procedureFilter: Array,
+    acquisitionFilter: Array,
+    groupFilter: Array
   },
   components: {
     SessionTable

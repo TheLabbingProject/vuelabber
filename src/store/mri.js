@@ -5,7 +5,7 @@ import {
   getScanQueryString,
   getSessionQueryString
 } from '@/api/mri/query'
-import { arraysEqual, camelToSnakeCase } from '@/utils'
+import { camelToSnakeCase } from '@/utils'
 import session from '@/api/session'
 
 const state = {

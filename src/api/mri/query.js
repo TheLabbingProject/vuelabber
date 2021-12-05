@@ -27,10 +27,15 @@ const getScanQueryString = ({ filters, options }) => {
     ''}&subject_id_number_lookup=icontains&subject_first_name=${filters.subjectFirstName ||
     ''}&subject_first_name_lookup=icontains&subject_last_name=${filters.subjectLastName ||
     ''}&subject_last_name_lookup=icontains${
-    filters.studyGroups
-      ? filters.studyGroups.map(group => `&study_groups=${group}`).join('')
+    filters.groups
+      ? filters.groups.map(group => `&study_groups=${group}`).join('')
       : ''
-  }&page_size=${
+  }${
+    filters.studies
+      ? filters.studies.map(studyId => `&study=${studyId}`).join('')
+      : ''
+  }&procedure=${filters.procedures ||
+    ''}&measurement=${filters.dataAcquisitions || ''}&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage
@@ -47,9 +52,11 @@ const getSessionQueryString = ({ filters, options }) => {
     ''}&subject_id_number_lookup=icontains&subject_first_name=${filters.subjectFirstName ||
     ''}&subject_first_name_lookup=icontains&subject_last_name=${filters.subjectLastName ||
     ''}&subject_last_name_lookup=icontains&created_after=&created_before=&session_date_after=${filters.afterDate ||
-    ''}&session_date_before=${filters.beforeDate || ''}&study_id_in=${
-    filters.studyIdIn ? filters.studyIdIn.join(',') : ''
-  }&page_size=${
+    ''}&session_date_before=${filters.beforeDate ||
+    ''}&study_id_in=${filters.studies ||
+    ''}&procedure_id_in=${filters.procedures ||
+    ''}&measurement_id_in=${filters.dataAcuisitions ||
+    ''}&group_id_in=${filters.groups || ''}&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage

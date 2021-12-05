@@ -17,7 +17,7 @@
           />
         </v-col>
         <v-col v-if="showPersonalInformationFilters">
-          <v-text-field label="ID Number" v-model="filters.idNumber" dense />
+          <v-text-field label="Subject ID" v-model="filters.idNumber" dense />
         </v-col>
         <v-col v-if="showPersonalInformationFilters">
           <v-text-field label="First Name" v-model="filters.firstName" dense />
@@ -96,6 +96,7 @@
     </v-col> -->
       </v-row>
       <v-row class="my-0">
+        <!-- Study -->
         <v-col>
           <v-autocomplete
             label="Study"
@@ -104,6 +105,7 @@
             multiple
             v-model="filters.studies"
             :items="studies"
+            :loading="loadingStudies"
             item-value="id"
             item-text="title"
             deletable-chips
@@ -111,8 +113,61 @@
           />
         </v-col>
 
+        <!-- Study Group -->
+        <v-col>
+          <v-autocomplete
+            label="Group"
+            dense
+            clearable
+            multiple
+            v-model="filters.groups"
+            :items="groupItems"
+            :loading="loadingStudyGroups"
+            item-value="id"
+            deletable-chips
+            small-chips
+            @update:search-input="loadStudyGroups"
+          />
+        </v-col>
+
+        <!-- Procedure -->
+        <v-col>
+          <v-autocomplete
+            label="Experimental Procedure"
+            dense
+            clearable
+            multiple
+            v-model="filters.procedures"
+            :items="procedures"
+            :loading="loadingProcedures"
+            item-value="id"
+            item-text="title"
+            deletable-chips
+            small-chips
+            @update:search-input="loadProcedures"
+          />
+        </v-col>
+
+        <!-- Data Acquisition -->
+        <v-col>
+          <v-autocomplete
+            label="Data Acquisition"
+            dense
+            clearable
+            multiple
+            v-model="filters.dataAcquisition"
+            :items="measurementDefinitions"
+            :loading="loadingDataAcuisitions"
+            item-value="id"
+            item-text="title"
+            deletable-chips
+            small-chips
+            @update:search-input="loadDataAcuisitions"
+          />
+        </v-col>
+
         <!-- Session time -->
-        <v-col :cols="4">
+        <v-col :cols="3">
           <v-row class="align-center">
             <v-col>
               <v-menu
@@ -161,7 +216,6 @@
             </v-col>
           </v-row>
         </v-col>
-        <v-spacer />
         <v-col :cols="1">
           <v-btn small class="info" @click="toCsv">CSV</v-btn>
         </v-col>
@@ -221,10 +275,12 @@ export default {
   name: 'SubjectTableControls',
   props: { options: Object, selectedSubjects: Array },
   components: { ExportSubjectDataCard },
-  created() {
-    this.fetchStudies({ filters: {}, options: {} })
-      .then(() => this.update())
-      .then(() => this.fetchExportDestinations({ filters: {}, options: {} }))
+  mounted() {
+    this.update().then(() => {
+      this.loadStudies()
+      this.loadStudyGroups()
+      this.fetchExportDestinations({ filters: {}, options: {} })
+    })
   },
   data: () => ({
     plotScriptLoaded: 0,
@@ -232,6 +288,10 @@ export default {
     bornBeforeMenu: false,
     sessionTimeAfterMenu: false,
     sessionBeforeMenu: false,
+    loadingStudies: false,
+    loadingProcedures: false,
+    loadingDataAcuisitions: false,
+    loadingStudyGroups: false,
     filters: {
       pk: '',
       idNumber: '',
@@ -244,7 +304,10 @@ export default {
       dominantHand: '',
       studies: [],
       mriSessionAfter: '',
-      mriSessionBefore: ''
+      mriSessionBefore: '',
+      groups: [],
+      measurementDefinitions: [],
+      procedures: []
     },
     sexItems: createSelectItems(sexOptions),
     genderItems: createSelectItems(genderOptions),
@@ -285,9 +348,37 @@ export default {
         this.plots.subject.summary.js && this.plots.subject.summary.tag
       )
     },
+    procedureFilter: function() {
+      return { studies: this.filters.studies }
+    },
+    dataAcquisitionFilter: function() {
+      return { procedure: this.filters.procedures, study: this.filters.studies }
+    },
+    studyGroupFilter: function() {
+      return { study: this.filters.studies }
+    },
+    groupItems: function() {
+      if (this.filters.studies.length == 1) {
+        return this.groups.map(group => ({
+          ...group,
+          text: `${group.title}`
+        }))
+      } else {
+        return this.groups.map(group => ({
+          ...group,
+          text: `${group.study.title} | ${group.title}`
+        }))
+      }
+    },
     ...mapState('accounts', ['exportDestinations']),
     ...mapState('auth', ['user']),
-    ...mapState('research', ['studies', 'plots'])
+    ...mapState('research', [
+      'studies',
+      'plots',
+      'groups',
+      'measurementDefinitions',
+      'procedures'
+    ])
   },
   methods: {
     toCsv: function() {
@@ -317,7 +408,7 @@ export default {
     },
     update() {
       this.$emit('fetch-subjects-start')
-      this.fetchSubjects(this.query).then(() => {
+      return this.fetchSubjects(this.query).then(() => {
         this.$emit('fetch-subjects-end')
         this.fetchSubjectsInfoPlot(this.query).then(() => {
           // this.$nextTick(() => {
@@ -336,11 +427,45 @@ export default {
     closeSubjectExportDialog() {
       this.exportSubjectDataDialog = false
     },
+    loadStudies() {
+      this.loadingStudies = true
+      this.fetchStudies({ filters: {}, options: {} }).then(
+        (this.loadingStudies = false)
+      )
+    },
+    loadProcedures() {
+      this.loadingProcedures = true
+      let query = { filters: this.procedureFilter, options: {} }
+      this.fetchProcedures(query).then(() => {
+        this.loadingProcedures = false
+        // if (this.procedures.length == 1) {
+        //   this.filters.procedures.push(this.procedures[0].id)
+        // }
+        this.loadDataAcuisitions()
+      })
+    },
+    loadDataAcuisitions() {
+      this.loadingDataAcuisitions = true
+      let query = { filters: this.dataAcquisitionFilter, options: {} }
+      this.fetchMeasurementDefinitions(query).then(() => {
+        this.loadingDataAcuisitions = false
+      })
+    },
+    loadStudyGroups() {
+      this.loadingStudyGroups = true
+      let query = { filters: this.studyGroupFilter, options: {} }
+      this.fetchGroups(query).then(() => {
+        this.loadingStudyGroups = false
+      })
+    },
     ...mapActions('research', [
       'fetchStudies',
       'fetchSubjects',
       'exportSubjectData',
-      'fetchSubjectsInfoPlot'
+      'fetchSubjectsInfoPlot',
+      'fetchGroups',
+      'fetchMeasurementDefinitions',
+      'fetchProcedures'
     ]),
     ...mapActions('accounts', ['fetchExportDestinations'])
   },
@@ -356,6 +481,14 @@ export default {
         this.update()
       },
       deep: true
+    },
+    'filters.studies': function() {
+      this.loadProcedures()
+      this.loadDataAcuisitions()
+      this.loadStudyGroups()
+    },
+    'filters.procedures': function() {
+      this.loadDataAcuisitions()
     },
     'plots.subject.summary': {
       handler() {

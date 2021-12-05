@@ -26,6 +26,9 @@
                 ref="controls"
                 :subject="subject"
                 :studyFilter="studyFilter"
+                :procedureFilter="procedureFilter"
+                :acquisitionFilter="acquisitionFilter"
+                :groupFilter="groupFilter"
                 :options="options"
                 :selectedSessions="selected"
                 @fetch-sessions-start="loading = true"
@@ -200,7 +203,14 @@
       <!-- Show scan table when expanded -->
       <template v-slot:expanded-item="{ item, headers }">
         <td :colspan="headers.length" class="subject-data pa-0 ma-0">
-          <scan-table :subject="item.subject" :session="item" />
+          <scan-table
+            :subject="item.subject"
+            :session="item"
+            :studyFilter="studyFilter"
+            :procedureFilter="procedureFilter"
+            :acquisitionFilter="acquisitionFilter"
+            :groupFilter="groupFilter"
+          />
           <hr />
         </td>
       </template>
@@ -234,7 +244,13 @@ import BASE_URL from '@/api/base_url.js'
 
 export default {
   name: 'SessionTable',
-  props: { subject: Object, studyFilter: Array },
+  props: {
+    subject: Object,
+    studyFilter: Array,
+    procedureFilter: Array,
+    acquisitionFilter: Array,
+    groupFilter: Array
+  },
   components: {
     ScanTable,
     SessionTableControls

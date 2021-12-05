@@ -251,18 +251,14 @@ const actions = {
       })
       .catch(console.error)
   },
-  fetchProcedures({ commit }, { query, queryItems = false } = {}) {
+  fetchProcedures({ commit }, query) {
     let queryString = getProcedureQueryString(query)
     let URL = `${PROCEDURES}/${queryString}`
     return session
       .get(URL)
       .then(({ data }) => {
-        if (queryItems) {
-          commit('setProcedureItems', data.results)
-        } else {
-          commit('setProcedures', data.results)
-          commit('setProcedureCount', data.count)
-        }
+        commit('setProcedures', data.results)
+        commit('setProcedureCount', data.count)
       })
       .catch(console.error)
   },
@@ -323,8 +319,8 @@ const actions = {
       })
       .catch(console.error)
   },
-  fetchGroups({ commit }, { filters, options }) {
-    let queryString = getGroupQueryString({ filters, options })
+  fetchGroups({ commit }, query) {
+    let queryString = getGroupQueryString(query)
     return session
       .get(`${GROUPS}/${queryString}`)
       .then(({ data }) => {

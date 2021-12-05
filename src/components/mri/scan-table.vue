@@ -42,6 +42,10 @@
                 :subject="subject"
                 :session="session"
                 :selectedScans="selectedScans"
+                :studyFilter="studyFilter"
+                :procedureFilter="procedureFilter"
+                :acquisitionFilter="acquisitionFilter"
+                :groupFilter="groupFilter"
                 @fetch-scans-start="loading = true"
                 @fetch-scans-end="loading = false"
               />
@@ -166,7 +170,11 @@ export default {
   name: 'ScanTable',
   props: {
     subject: { type: Object, default: undefined },
-    session: { type: Object, default: undefined }
+    session: { type: Object, default: undefined },
+    studyFilter: { type: Array, default: () => [] },
+    procedureFilter: { type: Array, default: () => [] },
+    acquisitionFilter: { type: Array, default: () => [] },
+    groupFilter: { type: Array, default: () => [] }
   },
   components: {
     GroupAssociation,

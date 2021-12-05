@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <v-row class="pa-5">
+  <v-container fluid class="pa-2">
+    <v-row>
       <div class="title text-left">
         {{ title }}
       </div>
@@ -19,106 +19,110 @@
         />
       </v-dialog>
     </v-row>
-    <v-data-table
-      dense
-      item-key="id"
-      show-expand
-      single-expand
-      multi-sort
-      :no-data-text="noDataText"
-      :expanded.sync="expanded"
-      :headers="computedHeaders"
-      :items="studies"
-      :loading="loading"
-      :options.sync="options"
-      :server-items-length="studyCount"
-      :footer-props="{
-        itemsPerPageOptions
-      }"
-    >
-      <template v-slot:top>
-        <study-table-controls
+    <v-row>
+      <v-col class="pa-0">
+        <v-data-table
+          dense
+          item-key="id"
+          show-expand
+          single-expand
+          multi-sort
+          :no-data-text="noDataText"
+          :expanded.sync="expanded"
+          :headers="computedHeaders"
+          :items="studies"
           :loading="loading"
-          :options="options"
-          ref="controls"
-          @fetch-studies-start="loading = true"
-          @fetch-studies-end="loading = false"
-          @fetch-study-aggregations-start="loading = true"
-          @fetch-study-aggregations-end="loading = false"
-        />
-        <v-dialog v-model="deleteStudyDialog" max-width="500px">
-          <v-card>
-            <v-card-title class="h4">
-              Are you sure you want to delete this item?
-            </v-card-title>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="closeDeleteDialog">
-                Cancel
-              </v-btn>
-              <v-btn color="blue darken-1" text @click="deleteStudyConfirm">
-                OK
-              </v-btn>
-              <v-spacer></v-spacer>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </template>
-
-      <!-- Title -->
-      <template v-slot:[`item.title`]="{ item }" v-if="user.isStaff">
-        <v-edit-dialog
-          :return-value.sync="item.title"
-          large
-          persistent
-          @save="saveTitle(item)"
+          :options.sync="options"
+          :server-items-length="studyCount"
+          :footer-props="{
+            itemsPerPageOptions
+          }"
         >
-          <div>{{ item.title }}</div>
-          <template v-slot:input>
-            <v-text-field
-              v-model="item.title"
-              label="Edit"
-              single-line
-              autofocus
-            ></v-text-field>
+          <template v-slot:top>
+            <study-table-controls
+              :loading="loading"
+              :options="options"
+              ref="controls"
+              @fetch-studies-start="loading = true"
+              @fetch-studies-end="loading = false"
+              @fetch-study-aggregations-start="loading = true"
+              @fetch-study-aggregations-end="loading = false"
+            />
+            <v-dialog v-model="deleteStudyDialog" max-width="500px">
+              <v-card>
+                <v-card-title class="h4">
+                  Are you sure you want to delete this item?
+                </v-card-title>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="blue darken-1" text @click="closeDeleteDialog">
+                    Cancel
+                  </v-btn>
+                  <v-btn color="blue darken-1" text @click="deleteStudyConfirm">
+                    OK
+                  </v-btn>
+                  <v-spacer></v-spacer>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
           </template>
-        </v-edit-dialog>
-      </template>
 
-      <!-- Description -->
-      <template v-slot:[`item.description`]="{ item }" v-if="user.isStaff">
-        <v-edit-dialog
-          :return-value.sync="item.description"
-          large
-          persistent
-          @save="saveDescription(item)"
-        >
-          <div>{{ item.description }}</div>
-          <template v-slot:input>
-            <v-text-field
-              v-model="item.description"
-              label="Edit"
-              multi-line
-              autofocus
-            ></v-text-field>
+          <!-- Title -->
+          <template v-slot:[`item.title`]="{ item }" v-if="user.isStaff">
+            <v-edit-dialog
+              :return-value.sync="item.title"
+              large
+              persistent
+              @save="saveTitle(item)"
+            >
+              <div>{{ item.title }}</div>
+              <template v-slot:input>
+                <v-text-field
+                  v-model="item.title"
+                  label="Edit"
+                  single-line
+                  autofocus
+                ></v-text-field>
+              </template>
+            </v-edit-dialog>
           </template>
-        </v-edit-dialog>
-      </template>
 
-      <template v-if="actionPermissions" v-slot:[`item.remove`]="{ item }">
-        <v-icon small @click="showDeleteStudyDialog(item)">
-          mdi-delete
-        </v-icon>
-      </template>
+          <!-- Description -->
+          <template v-slot:[`item.description`]="{ item }" v-if="user.isStaff">
+            <v-edit-dialog
+              :return-value.sync="item.description"
+              large
+              persistent
+              @save="saveDescription(item)"
+            >
+              <div>{{ item.description }}</div>
+              <template v-slot:input>
+                <v-text-field
+                  v-model="item.description"
+                  label="Edit"
+                  multi-line
+                  autofocus
+                ></v-text-field>
+              </template>
+            </v-edit-dialog>
+          </template>
 
-      <template v-slot:expanded-item="{ item, headers }">
-        <td :colspan="headers.length" class="study-info pa-0 ma-0">
-          <study-info :study="item" />
-          <hr />
-        </td>
-      </template>
-    </v-data-table>
-  </div>
+          <template v-if="actionPermissions" v-slot:[`item.remove`]="{ item }">
+            <v-icon small @click="showDeleteStudyDialog(item)">
+              mdi-delete
+            </v-icon>
+          </template>
+
+          <template v-slot:expanded-item="{ item, headers }">
+            <td :colspan="headers.length" class="study-info pa-0 ma-0">
+              <study-info :study="item" />
+              <hr />
+            </td>
+          </template>
+        </v-data-table>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>

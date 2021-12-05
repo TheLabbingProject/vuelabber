@@ -42,7 +42,7 @@ export default {
   },
   created() {
     if (this.study) {
-      this.filters.studyId = this.study.id
+      this.filters.study.push(this.study.id)
     }
     this.update()
   },
@@ -50,7 +50,8 @@ export default {
     filters: {
       id: '',
       title: '',
-      description: ''
+      description: '',
+      study: []
     },
     groupCreationDialog: false
   }),

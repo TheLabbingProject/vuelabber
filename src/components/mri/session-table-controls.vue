@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
-    <v-row class="px-2">
-      <v-col v-if="showPersonalInformationFilters">
+    <v-row v-if="showPersonalInformationFilters">
+      <v-col>
         <v-text-field
           dense
           v-model="filters.subjectIdNumber"
@@ -9,22 +9,91 @@
           autofocus
         />
       </v-col>
-      <v-col v-if="showPersonalInformationFilters">
+      <v-col>
         <v-text-field
           v-model="filters.subjectFirstName"
           label="First Name"
           dense
         />
       </v-col>
-      <v-col v-if="showPersonalInformationFilters">
+      <v-col>
         <v-text-field
           v-model="filters.subjectLastName"
           label="Last Name"
           dense
         />
       </v-col>
+    </v-row>
+    <v-row>
+      <!-- Study -->
+      <v-col>
+        <v-autocomplete
+          v-model="filters.studies"
+          label="Study"
+          :items="studies"
+          :loading="loadingStudies"
+          item-text="title"
+          item-value="id"
+          multiple
+          dense
+          clearable
+          small-chips
+          deletable-chips
+        />
+      </v-col>
+
+      <!-- Study Group -->
+      <v-col>
+        <v-autocomplete
+          v-model="filters.groups"
+          label="Group"
+          :items="groupItems"
+          :loading="loadingStudyGroups"
+          item-value="id"
+          multiple
+          dense
+          clearable
+          small-chips
+          deletable-chips
+        />
+      </v-col>
+
+      <!-- Procedure -->
+      <v-col>
+        <v-autocomplete
+          v-model="filters.procedures"
+          label="Procedure"
+          :items="procedures"
+          :loading="loadingProcedures"
+          item-text="title"
+          item-value="id"
+          multiple
+          dense
+          clearable
+          small-chips
+          deletable-chips
+        />
+      </v-col>
+
+      <!-- Data Acquisition -->
+      <v-col>
+        <v-autocomplete
+          v-model="filters.dataAcquisitions"
+          label="Data Acquisition"
+          :items="measurementDefinitions"
+          :loading="loadingDataAcquisitions"
+          item-text="title"
+          item-value="id"
+          multiple
+          dense
+          clearable
+          small-chips
+          deletable-chips
+        />
+      </v-col>
+
       <!-- Scan Date -->
-      <v-col :cols="4">
+      <v-col :cols="3">
         <v-row class="align-center">
           <!-- After Date -->
           <v-col>
@@ -67,20 +136,7 @@
           </v-col>
         </v-row>
       </v-col>
-      <v-col :cols="2">
-        <v-autocomplete
-          v-model="filters.studyIdIn"
-          label="Associated Studies"
-          :items="studies"
-          item-text="title"
-          item-value="id"
-          multiple
-          dense
-          clearable
-          small-chips
-          deletable-chips
-        />
-      </v-col>
+
       <!-- Comments -->
       <v-col>
         <v-text-field v-model="filters.comments" label="Comments" dense />
@@ -138,21 +194,25 @@ export default {
     subject: Object,
     options: Object,
     selectedSessions: Array,
-    studyFilter: { type: Array, default: () => [] }
+    studyFilter: { type: Array, default: () => [] },
+    procedureFilter: { type: Array, default: () => [] },
+    acquisitionFilter: { type: Array, default: () => [] },
+    groupFilter: { type: Array, default: () => [] }
   },
   components: { ExportSessionCard },
   mounted() {
     if (this.subject) {
       this.$set(this.filters, 'subject', this.subject.id)
     }
-    this.filters.studyIdIn = this.studyFilter
-    this.update()
-    this.fetchStudies({ filters: {}, options: {} }).then(() =>
-      this.fetchExportDestinations({
-        filters: { user: this.currentUser.id },
-        options: {}
-      })
-    )
+    this.filters.studies = this.studyFilter
+    this.filters.procedures = this.procedureFilter
+    this.filters.dataAcquisitions = this.acquisitionFilter
+    this.filters.groups = this.groupFilter
+    this.update().then(() => {
+      this.loadStudies()
+      this.loadProcedures()
+      this.fetchExportDestinations(this.exportDestinationQuery)
+    })
   },
   data: () => ({
     filters: {
@@ -163,14 +223,21 @@ export default {
       beforeDate: '',
       comments: '',
       subject: '',
-      studyIdIn: []
+      studies: [],
+      procedures: [],
+      dataAcquisitions: [],
+      groups: []
     },
     afterDateMenu: false,
     beforeDateMenu: false,
     exportSessionDataDialog: false,
     exportSnackbar: false,
     exportSnackbarTimeout: 5000,
-    exportSnackbarText: ''
+    exportSnackbarText: '',
+    loadingStudies: false,
+    loadingProcedures: false,
+    loadingDataAcquisitions: false,
+    loadingStudyGroups: false
   }),
   computed: {
     parsedOptions: function() {
@@ -197,18 +264,62 @@ export default {
         this.exportDestinations.length && this.selectedSessions.length
       )
     },
+    groupItems: function() {
+      if (this.filters.studies.length == 1) {
+        return this.groups.map(group => ({
+          ...group,
+          text: `${group.title}`
+        }))
+      } else {
+        return this.groups.map(group => ({
+          ...group,
+          text: `${group.study.title} | ${group.title}`
+        }))
+      }
+    },
     showPersonalInformationFilters: function() {
       return !this.subject && this.currentUser.isSuperuser
     },
+    studyQuery: function() {
+      return { filters: {}, options: {} }
+    },
+    procedureQuery: function() {
+      return { filters: { studies: this.filters.studies }, options: {} }
+    },
+    exportDestinationQuery: function() {
+      return {
+        filters: { user: this.currentUser.id },
+        options: {}
+      }
+    },
+    dataAcquisitionQuery: function() {
+      return {
+        filters: {
+          study: this.filters.studies,
+          procedure: this.filters.procedures
+        },
+        options: {}
+      }
+    },
+    studyGroupQuery: function() {
+      return { filters: { study: this.filters.studies }, options: {} }
+    },
+    query: function() {
+      return { filters: this.filters, options: this.parsedOptions }
+    },
     ...mapState('accounts', ['exportDestinations']),
-    ...mapState('research', ['studies']),
+    ...mapState('research', [
+      'studies',
+      'procedures',
+      'measurementDefinitions',
+      'groups'
+    ]),
     ...mapState('auth', { currentUser: 'user' })
   },
   methods: {
     update() {
       this.$emit('fetch-sessions-start')
-      let query = { filters: this.filters, options: this.parsedOptions }
-      this.fetchSessions(query).then(() => {
+      return this.fetchSessions(this.query).then(() => {
         this.$emit('fetch-sessions-end')
       })
     },
@@ -222,8 +333,37 @@ export default {
       this.exportSnackbarText = `Data export successfully started! (${nSessions} ${sessionText}, ${nExportDestinations} ${exportDestinationsText})`
       this.exportSnackbar = true
     },
+    loadStudies() {
+      this.loadingStudies = true
+      this.fetchStudies(this.studyQuery).then(() => {
+        this.loadingStudies = false
+      })
+    },
+    loadProcedures() {
+      this.loadingProcedures = true
+      this.fetchProcedures(this.procedureQuery).then(() => {
+        this.loadingProcedures = false
+      })
+    },
+    loadDataAcquisitions() {
+      this.loadingDataAcquisitions = true
+      this.fetchMeasurementDefinitions(this.dataAcquisitionQuery).then(() => {
+        this.loadingDataAcquisitions = false
+      })
+    },
+    loadStudyGroups() {
+      this.loadingStudyGroups = true
+      this.fetchGroups(this.studyGroupQuery).then(() => {
+        this.loadingStudyGroups = false
+      })
+    },
     ...mapActions('mri', ['fetchSessions']),
-    ...mapActions('research', ['fetchStudies']),
+    ...mapActions('research', [
+      'fetchStudies',
+      'fetchProcedures',
+      'fetchMeasurementDefinitions',
+      'fetchGroups'
+    ]),
     ...mapActions('accounts', ['fetchExportDestinations'])
   },
   watch: {
@@ -243,6 +383,14 @@ export default {
         this.update()
       },
       deep: true
+    },
+    'filters.studies': function() {
+      this.loadProcedures()
+      this.loadStudyGroups()
+      this.loadDataAcquisitions()
+    },
+    'filters.procedures': function() {
+      this.loadDataAcquisitions()
     }
   }
 }

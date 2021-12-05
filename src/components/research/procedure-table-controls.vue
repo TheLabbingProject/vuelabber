@@ -45,16 +45,18 @@ export default {
     study: { type: Object, default: undefined },
     showControls: { type: Boolean, default: true }
   },
-  created() {
+  mounted() {
     if (this.study) {
-      this.filters.studyId = this.study.id
+      this.filters.studies.push(this.study.id)
+    } else {
+      this.update()
     }
-    this.update()
   },
   data: () => ({
     filters: {
       title: '',
-      description: ''
+      description: '',
+      studies: []
     },
     addProcedureButton: {
       label: 'Add',
@@ -71,7 +73,7 @@ export default {
   methods: {
     update() {
       this.$emit('fetch-procedures-start')
-      this.fetchProcedures({ query: this.query }).then(() => {
+      this.fetchProcedures(this.query).then(() => {
         this.$emit('fetch-procedures-end')
       })
     },

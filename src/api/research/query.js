@@ -24,7 +24,23 @@ const getEventQueryString = ({ filters, options }) => {
     ''}&title_lookup=icontains&description=${filters.description ||
     ''}&description_lookup=icontains&content_type=${filters.contentType ||
     ''}&model_name=${filters.modelName || ''}&app_label=${filters.appLabel ||
-    ''}&exclude_procedure=${filters.excludeProcedure || ''}&page_size=${
+    ''}${
+    filters.procedure
+      ? filters.procedure
+          .map(procedureId => `&procedure=${procedureId}`)
+          .join('')
+      : ''
+  }${
+    filters.study
+      ? filters.study.map(studyId => `&study=${studyId}`).join('')
+      : ''
+  }${
+    filters.excludeProcedure
+      ? filters.excludeProcedure
+          .map(procedureId => `&exclude_procedure=${procedureId}`)
+          .join('')
+      : ''
+  }&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage
@@ -42,8 +58,10 @@ const getSubjectQueryString = ({ filters, options }) => {
     ''}&gender=${filters.gender || ''}&born_after_date=${filters.bornAfter ||
     ''}&born_before_date=${filters.bornBefore ||
     ''}&dominant_hand=${filters.dominantHand ||
-    ''}&dicom_patient=${filters.dicomPatientId ||
-    ''}&studies=${filters.studies ||
+    ''}&dicom_patient=${filters.dicomPatientId || ''}&study=${filters.studies ||
+    ''}&procedure=${filters.procedures ||
+    ''}&measurement=${filters.dataAcquisition ||
+    ''}&study_group=${filters.groups ||
     ''}&mri_session_time_after=${filters.mriSessionAfter ||
     ''}&mri_session_time_before=${filters.mriSessionBefore || ''}&page_size=${
     options.itemsPerPage
@@ -57,7 +75,11 @@ const getSubjectQueryString = ({ filters, options }) => {
 const getGroupQueryString = ({ filters, options }) => {
   return `?id=${filters.id || ''}&title=${filters.title ||
     ''}&title_lookup=icontains&description=${filters.description ||
-    ''}&description_lookup=icontains&study=${filters.studyId || ''}&page_size=${
+    ''}&description_lookup=icontains${
+    filters.study
+      ? filters.study.map(studyId => `&study=${studyId}`).join('')
+      : ''
+  }&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage
@@ -70,7 +92,9 @@ const getProcedureQueryString = ({ filters, options }) => {
   return `?id=${filters.id || ''}&title=${filters.title ||
     ''}&title_lookup=icontains&description=${filters.description ||
     ''}&description_lookup=icontains${
-    filters.studyId ? `&study=${filters.studyId}` : ''
+    filters.studies
+      ? filters.studies.map(studyId => `&study=${studyId}`).join('')
+      : ''
   }${
     filters.excludeStudy ? `&exclude_study=${filters.excludeStudy}` : ''
   }&page_size=${

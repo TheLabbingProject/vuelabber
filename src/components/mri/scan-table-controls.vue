@@ -1,198 +1,250 @@
 <template>
-  <v-container fluid class="pa-0">
-    <v-col class="pa-0">
-      <!-- Subject Information -->
-      <v-row v-if="!subject" class="pa-0">
-        <!-- Subject ID Number -->
-        <v-col>
-          <v-text-field
-            autofocus
-            clearable
-            v-model="filters.subjectIdNumber"
-            label="Subject ID"
-            dense
-          />
-        </v-col>
-        <!-- Subject First Name -->
-        <v-col>
-          <v-text-field
-            clearable
-            v-model="filters.subjectFirstName"
-            label="First Name"
-            dense
-          />
-        </v-col>
-        <!-- Subject Last Name -->
-        <v-col>
-          <v-text-field
-            clearable
-            v-model="filters.subjectLastName"
-            label="Last Name"
-            dense
-          />
-        </v-col>
-      </v-row>
+  <v-container fluid class="pt-2">
+    <!-- Subject Information -->
+    <v-row v-if="showPersonalInformationFilters" class="pa-0">
+      <!-- Subject ID Number -->
+      <v-col>
+        <v-text-field
+          autofocus
+          clearable
+          v-model="filters.subjectIdNumber"
+          label="Subject ID"
+          dense
+        />
+      </v-col>
+      <!-- Subject First Name -->
+      <v-col>
+        <v-text-field
+          clearable
+          v-model="filters.subjectFirstName"
+          label="First Name"
+          dense
+        />
+      </v-col>
+      <!-- Subject Last Name -->
+      <v-col>
+        <v-text-field
+          clearable
+          v-model="filters.subjectLastName"
+          label="Last Name"
+          dense
+        />
+      </v-col>
+    </v-row>
 
-      <!-- Scan Information -->
-      <v-row>
-        <!-- Number -->
-        <v-col class="pt-0">
-          <v-text-field
-            clearable
-            v-model="filters.number"
-            label="Scan Number"
-            dense
-          />
-        </v-col>
+    <!-- Scan Information -->
+    <v-row>
+      <!-- Number -->
+      <v-col class="pt-0">
+        <v-text-field
+          clearable
+          v-model="filters.number"
+          label="Scan Number"
+          dense
+          type="number"
+        />
+      </v-col>
 
-        <!-- Description -->
-        <v-col class="pt-0">
-          <v-text-field
-            clearable
-            v-model="filters.description"
-            label="Scan Description"
-            dense
-          />
-        </v-col>
-        <!-- Date -->
-        <v-col class="pt-0" :cols="4">
-          <v-row class="align-center">
-            <!-- After Date -->
-            <v-col>
-              <v-menu v-model="afterDateMenu" :close-on-content-click="false">
-                <template v-slot:activator="{ on }">
-                  <v-text-field
-                    clearable
-                    readonly
-                    label="Scanned After"
-                    prepend-icon="event"
-                    v-model="filters.afterDate"
-                    v-on="on"
-                    dense
-                  ></v-text-field>
-                </template>
-                <v-date-picker
+      <!-- Description -->
+      <v-col class="pt-0">
+        <v-text-field
+          clearable
+          v-model="filters.description"
+          label="Scan Description"
+          dense
+        />
+      </v-col>
+      <!-- Date -->
+      <v-col class="pt-0" :cols="4">
+        <v-row class="align-center">
+          <!-- After Date -->
+          <v-col>
+            <v-menu v-model="afterDateMenu" :close-on-content-click="false">
+              <template v-slot:activator="{ on }">
+                <v-text-field
+                  clearable
+                  readonly
+                  label="Scanned After"
+                  prepend-icon="event"
                   v-model="filters.afterDate"
-                  @input="afterDateMenu = false"
-                ></v-date-picker>
-              </v-menu> </v-col
-            >-
-            <!-- Before Date -->
-            <v-col>
-              <v-menu v-model="beforeDateMenu" :close-on-content-click="false">
-                <template v-slot:activator="{ on }">
-                  <v-text-field
-                    v-model="filters.beforeDate"
-                    label="Scanned Before"
-                    readonly
-                    clearable
-                    v-on="on"
-                    dense
-                  ></v-text-field>
-                </template>
-                <v-date-picker
+                  v-on="on"
+                  dense
+                ></v-text-field>
+              </template>
+              <v-date-picker
+                v-model="filters.afterDate"
+                @input="afterDateMenu = false"
+              ></v-date-picker>
+            </v-menu> </v-col
+          >-
+          <!-- Before Date -->
+          <v-col>
+            <v-menu v-model="beforeDateMenu" :close-on-content-click="false">
+              <template v-slot:activator="{ on }">
+                <v-text-field
                   v-model="filters.beforeDate"
-                  @input="beforeDateMenu = false"
-                ></v-date-picker>
-              </v-menu>
-            </v-col>
-          </v-row>
-        </v-col>
-
-        <v-col class="pt-0">
-          <v-autocomplete
-            v-model="filters.studyGroups"
-            label="Study Group"
-            small-chips
-            clearable
-            multiple
-            deletable-chips
-            item-value="id"
-            :items="computedGroups"
-            :loading="loadingStudyGroups"
-            :menu-props="menuProps"
-            dense
-          ></v-autocomplete>
-        </v-col>
-
-        <!-- Sequence Type -->
-        <v-col class="pt-0">
-          <v-autocomplete
-            small-chips
-            dense
-            clearable
-            multiple
-            deletable-chips
-            label="Sequence Type"
-            v-model="filters.sequenceType"
-            :items="sequenceTypeItems"
-            :menu-props="menuProps"
-          />
-        </v-col>
-
-        <!-- Download Button -->
-        <v-col :cols="1" class="pt-0 px-0 text-right">
-          <div>
-            <v-dialog v-model="downloadScanDialog" max-width="500px">
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  color="primary"
-                  v-bind="attrs"
+                  label="Scanned Before"
+                  readonly
+                  clearable
                   v-on="on"
-                  small
-                  :disabled="!allowExport"
-                  :dark="allowExport"
-                >
-                  Download
-                </v-btn>
+                  dense
+                ></v-text-field>
               </template>
-              <download-scan-card
-                :selectedScans="selectedScans"
-                @close-scan-download-dialog="closeScanDownloadDialog"
-              />
-            </v-dialog>
-          </div>
-        </v-col>
-        <!-- Export Button -->
-        <v-col :cols="1" class="pt-0">
-          <div>
-            <v-dialog v-model="exportScanDialog" max-width="500px">
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  color="primary"
-                  v-bind="attrs"
-                  v-on="on"
-                  small
-                  :disabled="!allowExport"
-                  :dark="allowExport"
-                >
-                  Export
-                </v-btn>
-              </template>
-              <export-scan-card
-                :selectedScans="selectedScans"
-                @close-scan-export-dialog="closeScanExportDialog"
-                @scan-export-started="showExportSnackbar"
-              />
-            </v-dialog>
-          </div>
+              <v-date-picker
+                v-model="filters.beforeDate"
+                @input="beforeDateMenu = false"
+              ></v-date-picker>
+            </v-menu>
+          </v-col>
+        </v-row>
+      </v-col>
 
-          <v-snackbar v-model="exportSnackbar" :timeout="exportSnackbarTimeout">
-            {{ exportSnackbarText }}
-            <template v-slot:action="{ attrs }">
+      <!-- Sequence Type -->
+      <v-col class="pt-0">
+        <v-autocomplete
+          small-chips
+          dense
+          clearable
+          multiple
+          deletable-chips
+          label="Sequence Type"
+          v-model="filters.sequenceType"
+          :items="sequenceTypeItems"
+          :menu-props="menuProps"
+        />
+      </v-col>
+    </v-row>
+    <v-row>
+      <!-- Study -->
+      <v-col>
+        <v-autocomplete
+          v-model="filters.studies"
+          label="Study"
+          :items="studies"
+          :loading="loadingStudies"
+          item-text="title"
+          item-value="id"
+          multiple
+          dense
+          clearable
+          small-chips
+          deletable-chips
+        />
+      </v-col>
+
+      <!-- Study Group -->
+      <v-col>
+        <v-autocomplete
+          v-model="filters.groups"
+          label="Study Group"
+          small-chips
+          clearable
+          multiple
+          deletable-chips
+          item-value="id"
+          :items="groupItems"
+          :loading="loadingStudyGroups"
+          :menu-props="menuProps"
+          dense
+        ></v-autocomplete>
+      </v-col>
+
+      <!-- Procedure -->
+      <v-col>
+        <v-autocomplete
+          v-model="filters.procedures"
+          label="Procedure"
+          :items="procedures"
+          :loading="loadingProcedures"
+          item-text="title"
+          item-value="id"
+          multiple
+          dense
+          clearable
+          small-chips
+          deletable-chips
+        />
+      </v-col>
+
+      <!-- Data Acquisition -->
+      <v-col>
+        <v-autocomplete
+          v-model="filters.dataAcquisitions"
+          label="Data Acquisition"
+          :items="measurementDefinitions"
+          :loading="loadingDataAcquisitions"
+          item-text="title"
+          item-value="id"
+          multiple
+          dense
+          clearable
+          small-chips
+          deletable-chips
+        />
+      </v-col>
+
+      <!-- Download Button -->
+      <v-col :cols="1" class="px-0 text-right">
+        <div>
+          <v-dialog v-model="downloadScanDialog" max-width="500px">
+            <template v-slot:activator="{ on, attrs }">
               <v-btn
-                color="blue"
-                text
+                color="primary"
                 v-bind="attrs"
-                @click="exportSnackbar = false"
+                v-on="on"
+                small
+                :disabled="!allowExport"
+                :dark="allowExport"
               >
-                Close
+                Download
               </v-btn>
             </template>
-          </v-snackbar>
-        </v-col>
-      </v-row>
-    </v-col>
+            <download-scan-card
+              :selectedScans="selectedScans"
+              @close-scan-download-dialog="closeScanDownloadDialog"
+            />
+          </v-dialog>
+        </div>
+      </v-col>
+      <!-- Export Button -->
+      <v-col :cols="1">
+        <div>
+          <v-dialog v-model="exportScanDialog" max-width="500px">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                color="primary"
+                v-bind="attrs"
+                v-on="on"
+                small
+                :disabled="!allowExport"
+                :dark="allowExport"
+              >
+                Export
+              </v-btn>
+            </template>
+            <export-scan-card
+              :selectedScans="selectedScans"
+              @close-scan-export-dialog="closeScanExportDialog"
+              @scan-export-started="showExportSnackbar"
+            />
+          </v-dialog>
+        </div>
+
+        <v-snackbar v-model="exportSnackbar" :timeout="exportSnackbarTimeout">
+          {{ exportSnackbarText }}
+          <template v-slot:action="{ attrs }">
+            <v-btn
+              color="blue"
+              text
+              v-bind="attrs"
+              @click="exportSnackbar = false"
+            >
+              Close
+            </v-btn>
+          </template>
+        </v-snackbar>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
@@ -211,20 +263,29 @@ export default {
     options: Object,
     subject: Object,
     session: Object,
-    selectedScans: Array
+    selectedScans: Array,
+    studyFilter: { type: Array, default: () => [] },
+    procedureFilter: { type: Array, default: () => [] },
+    acquisitionFilter: { type: Array, default: () => [] },
+    groupFilter: { type: Array, default: () => [] }
   },
-  created() {
+  mounted() {
     if (this.subject) {
       this.$set(this.filters, 'subject', this.subject.id)
     }
     if (this.session) {
       this.$set(this.filters, 'session', this.session.id)
     }
-  },
-  mounted() {
+    this.filters.studies = this.studyFilter
+    this.filters.procedures = this.procedureFilter
+    this.filters.dataAcquisitions = this.acquisitionFilter
+    this.filters.groups = this.groupFilter
     // eslint-disable-next-line
     EventBus.$on('fetch-scans', this.update)
-    this.update()
+    this.update().then(() => {
+      this.loadStudies()
+      this.loadStudyGroups()
+    })
   },
   data: () => ({
     filters: {
@@ -238,13 +299,18 @@ export default {
       subjectIdNumber: '',
       subjectFirstName: '',
       subjectLastName: '',
-      studyGroups: []
+      studies: [],
+      procedures: [],
+      dataAcquisitions: [],
+      groups: []
     },
     afterDateMenu: false,
     beforeDateMenu: false,
     sequenceTypeItems: SEQUENCE_TYPE_ITEMS,
+    loadingStudies: false,
+    loadingProcedures: false,
+    loadingDataAcquisitions: false,
     loadingStudyGroups: false,
-    studyGroupQuery: { filters: {}, options: {} },
     menuProps: { offsetY: true, auto: true },
     exportScanDialog: false,
     exportSnackbar: false,
@@ -284,26 +350,61 @@ export default {
     dicomDownloadUrl: function() {
       return `${SERIES}/to_zip/${this.selectedDicomIdsString}/`
     },
-    computedGroups: function() {
-      return this.groups.map(group => ({
-        ...group,
-        text: `${group.study.title}|${group.title}`
-      }))
+    groupItems: function() {
+      if (this.filters.studies.length == 1) {
+        return this.groups.map(group => ({
+          ...group,
+          text: `${group.title}`
+        }))
+      } else {
+        return this.groups.map(group => ({
+          ...group,
+          text: `${group.study.title} | ${group.title}`
+        }))
+      }
     },
+
     allowExport: function() {
       return Boolean(
         this.exportDestinations.length && this.selectedScans.length
       )
     },
+    showPersonalInformationFilters: function() {
+      return !this.subject && this.currentUser.isSuperuser
+    },
+    studyQuery: function() {
+      return { filters: {}, options: {} }
+    },
+    procedureQuery: function() {
+      return { filters: { studies: this.filters.studies }, options: {} }
+    },
+    dataAcquisitionQuery: function() {
+      return {
+        filters: {
+          study: this.filters.studies,
+          procedure: this.filters.procedures
+        },
+        options: {}
+      }
+    },
+    studyGroupQuery: function() {
+      return { filters: { study: this.filters.studies }, options: {} }
+    },
     ...mapState('accounts', ['exportDestinations']),
+    ...mapState('auth', { currentUser: 'user' }),
     ...mapState('mri', ['scans']),
-    ...mapState('research', ['groups'])
+    ...mapState('research', [
+      'groups',
+      'studies',
+      'procedures',
+      'measurementDefinitions'
+    ])
   },
   methods: {
     update() {
       this.$emit('fetch-scans-start')
       let query = { filters: this.filters, options: this.parsedOptions }
-      this.fetchScans(query).then(() => {
+      return this.fetchScans(query).then(() => {
         this.$emit('fetch-scans-end')
       })
     },
@@ -326,8 +427,37 @@ export default {
     closeScanDownloadDialog() {
       this.downloadScanDialog = false
     },
+    loadStudies() {
+      this.loadingStudies = true
+      this.fetchStudies(this.studyQuery).then(() => {
+        this.loadingStudies = false
+      })
+    },
+    loadProcedures() {
+      this.loadingProcedures = true
+      this.fetchProcedures(this.procedureQuery).then(() => {
+        this.loadingProcedures = false
+      })
+    },
+    loadDataAcquisitions() {
+      this.loadingDataAcquisitions = true
+      this.fetchMeasurementDefinitions(this.dataAcquisitionQuery).then(() => {
+        this.loadingDataAcquisitions = false
+      })
+    },
+    loadStudyGroups() {
+      this.loadingStudyGroups = true
+      this.fetchGroups(this.studyGroupQuery).then(() => {
+        this.loadingStudyGroups = false
+      })
+    },
     ...mapActions('mri', ['fetchScans']),
-    ...mapActions('research', ['fetchGroups'])
+    ...mapActions('research', [
+      'fetchGroups',
+      'fetchStudies',
+      'fetchProcedures',
+      'fetchMeasurementDefinitions'
+    ])
   },
   watch: {
     subject: function(selectedSubject) {
@@ -347,6 +477,14 @@ export default {
         this.update()
       },
       deep: true
+    },
+    'filters.studies': function() {
+      this.loadProcedures()
+      this.loadStudyGroups()
+      this.loadDataAcquisitions()
+    },
+    'filters.procedures': function() {
+      this.loadDataAcquisitions()
     }
   }
 }

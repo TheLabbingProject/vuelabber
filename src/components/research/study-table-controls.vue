@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-row class="px-4 align-left">
+    <v-row class="pa-0">
       <v-col :cols="2">
         <v-text-field
           autofocus
@@ -134,16 +134,15 @@ export default {
     },
     updateCollaborators(value) {
       this.loadingCollaborators = true
-      this.fetchUsers({ filters: { username: value }, options: {} }).then(
-        () => {
-          this.loadingCollaborators = false
-        }
-      )
+      let query = { filters: { username: value }, options: {} }
+      this.fetchUsers(query).then(() => {
+        this.loadingCollaborators = false
+      })
     },
     updateProcedures(value) {
       this.loadingProcedures = true
       let query = { filters: { title: value }, options: {} }
-      this.fetchProcedures({ query }).then(() => {
+      this.fetchProcedures(query).then(() => {
         this.loadingProcedures = false
       })
     },

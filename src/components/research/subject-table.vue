@@ -250,7 +250,13 @@
 
         <template v-slot:expanded-item="{ item, headers }">
           <td :colspan="headers.length" class="subject-data pa-0 ma-0">
-            <subject-data :subject="item" :studyFilter="studyFilter" />
+            <subject-data
+              :subject="item"
+              :studyFilter="studyFilter"
+              :procedureFilter="procedureFilter"
+              :acquisitionFilter="acquisitionFilter"
+              :groupFilter="groupFilter"
+            />
             <hr />
           </td>
         </template>
@@ -269,10 +275,16 @@ import { createSelectItems } from '@/components/utils'
 
 export default {
   name: 'SubjectTable',
+  props: { study: Object },
   components: {
     SubjectData,
     SubjectInfoCard,
     SubjectTableControls
+  },
+  mounted() {
+    if (this.study != undefined) {
+      this.$refs.controls.filters.studies.push(this.study.id)
+    }
   },
   data: () => ({
     title: 'Subjects',
@@ -365,6 +377,17 @@ export default {
     },
     studyFilter: function() {
       return this.$refs.controls ? this.$refs.controls.filters.studies : []
+    },
+    procedureFilter: function() {
+      return this.$refs.controls ? this.$refs.controls.filters.procedures : []
+    },
+    acquisitionFilter: function() {
+      return this.$refs.controls
+        ? this.$refs.controls.filters.measurementDefinitions
+        : []
+    },
+    groupFilter: function() {
+      return this.$refs.controls ? this.$refs.controls.filters.groups : []
     },
     ...mapState('research', ['subjects', 'subjectCount']),
     ...mapState('auth', { currentUser: 'user' })
