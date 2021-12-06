@@ -142,6 +142,12 @@
         <v-text-field v-model="filters.comments" label="Comments" dense />
       </v-col>
 
+      <v-col :cols="1" class="text-right">
+        <v-btn small class="info" @click="toCsv">
+          CSV
+        </v-btn>
+      </v-col>
+
       <!-- Export Button -->
       <v-col :cols="1">
         <div class="text-right">
@@ -185,8 +191,12 @@
 </template>
 
 <script>
+import session from '@/api/session'
 import { mapActions, mapState } from 'vuex'
+import { getSessionQueryString } from '@/api/mri/query'
+import { SESSIONS_CSV } from '@/api/mri/endpoints'
 import ExportSessionCard from '@/components/mri/export-session-card'
+var FileSaver = require('file-saver')
 
 export default {
   name: 'SessionTableControls',
@@ -357,6 +367,32 @@ export default {
         this.loadingStudyGroups = false
       })
     },
+    toCsv: function() {
+      let queryString = getSessionQueryString(this.query)
+      let URL = `${SESSIONS_CSV}/${queryString}`
+      return session
+        .get(URL, { responseType: 'blob' })
+        .then(response => {
+          // Log somewhat to show that the browser actually exposes the custom HTTP header
+          const fileNameHeader = 'x-suggested-filename'
+          const suggestedFileName = response.headers[fileNameHeader]
+          const effectiveFileName =
+            suggestedFileName === undefined ? 'sessions.csv' : suggestedFileName
+          console.log(
+            `Received header [${fileNameHeader}]: ${suggestedFileName}, effective fileName: ${effectiveFileName}`
+          )
+
+          // Let the user save the file.
+          FileSaver.saveAs(response.data, effectiveFileName)
+        })
+        .catch(response => {
+          console.error(
+            'Could not Download the CSV report from the backend.',
+            response
+          )
+        })
+    },
+
     ...mapActions('mri', ['fetchSessions']),
     ...mapActions('research', [
       'fetchStudies',
