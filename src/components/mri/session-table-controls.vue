@@ -211,9 +211,7 @@ export default {
   },
   components: { ExportSessionCard },
   mounted() {
-    if (this.subject) {
-      this.$set(this.filters, 'subject', this.subject.id)
-    }
+    this.filters.subject = this.subject.id
     this.filters.studies = this.studyFilter
     this.filters.procedures = this.procedureFilter
     this.filters.dataAcquisitions = this.acquisitionFilter
@@ -404,9 +402,11 @@ export default {
   },
   watch: {
     subject(selectedSubject) {
-      if (selectedSubject) {
-        this.$set(this.filters, 'subject', selectedSubject.id)
-      }
+      this.filters.subject = selectedSubject.id
+      this.filters.studies = this.studyFilter
+      this.filters.procedures = this.procedureFilter
+      this.filters.dataAcquisitions = this.acquisitionFilter
+      this.filters.groups = this.groupFilter
     },
     filters: {
       handler() {
