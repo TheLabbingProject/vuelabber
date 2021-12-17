@@ -14,16 +14,32 @@
             label="Primary Key"
             v-model="filters.pk"
             dense
+            clearable
           />
         </v-col>
         <v-col v-if="showPersonalInformationFilters">
-          <v-text-field label="Subject ID" v-model="filters.idNumber" dense />
+          <v-text-field
+            label="Subject ID"
+            v-model="filters.idNumber"
+            dense
+            clearable
+          />
         </v-col>
         <v-col v-if="showPersonalInformationFilters">
-          <v-text-field label="First Name" v-model="filters.firstName" dense />
+          <v-text-field
+            label="First Name"
+            v-model="filters.firstName"
+            dense
+            clearable
+          />
         </v-col>
         <v-col v-if="showPersonalInformationFilters">
-          <v-text-field label="Last Name" v-model="filters.lastName" dense />
+          <v-text-field
+            label="Last Name"
+            v-model="filters.lastName"
+            dense
+            clearable
+          />
         </v-col>
         <v-col :cols="3">
           <v-row class="align-center">
