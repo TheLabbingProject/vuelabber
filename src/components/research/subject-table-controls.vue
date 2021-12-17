@@ -89,6 +89,9 @@
           <v-autocomplete
             dense
             clearable
+            multiple
+            deletable-chips
+            small-chips
             label="Sex"
             v-model="filters.sex"
             :items="sexItems"
@@ -102,14 +105,18 @@
         :items="genderItems"
       />
     </v-col> -->
-        <!-- <v-col :cols="2">
-      <v-select
-        clearable
-        label="Dominant Hand"
-        v-model="filters.dominantHand"
-        :items="dominantHandItems"
-      />
-    </v-col> -->
+        <v-col :cols="1">
+          <v-autocomplete
+            dense
+            clearable
+            multiple
+            deletable-chips
+            small-chips
+            label="Dominant Hand"
+            v-model="filters.dominantHand"
+            :items="dominantHandItems"
+          />
+        </v-col>
       </v-row>
       <v-row class="my-0">
         <!-- Study -->

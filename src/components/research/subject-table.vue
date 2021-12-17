@@ -176,31 +176,31 @@
         </template>
 
         <!-- Dominant Hand -->
-        <!-- <template
-        v-if="currentUser.isStaff"
-        v-slot:[`item.dominantHand`]="{ item }"
-      >
-        <v-edit-dialog
-          :return-value.sync="item.dominantHand"
-          large
-          @save="saveSubject(item, 'dominantHand')"
+        <template
+          v-if="currentUser.isStaff"
+          v-slot:[`item.dominantHand`]="{ item }"
         >
-          <div>
-            {{ getDisplay(item.dominantHand, dominantHandOptions) }}
-          </div>
-          <template v-slot:input>
-            <v-select
-              clearable
-              label="Edit"
-              v-model="item.dominantHand"
-              :items="dominantHandItems"
-            />
-          </template>
-        </v-edit-dialog>
-      </template>
-      <template v-else v-slot:[`item.dominantHand`]="{ item }">
-        {{ getDisplay(item.dominantHand, dominantHandOptions) }}
-      </template> -->
+          <v-edit-dialog
+            :return-value.sync="item.dominantHand"
+            large
+            @save="saveSubject(item, 'dominantHand')"
+          >
+            <div>
+              {{ getDisplay(item.dominantHand, dominantHandOptions) }}
+            </div>
+            <template v-slot:input>
+              <v-select
+                clearable
+                label="Edit"
+                v-model="item.dominantHand"
+                :items="dominantHandItems"
+              />
+            </template>
+          </v-edit-dialog>
+        </template>
+        <template v-else v-slot:[`item.dominantHand`]="{ item }">
+          {{ getDisplay(item.dominantHand, dominantHandOptions) }}
+        </template>
 
         <template v-slot:[`item.latestMriSessionTime`]="{ item }">
           {{ item.latestMriSessionTime | formatDateTime }}
@@ -305,7 +305,7 @@ export default {
       },
       { text: 'Sex', value: 'sex', align: 'center', sortable: true },
       // { text: 'Gender', value: 'gender', sortable: false },
-      // { text: 'Dominant Hand', value: 'dominantHand' },
+      { text: 'Dominant Hand', value: 'dominantHand' },
       {
         text: 'Latest MRI Session',
         value: 'latestMriSessionTime',
