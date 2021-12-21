@@ -182,9 +182,23 @@
 
           <!-- Status -->
           <template v-slot:[`item.status`]="{ item }">
-            <v-icon small :color="itemStatusColor(item)">
-              circle
-            </v-icon>
+            <div class="py-1">
+              <v-btn
+                small
+                rounded
+                :color="statusColors[item.id]"
+                :loading="loadingStatus[item.id] == true"
+                @click="checkStatus(item)"
+              >
+                {{
+                  exportDestinationStatus[item.id] == undefined
+                    ? 'Test'
+                    : exportDestinationStatus[item.id]
+                    ? 'Active'
+                    : 'Failure'
+                }}
+              </v-btn>
+            </div>
           </template>
 
           <!-- Actions -->
@@ -266,10 +280,12 @@ export default {
     editItemFormTitle: 'Edit Export Destination',
     reachableExportDestinationColor: 'green',
     unreachableExportDestinationColor: 'red',
+    untestedExportDestinationColor: 'grey',
     deleteDialogText: 'Are you sure you want to delete this item?',
     cancelButton: { label: 'Cancel', color: 'blue darken-1' },
     saveButton: { label: 'Save', color: 'blue darken-1' },
-    confirmDeleteButton: { label: 'OK', color: 'blue darken-1' }
+    confirmDeleteButton: { label: 'OK', color: 'blue darken-1' },
+    loadingStatus: {}
   }),
   computed: {
     isCurrentUser: function() {
@@ -296,9 +312,20 @@ export default {
         return this.headers
       }
     },
+    statusColors() {
+      return Object.fromEntries(
+        Object.entries(this.exportDestinationStatus).map(
+          ([pk, connectionStatus]) => [
+            pk,
+            this.itemStatusColor(connectionStatus)
+          ]
+        )
+      )
+    },
     ...mapState('accounts', [
       'exportDestinations',
       'exportDestinationCount',
+      'exportDestinationStatus',
       'users'
     ]),
     ...mapState('auth', { currentUser: 'user' })
@@ -312,8 +339,10 @@ export default {
     }
   },
   methods: {
-    itemStatusColor(item) {
-      return item.status
+    itemStatusColor(status) {
+      return status == undefined
+        ? this.untestedExportDestinationColor
+        : status
         ? this.reachableExportDestinationColor
         : this.unreachableExportDestinationColor
     },
@@ -364,10 +393,17 @@ export default {
       }
       this.close()
     },
+    checkStatus: function(exportDestination) {
+      this.$set(this.loadingStatus, exportDestination.id, true)
+      this.checkExportDestinationStatus(exportDestination).then(() => {
+        this.$set(this.loadingStatus, exportDestination.id, false)
+      })
+    },
     ...mapActions('accounts', [
       'createExportDestination',
       'deleteExportDestination',
       'patchExportDestination',
+      'checkExportDestinationStatus',
       'fetchUsers'
     ])
   }

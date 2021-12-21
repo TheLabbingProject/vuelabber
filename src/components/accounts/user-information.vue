@@ -63,7 +63,7 @@ import { mapActions, mapState } from 'vuex'
 
 export default {
   name: 'UserInformation',
-  created() {
+  mounted() {
     let query = { filters: { username: this.username }, options: {} }
     this.fetchUsers(query)
   },

@@ -22,7 +22,8 @@ const state = {
   exportDestinations: [],
   userCount: 0,
   taskCount: {},
-  exportDestinationCount: 0
+  exportDestinationCount: 0,
+  exportDestinationStatus: {}
 }
 
 const getters = {
@@ -94,6 +95,11 @@ const mutations = {
   setExportDestinations(state, exportDestinations) {
     state.exportDestinations = exportDestinations
   },
+  setExportDestinationStatus(state, { exportDestination, data }) {
+    let status = Object.assign({}, state.exportDestinationStatus)
+    status[exportDestination.id] = data
+    state.exportDestinationStatus = status
+  },
   setExportDestinationCount(state, exportDestinationCount) {
     state.exportDestinationCount = exportDestinationCount
   }
@@ -161,6 +167,15 @@ const actions = {
       .then(({ data }) => {
         commit('setExportDestinations', data.results)
         commit('setExportDestinationCount', data.count)
+      })
+      .catch(console.error)
+  },
+  checkExportDestinationStatus({ commit }, exportDestination) {
+    let URL = `${EXPORT_DESTINATIONS}/${exportDestination.id}/status/`
+    return session
+      .get(URL)
+      .then(({ data }) => {
+        commit('setExportDestinationStatus', { exportDestination, data })
       })
       .catch(console.error)
   },
