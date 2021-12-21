@@ -9,7 +9,7 @@
       multi-sort
       show-select
       :expanded.sync="expanded"
-      :headers="headers"
+      :headers="computedHeaders"
       :items="sessions"
       :loading="loading"
       :options.sync="options"
@@ -256,11 +256,6 @@ export default {
     SessionTableControls
     // SubjectInfoCard
   },
-  mounted() {
-    if (this.currentUser.isSuperuser && this.subject == undefined) {
-      this.headers = [...this.personalInformation, ...this.headers]
-    }
-  },
   data: () => ({
     headers: [
       { text: 'Date', value: 'date', width: 100 },
@@ -316,6 +311,13 @@ export default {
     },
     irbApprovalNumbers: function() {
       return this.irbApprovals.map(irb => irb.number)
+    },
+    computedHeaders: function() {
+      if (this.currentUser.isSuperuser && this.subject == undefined) {
+        return [...this.personalInformation, ...this.headers]
+      } else {
+        return this.headers
+      }
     },
     ...mapState('mri', ['irbApprovals', 'sessions', 'sessionCount']),
     ...mapState('research', ['measurementDefinitions']),
