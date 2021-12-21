@@ -211,7 +211,9 @@ export default {
   },
   components: { ExportSessionCard },
   mounted() {
-    this.filters.subject = this.subject.id
+    if (this.subject) {
+      this.filters.subject = this.subject.id
+    }
     this.filters.studies = this.studyFilter
     this.filters.procedures = this.procedureFilter
     this.filters.dataAcquisitions = this.acquisitionFilter
