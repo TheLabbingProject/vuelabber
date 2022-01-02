@@ -204,7 +204,7 @@
       <template v-slot:expanded-item="{ item, headers }">
         <td :colspan="headers.length" class="subject-data pa-0 ma-0">
           <scan-table
-            :subject="item.subject"
+            :subject="subject"
             :session="item"
             :studyFilter="studyFilter"
             :procedureFilter="procedureFilter"
