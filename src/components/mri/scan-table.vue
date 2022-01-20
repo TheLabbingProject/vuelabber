@@ -216,6 +216,24 @@ export default {
         align: 'center'
       },
       {
+        text: 'Repetition Time (TR)',
+        value: 'repetitionTime',
+        sortable: false,
+        align: 'center'
+      },
+      {
+        text: 'Echo Time (TR)',
+        value: 'echoTime',
+        sortable: false,
+        align: 'center'
+      },
+      {
+        text: 'Inversion Time (TR)',
+        value: 'inversionTime',
+        sortable: false,
+        align: 'center'
+      },
+      {
         text: 'Spatial Resolution (mm)',
         value: 'spatialResolution',
         sortable: false,
