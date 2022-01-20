@@ -97,7 +97,7 @@
 
       <!-- Time -->
       <template v-slot:[`item.time`]="{ item }">
-        {{ item.time ? item.time.slice(11, 23) : '' }}
+        {{ item.time ? item.time.slice(11, 19) : '' }}
       </template>
 
       <!-- Sequence Type -->
