@@ -13,12 +13,19 @@
           :groupFilter="groupFilter"
         />
       </v-tab-item>
+      <v-tab>
+        {{ runsTabTitle }}
+      </v-tab>
+      <v-tab-item>
+        <run-table :subject="subject" />
+      </v-tab-item>
     </v-tabs>
   </v-container>
 </template>
 
 <script>
 import SessionTable from '@/components/mri/session-table.vue'
+import RunTable from '@/components/analysis/run-table.vue'
 
 export default {
   name: 'SubjectData',
@@ -30,11 +37,13 @@ export default {
     groupFilter: Array
   },
   components: {
+    RunTable,
     SessionTable
   },
   data: () => ({
     active: 0,
-    mriTabTitle: 'MRI'
+    mriTabTitle: 'MRI',
+    runsTabTitle: 'Runs'
   })
 }
 </script>

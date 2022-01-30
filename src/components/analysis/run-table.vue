@@ -22,6 +22,7 @@
             ref="controls"
             :options="options"
             :scan="scan"
+            :subject="subject"
             @fetch-run-start="loading = true"
             @fetch-run-end="loading = false"
           ></run-table-controls>
@@ -118,6 +119,7 @@ import { RUNS } from '@/api/analysis/endpoints.js'
 export default {
   name: 'RunTable',
   props: {
+    subject: { type: Object },
     scan: { type: Object }
   },
   components: { RunInputInformation, RunOutputInformation, RunTableControls },

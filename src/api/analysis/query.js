@@ -131,7 +131,8 @@ const getRunQueryString = ({ filters, options }) => {
     ''}${analysisFilter}${analysisVersionFilter}${statusFilter}&start_time_after=${filters.startTimeAfter ||
     ''}&start_time_before=${filters.startTimeBefore ||
     ''}&end_time_after=${filters.endTimeAfter ||
-    ''}&end_time_before=${filters.startTimeBefore || ''}&page_size=${
+    ''}&end_time_before=${filters.startTimeBefore ||
+    ''}&subject=${filters.subjectId || ''}&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage

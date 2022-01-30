@@ -52,7 +52,7 @@ import { mapActions, mapMutations, mapState } from 'vuex'
 
 export default {
   name: 'RunTableControls',
-  props: { options: Object, scan: Object },
+  props: { options: Object, scan: Object, subject: Object },
   created() {
     this.updateAnalysis()
     this.update()
@@ -82,7 +82,8 @@ export default {
         startTimeAfter: '',
         startTimeBefore: '',
         endTimeAfter: '',
-        endTimeBefore: ''
+        endTimeBefore: '',
+        subjectId: this.subject ? this.subject.id : ''
       }
     },
     query: function() {
