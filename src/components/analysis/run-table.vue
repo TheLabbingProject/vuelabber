@@ -5,8 +5,10 @@
         item-key="id"
         show-expand
         single-expand
+        show-select
         multi-sort
         dense
+        v-model="selectedRuns"
         :expanded.sync="expanded"
         :headers="headers"
         :items="runs"
@@ -23,6 +25,7 @@
             :options="options"
             :scan="scan"
             :subject="subject"
+            :selectedRuns="selectedRuns"
             @fetch-run-start="loading = true"
             @fetch-run-end="loading = false"
           ></run-table-controls>
@@ -125,6 +128,7 @@ export default {
   components: { RunInputInformation, RunOutputInformation, RunTableControls },
   data: () => ({
     expanded: [],
+    selectedRuns: [],
     loading: false,
     itemsPerPageOptions: [10, 25, 50, -1],
     headers: [

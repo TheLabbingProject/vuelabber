@@ -36,27 +36,75 @@
           clearable
         />
       </v-col>
-      <v-col :cols="1" class="text-center">
+      <v-col :cols="1">
         <v-btn :class="refreshButton.class" @click="update" small>
           <v-icon>
             {{ refreshButton.icon }}
           </v-icon>
         </v-btn>
       </v-col>
+      <!-- Export Button -->
+      <v-col :cols="1" class="text-left">
+        <div>
+          <v-dialog v-model="exportRunDataDialog" max-width="500px">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                color="primary"
+                v-bind="attrs"
+                v-on="on"
+                small
+                :disabled="!allowExport"
+                :dark="allowExport"
+              >
+                Export
+              </v-btn>
+            </template>
+            <export-run-card
+              :selectedRuns="selectedRuns"
+              @close-run-export-dialog="closeRunExportDialog"
+              @run-export-started="showExportSnackbar"
+            />
+          </v-dialog>
+        </div>
+
+        <v-snackbar v-model="exportSnackbar" :timeout="exportSnackbarTimeout">
+          {{ exportSnackbarText }}
+          <template v-slot:action="{ attrs }">
+            <v-btn
+              color="blue"
+              text
+              v-bind="attrs"
+              @click="exportSnackbar = false"
+            >
+              Close
+            </v-btn>
+          </template>
+        </v-snackbar>
+      </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
+import ExportRunCard from '@/components/analysis/export-run-card'
 
 export default {
   name: 'RunTableControls',
-  props: { options: Object, scan: Object, subject: Object },
-  created() {
-    this.updateAnalysis()
-    this.update()
+  mounted() {
+    this.update().then(() => {
+      this.updateAnalysis().then(() => {
+        this.fetchExportDestinations(this.exportDestinationQuery)
+      })
+    })
   },
+  props: {
+    options: Object,
+    scan: Object,
+    subject: Object,
+    selectedRuns: Array
+  },
+  components: { ExportRunCard },
   data: () => ({
     analysisFilter: { label: 'Analysis', value: [] },
     analysisVersionFilter: { label: 'Version', value: [] },
@@ -71,7 +119,11 @@ export default {
     },
     loadingAnalyses: false,
     loadingAnalysisVersions: false,
-    refreshButton: { icon: 'refresh', class: 'info' }
+    refreshButton: { icon: 'refresh', class: 'info' },
+    exportRunDataDialog: false,
+    exportSnackbar: false,
+    exportSnackbarTimeout: 5000,
+    exportSnackbarText: ''
   }),
   computed: {
     filters: function() {
@@ -95,17 +147,28 @@ export default {
         ...version
       }))
     },
-    ...mapState('analysis', ['analyses', 'analysisVersions'])
+    exportDestinationQuery: function() {
+      return {
+        filters: { user: this.currentUser.id },
+        options: {}
+      }
+    },
+    allowExport: function() {
+      return Boolean(this.exportDestinations.length && this.selectedRuns.length)
+    },
+    ...mapState('accounts', ['exportDestinations']),
+    ...mapState('analysis', ['analyses', 'analysisVersions']),
+    ...mapState('auth', { currentUser: 'user' })
   },
   methods: {
     update: function() {
       this.$emit('fetch-run-start')
       if (this.scan != undefined) {
-        this.fetchScanRunSet(this.scan.id).then(() => {
+        return this.fetchScanRunSet(this.scan.id).then(() => {
           this.$emit('fetch-run-end')
         })
       } else {
-        this.fetchRuns(this.query).then(() => {
+        return this.fetchRuns(this.query).then(() => {
           this.$emit('fetch-run-end')
         })
       }
@@ -113,32 +176,43 @@ export default {
     updateAnalysis: function() {
       this.$emit('fetch-analyses-start')
       this.loadingAnalyses = true
-      this.fetchAnalyses({
+      return this.fetchAnalyses({
         filters: { hasRuns: true },
         options: {}
       }).then(() => {
         this.loadingAnalyses = false
+        this.$emit('fetch-analyses-end')
       })
-      this.$emit('fetch-analyses-end')
     },
     updateAnalysisVersions: function() {
       this.$emit('fetch-analysis-versions-start')
       this.loadingAnalysisVersions = true
-      this.fetchAnalysisVersions({
+      return this.fetchAnalysisVersions({
         filters: { analysis: this.filters.analysis, hasRuns: true },
         options: {}
       }).then(() => {
         this.loadingAnalysisVersions = false
+        this.$emit('fetch-analysis-versions-end')
       })
-      this.$emit('fetch-analysis-versions-end')
     },
+    closeRunExportDialog() {
+      this.exportRunDataDialog = false
+    },
+    showExportSnackbar(nRuns, nExportDestinations) {
+      let exportDestinationsText =
+        'destination' + (nExportDestinations > 1 ? 's' : '')
+      let runText = 'run' + (nRuns > 1 ? 's' : '')
+      this.exportSnackbarText = `Run results export successfully started! (${nRuns} ${runText}, ${nExportDestinations} ${exportDestinationsText})`
+      this.exportSnackbar = true
+    },
+    ...mapActions('accounts', ['fetchExportDestinations']),
     ...mapActions('analysis', [
       'fetchAnalyses',
       'fetchAnalysisVersions',
-      'fetchRuns'
+      'fetchRuns',
+      'setAnalysisVersions'
     ]),
-    ...mapActions('mri', ['fetchScanRunSet']),
-    ...mapMutations('analysis', ['setAnalysisVersions'])
+    ...mapActions('mri', ['fetchScanRunSet'])
   },
   watch: {
     filters: {
