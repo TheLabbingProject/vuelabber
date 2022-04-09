@@ -193,8 +193,8 @@
                 v-bind="attrs"
                 v-on="on"
                 small
-                :disabled="!allowExport"
-                :dark="allowExport"
+                :disabled="!allowDownload"
+                :dark="allowDownload"
               >
                 Download
               </v-btn>
@@ -267,7 +267,7 @@ export default {
     studyFilter: { type: Array, default: () => [] },
     procedureFilter: { type: Array, default: () => [] },
     acquisitionFilter: { type: Array, default: () => [] },
-    groupFilter: { type: Array, default: () => [] }
+    groupFilter: { type: Array, default: () => [] },
   },
   mounted() {
     if (this.subject) {
@@ -302,7 +302,7 @@ export default {
       studies: [],
       procedures: [],
       dataAcquisitions: [],
-      groups: []
+      groups: [],
     },
     afterDateMenu: false,
     beforeDateMenu: false,
@@ -316,12 +316,12 @@ export default {
     exportSnackbar: false,
     exportSnackbarTimeout: 5000,
     exportSnackbarText: '',
-    downloadScanDialog: false
+    downloadScanDialog: false,
   }),
   computed: {
-    parsedOptions: function() {
+    parsedOptions: function () {
       let options = Object.assign({}, this.options)
-      options['sortBy'] = options['sortBy'].map(item => {
+      options['sortBy'] = options['sortBy'].map((item) => {
         if (item == 'date') {
           return 'time__date'
         } else if (item == 'time') {
@@ -338,56 +338,59 @@ export default {
       })
       return options
     },
-    selectedIdsString: function() {
-      return this.selectedScans.map(scan => scan.id).join(',')
+    selectedIdsString: function () {
+      return this.selectedScans.map((scan) => scan.id).join(',')
     },
-    selectedDicomIdsString: function() {
-      return this.selectedScans.map(scan => scan.dicom).join(',')
+    selectedDicomIdsString: function () {
+      return this.selectedScans.map((scan) => scan.dicom).join(',')
     },
-    niftiDownloadUrl: function() {
+    niftiDownloadUrl: function () {
       return `${SCANS}/nifti_zip/${this.selectedIdsString}/`
     },
-    dicomDownloadUrl: function() {
+    dicomDownloadUrl: function () {
       return `${SERIES}/to_zip/${this.selectedDicomIdsString}/`
     },
-    groupItems: function() {
+    groupItems: function () {
       if (this.filters.studies.length == 1) {
-        return this.groups.map(group => ({
+        return this.groups.map((group) => ({
           ...group,
-          text: `${group.title}`
+          text: `${group.title}`,
         }))
       } else {
-        return this.groups.map(group => ({
+        return this.groups.map((group) => ({
           ...group,
-          text: `${group.study.title} | ${group.title}`
+          text: `${group.study.title} | ${group.title}`,
         }))
       }
     },
 
-    allowExport: function() {
+    allowExport: function () {
       return Boolean(
         this.exportDestinations.length && this.selectedScans.length
       )
     },
-    showPersonalInformationFilters: function() {
+    allowDownload: function () {
+      return Boolean(this.selectedScans.length)
+    },
+    showPersonalInformationFilters: function () {
       return !this.subject && this.currentUser.isSuperuser
     },
-    studyQuery: function() {
+    studyQuery: function () {
       return { filters: {}, options: {} }
     },
-    procedureQuery: function() {
+    procedureQuery: function () {
       return { filters: { studies: this.filters.studies }, options: {} }
     },
-    dataAcquisitionQuery: function() {
+    dataAcquisitionQuery: function () {
       return {
         filters: {
           study: this.filters.studies,
-          procedure: this.filters.procedures
+          procedure: this.filters.procedures,
         },
-        options: {}
+        options: {},
       }
     },
-    studyGroupQuery: function() {
+    studyGroupQuery: function () {
       return { filters: { study: this.filters.studies }, options: {} }
     },
     ...mapState('accounts', ['exportDestinations']),
@@ -397,8 +400,8 @@ export default {
       'groups',
       'studies',
       'procedures',
-      'measurementDefinitions'
-    ])
+      'measurementDefinitions',
+    ]),
   },
   methods: {
     update() {
@@ -456,37 +459,37 @@ export default {
       'fetchGroups',
       'fetchStudies',
       'fetchProcedures',
-      'fetchMeasurementDefinitions'
-    ])
+      'fetchMeasurementDefinitions',
+    ]),
   },
   watch: {
-    subject: function(selectedSubject) {
+    subject: function (selectedSubject) {
       this.$set(this.filters, 'subject', selectedSubject.id)
     },
-    session: function(selectedSession) {
+    session: function (selectedSession) {
       this.$set(this.filters, 'session', selectedSession.id)
     },
     filters: {
       handler() {
         this.update()
       },
-      deep: true
+      deep: true,
     },
     options: {
       handler() {
         this.update()
       },
-      deep: true
+      deep: true,
     },
-    'filters.studies': function() {
+    'filters.studies': function () {
       this.loadProcedures()
       this.loadStudyGroups()
       this.loadDataAcquisitions()
     },
-    'filters.procedures': function() {
+    'filters.procedures': function () {
       this.loadDataAcquisitions()
-    }
-  }
+    },
+  },
 }
 </script>
 
