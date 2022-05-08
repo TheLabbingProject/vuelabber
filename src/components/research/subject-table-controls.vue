@@ -17,6 +17,14 @@
             clearable
           />
         </v-col>
+        <v-col :cols="2">
+          <v-text-field
+            label="Questionnaire ID"
+            v-model="filters.questionnaireId"
+            dense
+            clearable
+          />
+        </v-col>
         <v-col v-if="showPersonalInformationFilters">
           <v-text-field
             label="Subject ID"
@@ -328,6 +336,7 @@ export default {
       studies: [],
       mriSessionAfter: '',
       mriSessionBefore: '',
+      questionnaireId: '',
       groups: [],
       measurementDefinitions: [],
       procedures: []
@@ -353,8 +362,8 @@ export default {
       )
     },
     showPersonalInformationFilters: function() {
-      // return this.user.isStaff
-      return true
+      return this.user.isStaff
+      // return true
     },
     computedOptions: function() {
       let options = Object.assign({}, this.options)

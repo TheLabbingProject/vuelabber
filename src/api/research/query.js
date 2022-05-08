@@ -62,7 +62,8 @@ const getSubjectQueryString = ({ filters, options }) => {
     ''}&measurement=${filters.dataAcquisition ||
     ''}&study_group=${filters.groups ||
     ''}&mri_session_time_after=${filters.mriSessionAfter ||
-    ''}&mri_session_time_before=${filters.mriSessionBefore || ''}&page_size=${
+    ''}&mri_session_time_before=${filters.mriSessionBefore ||
+    ''}&questionnaire_id=${filters.questionnaireId || ''}&page_size=${
     options.itemsPerPage
       ? options.itemsPerPage != -1
         ? options.itemsPerPage

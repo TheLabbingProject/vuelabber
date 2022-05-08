@@ -298,6 +298,13 @@ export default {
         sortable: true
       },
       {
+        text: 'Questionnaire ID',
+        value: 'customAttributes.questionnaireId.value',
+        align: 'center',
+        width: 140,
+        sortable: true
+      },
+      {
         text: 'Date of Birth',
         value: 'dateOfBirth',
         align: 'center',
