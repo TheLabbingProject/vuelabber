@@ -127,7 +127,7 @@ const getRunQueryString = ({ filters, options }) => {
   let statusFilter = filters.status
     .map(statusCode => `&status=${statusCode}`)
     .join('')
-  return `?id=${filters.id ||
+  return `?id_in=${filters.idIn ||
     ''}${analysisFilter}${analysisVersionFilter}${statusFilter}&start_time_after=${filters.startTimeAfter ||
     ''}&start_time_before=${filters.startTimeBefore ||
     ''}&end_time_after=${filters.endTimeAfter ||

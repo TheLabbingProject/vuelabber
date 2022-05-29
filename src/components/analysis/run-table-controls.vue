@@ -2,6 +2,9 @@
   <v-container fluid class="pa-0">
     <v-row>
       <v-col class="pt-0">
+        <v-text-field v-model="runIdFilter.value" :label="runIdFilter.label" />
+      </v-col>
+      <v-col class="pt-0">
         <v-autocomplete
           v-model="analysisFilter.value"
           :items="analyses"
@@ -106,6 +109,7 @@ export default {
   },
   components: { ExportRunCard },
   data: () => ({
+    runIdFilter: { label: 'Run ID', value: [] },
     analysisFilter: { label: 'Analysis', value: [] },
     analysisVersionFilter: { label: 'Version', value: [] },
     statusFilter: {
@@ -128,6 +132,7 @@ export default {
   computed: {
     filters: function() {
       return {
+        idIn: this.runIdFilter.value,
         analysis: this.analysisFilter.value,
         analysisVersion: this.analysisVersionFilter.value,
         status: this.statusFilter.value,
