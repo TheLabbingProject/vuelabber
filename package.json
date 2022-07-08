@@ -24,7 +24,7 @@
     "file-saver": "^2.0.5",
     "luxon": "^1.21.3",
     "material-design-icons-iconfont": "^5.0.1",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "postscribe": "^2.0.8",
     "vue": "^2.6.11",
     "vue-async-computed": "^3.7.0",
